@@ -1,4 +1,4 @@
-# ![saxophone](Images/Saxophone_64.png) Birdland Musician's Assistant
+# ![saxophone](/Images/Saxophone_64.png) Birdland Musician's Assistant
 
 Birdland is a Linux-based multimedia music viewer and library manager for music books in PDF form including fakebooks.  It
 displays a page of music or a ChordPro song by searching a database of
@@ -10,7 +10,7 @@ indexes using OCR, harmonize indexes from disparate sources, compare them, and i
 one database.  Birdland ships with index data from 9 sources covering over 100 books
 and over 20,000 titles.  Users can edit existing indexes and add their own.
 
-![small-full-window](Images/small-full-window.png)
+![small-full-window](/Images/small-full-window.png)
 
 ## Terminology
 
