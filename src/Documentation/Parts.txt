@@ -1,0 +1,28 @@
+## History
+
+## Fakebook Index Work - Dec 2021
+
+This paper describes work started around Sept 2020 and resumed in Dec 2021.
+It is separate from the Birdland project from 2011 or so and Bluebird from the fall of 2019.
+
+Index Files
+The raw source file is the origin of the index data, that is, a mapping
+between a song title, fakebook, and page number.  Presently, we are
+working with nine sources of index data.
+
+* AdamSpiers
+* Buffalo
+* ExtractedIndex
+* JasonDonenfeld
+* MikelNelson
+* Sher
+* Skrivarna
+* StompBox
+* User
+
+Fakebook Files
+This project does not concern itself with the acquisition of fakebooks.
+We assume that the user has scanned or otherwise acquired them, that they
+live under a common root, and that they have unique names but not
+necessarily the book names that appear in any index nor the canonical book
+names used here though they could be.  A few examples:

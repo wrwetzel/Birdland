@@ -1,0 +1,15 @@
+# .gititnore - WRW 27 May 2022
+
+#   Ignore rand editor backup files
+,*
+
+#   Ignore other rand editor files
+.es1
+.ek1
+.ec1
+
+__pycache__/
+Junk/
+Hold/
+birdland_wrwetzel.egg-info/
+

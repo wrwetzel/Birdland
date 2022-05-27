@@ -1,0 +1,20 @@
+# .rgignore - WRW 28 Nov 2020 - for ripgrep (rg)
+
+#   Ignore rand editor backup files
+,*
+
+#   Ignore other rand editor files
+.es1
+.ek1
+.ec1
+
+#   Ignore all files
+# *
+
+#   Un-ignore interesting files as in lgrep
+# ![a-zA-Z]*.py
+# ![a-zA-Z]*.sh
+
+Play/*
+Parts/*
+Obsolete/*

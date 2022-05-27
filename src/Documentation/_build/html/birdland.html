@@ -1,0 +1,948 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birdland Musician’s Assistant &#8212; Birdland 1.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/lglb-sphinx-doc.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Birdland Documentation" href="index.html" /> 
+  </head><body>
+<div class="header">
+ <p class="logo"><a href="https://birdland.wrwetzel.com">
+  <img class="logo" src="_static/Top-Logo.png" alt="Logo"/>
+ </a></p>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="index.html" title="Birdland Documentation"
+             accesskey="P">previous</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">Birdland 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""> Birdland Musician’s Assistant</a></li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <p class="caption" role="heading"><span class="caption-text">Table of Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Birdland Musician’s Assistant</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#music-vs-audio">Music vs Audio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-indexes">Raw Indexes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#music-book-identifiers">Music Book Identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#page-number-sheet-number-title-number">Page Number, Sheet Number, Title Number</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#foundational-concepts">Foundational Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#no-copyrighted-media">No Copyrighted Media</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text-based-primary-input-files">Text-based Primary Input Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-raw-indexes">Multiple Raw Indexes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#normalized-titles">Normalized Titles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#screen-size">Screen Size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#programming-is-more-fun-than-bookkeeping">Programming is More Fun Than Bookkeeping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#music-viewer-features">Music Viewer Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#index-management-features">Index Management Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-features">Other Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#download">Download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#status">Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#settings">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operation">Operation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#abbreviated-reference-manual">Abbreviated Reference Manual</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-line">Command Line</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c-confdir">-c confdir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-mysql">-d mysql</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-commands">Additional Commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#menus">Menus</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#file-settings">File-&gt;Settings</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#folders-containing-music-files-permitting-canon-file-editing">Folders containing music files permitting Canon-&gt;File editing</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#canonical-file-map-file-s">Canonical-&gt;File map file(s)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#editable-canonical-file-map-file">Editable Canonical-&gt;File map file</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#include-titles-missing-in-music-files">Include titles missing in music files</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#database">Database</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#rebuild-sheet-offset-table-rebuild-canonical-to-file-table">Rebuild Sheet-Offset Table, Rebuild Canonical to File Table</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#index-management">Index Management</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#process-raw-index-sources">Process Raw-Index Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#view">View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#help">Help</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#about-birdland">About Birdland</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search-and-search-controls">Search and Search Controls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#also-search-audio-title-in-music">Also Search Audio Title in Music</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#browse-music">Browse Music</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audio-of-title-midi-of-title">Audio of Title, Midi of Title</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tabs">Tabs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#edit-canonical-file">Edit Canonical-&gt;File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Index Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#index-comparison-tab">Index Comparison Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#index-page-list-tab">Index Page List Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-edit-user-index-tab">Create/Edit User Index Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#edit-local-canonical">Edit Local-&gt;Canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-music-book">Adding A New Music Book</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-an-index-source">Adding An Index Source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#source-specific-processing">Source-Specific Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#future-work">Future Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#random-comments">Random Comments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#symmetry">Symmetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#book-errors">Book Errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-index-independence">Raw Index Independence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indexes-vs-indices">Indexes vs Indices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dedication">Dedication</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Birdland Documentation</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saxophone-birdland-musician-s-assistant">
+<h1><img alt="saxophone" src="_images/Saxophone_64.png" /> Birdland Musician’s Assistant<a class="headerlink" href="#saxophone-birdland-musician-s-assistant" title="Permalink to this headline">¶</a></h1>
+<p>Birdland is a Linux-based multimedia music viewer and library manager for music books in PDF form including fakebooks.  It
+displays a page of music or a ChordPro song by searching a database of
+titles and other metadata.  Answering the <em>Let’s hear how it goes</em> query it also suggests
+audio files, midi files, JJazzLab songs and YouTube links matching the search.</p>
+<p>A secondary feature of Birdland is index management.  Birdland contains tools to quickly create
+indexes using OCR, harmonize indexes from disparate sources, compare them, and integrate them into
+one database.  Birdland ships with index data from 9 sources covering over 100 books
+and over 20,000 titles.  Users can edit existing indexes and add their own.</p>
+<p><img alt="small-full-window" src="_images/small-full-window.png" /></p>
+<div class="section" id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="music-vs-audio">
+<h3>Music vs Audio<a class="headerlink" href="#music-vs-audio" title="Permalink to this headline">¶</a></h3>
+<p>The common (and ambiguous) terms - <em>music</em> and <em>audio</em> - are used formally here.  You look
+at <em>Music</em>; you listen to <em>Audio</em>.  That is, <em>Music</em> is derived from the printed page,
+<em>Audio</em> from performance.  The term <em>Book</em> is used informally to refer to a <em>Music</em> book.</p>
+</div>
+<div class="section" id="raw-indexes">
+<h3>Raw Indexes<a class="headerlink" href="#raw-indexes" title="Permalink to this headline">¶</a></h3>
+<p>A key feature of Birdland is the ability to locate title in a book by searching a
+database.  This requires an index that maps song titles to pages in PDF files.  Birdland ships
+with raw indexes compiled from several online sources, one extracted from the table of
+contents of a collection of music books (of those having a table of contents) and
+a small one created during testing.</p>
+<p>Each raw-index source has a short, three
+character identifier called <em><strong>Src</strong></em>.  Each raw-index source also has a longer, descriptive
+identifier called <em><strong>Source</strong></em> though that has less visibility than <em>Src</em>.</p>
+</div>
+<div class="section" id="music-book-identifiers">
+<h3>Music Book Identifiers<a class="headerlink" href="#music-book-identifiers" title="Permalink to this headline">¶</a></h3>
+<p>Every music book has three identifiers.  The <em><strong>Local Name</strong></em> is specific (or local) to each
+raw-index source and created by the person compiling the index. <em>Local</em> names are often
+cryptic and non-unique across different index sources.</p>
+<p>The <em><strong>Canonical Name</strong></em> is descriptive, is unique over all music books, and was selected by
+author of Birdland.  It is typically the same or similar to the name of the book, possibly
+normalized and disambiguated, particularly for for <em>Real Books</em> from Sher, Hal Leonard and
+the originals from Berkeley Music College.
+The local name is mapped to the canonical name by a file in each of the raw-index source directories.</p>
+<p>The <em><strong>File Name</strong></em> is the name of the music file, i.e. the PDF file containing music, in
+<em>your</em> music library.<br />The canonical name is mapped to the file name by a file, <em>Canonical2ile.txt</em> in the configuration directory.
+Birdland includes a tool for managing that file or you can use your favorite text editor.</p>
+<blockquote>
+<div><p>The <em>Canonical2File.txt</em> file must exist before Birdland can find your music files.</p>
+</div></blockquote>
+</div>
+<div class="section" id="page-number-sheet-number-title-number">
+<h3>Page Number, Sheet Number, Title Number<a class="headerlink" href="#page-number-sheet-number-title-number" title="Permalink to this headline">¶</a></h3>
+<p>Two common (and also ambiguous) terms, <em>Page</em> and <em>Sheet</em>, are also used formally
+here.</p>
+<p>The <em><strong>Page Number</strong></em> of a title exists within the domain of a PDF file and what is shown by PDF
+readers.  Page numbers are sequential starting with one, have no gaps, and increase by one for each page in a
+book. (Internally, page numbers start at zero but that’s hidden from the user.) Some PDF files have
+non-numeric page numbers (yes, an oxymoron), often for front matter. Birdland does not deal with non-numeric page
+numbers.</p>
+<p>The <em><strong>Sheet Number</strong></em> of a title is usually what is shown on the visual page.  In the general case
+<em>Page</em> and <em>Sheet</em> numbers are not the same and vary by raw-index source.</p>
+<p><em>Sheet</em> numbers increase monotonically, there is only one per page, they are assigned for
+continuation pages, and they may have gaps, for example, because of omitted photos.</p>
+<p>A small number of books identify titles with a <em><strong>Title Number</strong></em> instead of a <em>Sheet Number</em>.
+<em>Title Numbers</em> increase monotonically, there can be one or more per page, they are not assigned to
+continuation pages, and they may have gaps, for example, because of a structured title numbering system.</p>
+<p>The relation between <em>Page</em> and <em>Sheet</em> (or <em>Title</em>) numbers is established by a file
+named <em>Sheet-Offsets.txt</em> in each of the raw-index source directories.
+It contains one or more pairs of numbers.  Starting at the sheet represented by the first
+number the <em>Page</em> number is obtained by adding the second number to the sheet number.  For
+some index sources the <em>Page</em> number and <em>Sheet</em> number are the same.</p>
+<p>The distinction between <em>Sheet Number</em> and <em>Title Number</em> exists only for creating new indexes.  It
+controls the automatic incrementing of the sheet/title number when skipping a page and displaying a
+nastygram when a sheet/title number is not given.</p>
+<blockquote>
+<div><p>The indexes included with Birdland but which were obtained from external sources are inconsistent
+in sheet numbering and none make use of title numbering.  For some, the page and sheet numbers are
+the same but the sheet numbers do not agree with the printed page.  For others, the sheet number is
+offset from the page number and do agree with the printed page.  The benefit of title numbering only
+accrue when creating new indexes with Birdland.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Editorial -</strong> We assert that <em>Sheet Number</em>, not <em>Page Number</em>, should be published in raw indexes.
+The sheet number is constant, as fixed as the ink in the book, whereas the page number is not.
+Different people doing scans may have different approaches
+to front matter, photos, back matter, etc., resulting in multiple incompatible scans. A small, simple
+offset file, not an entirely new index, brings those divergent scans into agreement.
+And the sheet number can be used to locate a title in a physical book whereas the page number cannot.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="foundational-concepts">
+<h2>Foundational Concepts<a class="headerlink" href="#foundational-concepts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="no-copyrighted-media">
+<h3>No Copyrighted Media<a class="headerlink" href="#no-copyrighted-media" title="Permalink to this headline">¶</a></h3>
+<p>Birdland ships with no copyrighted media - music, audio or midi.  You
+must supply your own media, which is available from many online sources, or from your own
+scans.  It does include music indexes for many popular books.  Indexes are lists of facts
+and, as such, not subject to copyright.</p>
+</div>
+<div class="section" id="text-based-primary-input-files">
+<h3>Text-based Primary Input Files<a class="headerlink" href="#text-based-primary-input-files" title="Permalink to this headline">¶</a></h3>
+<p>The primary input files - raw indexes, local to canonical maps, canonical to file map,
+title corrections, etc., are all text-based.  Birdland include tools for editing
+most or you may use your favorite text editor.</p>
+<p>A corollary of this is that no user input is stored only in the Birdland database.
+The database may be rebuilt freely without the loss of data you have entered.</p>
+</div>
+<div class="section" id="multiple-raw-indexes">
+<h3>Multiple Raw Indexes<a class="headerlink" href="#multiple-raw-indexes" title="Permalink to this headline">¶</a></h3>
+<p>By comparing indexes from multiple sources it is possible to identify incorrect
+sheet numbers, alternate title spellings, and omitted titles. Of course, this is only
+meaningful if the sources were built independently, which does not appear to always be the case.
+And, of course, this only works when multiple sources exist. A book with only one index
+source may have error that can only be identified by viewing each page.</p>
+<blockquote>
+<div><p>At some point, we’re not there yet, but at some point all index sources
+will agree.  When we get there then there will no longer be a need for
+multiple raw indexes.  Instead, we will consolidate all indexes into one
+and ship only that one with Birdland.  We will also normalize all sheet numbers to agree
+with the printed sheet and include an offset file to map to PDF page.
+We hope users will contribute to this effort.</p>
+</div></blockquote>
+</div>
+<div class="section" id="normalized-titles">
+<h3>Normalized Titles<a class="headerlink" href="#normalized-titles" title="Permalink to this headline">¶</a></h3>
+<p>Titles for the same song in the raw indexes vary in several ways: capitalization, spelling errors,
+differences in punctuation, inclusion of subtitles, leading or trailing articles <em>A</em> and
+<em>The</em>, possibly in parens, key signatures, diacritical marks, certain source-specific
+quirks such as leading or trailing items, and more.</p>
+<p>Ideally, there would only be one representation for each title.  We’re not there yet but
+Birdland includes the tools to move in that direction. At an early step in raw-index processing<br />Birdland checks each title against sixteen patterns of potential mismatches including those described above and automatically corrects to a normalized form.</p>
+<p>Using one of the tools in <em>Index Management</em> users can manually add corrections that
+cannot be done automatically.  Those corrections are then applied on a subsequent raw-index
+processing step.</p>
+<p>Punctuation in the raw index is preserved in the database so that the displayed titles appear the same as the printed titles. However, punctuation is generally ignored when searching.</p>
+</div>
+<div class="section" id="screen-size">
+<h3>Screen Size<a class="headerlink" href="#screen-size" title="Permalink to this headline">¶</a></h3>
+<p>Development of Birdland was done on both a desktop PC with a large monitor and a laptop with a 13.25” screen and resolution of 1366x768. The layout of the graphical user interface was designed to fit on
+the laptop screen though at that size the built-in PDF viewer is barely
+usable - an external one using the full screen height is a better choice. The laptop screen
+also constrained the number and placement of UI features including buttons, textboxes, and tabs.
+We believe the compromises required to support smaller screens will be appreciated by some users.</p>
+</div>
+<div class="section" id="programming-is-more-fun-than-bookkeeping">
+<h3>Programming is More Fun Than Bookkeeping<a class="headerlink" href="#programming-is-more-fun-than-bookkeeping" title="Permalink to this headline">¶</a></h3>
+<p>Index management involves a lot of bookkeeping, e.g. identifying page mismatches between
+index sources, aligning page numbers, editing mapping files, etc.  The time to develop the
+Birdland tools to minimize the bookkeeping effort likely exceeded many fold the time to
+just do the bookkeeping manually.  But it was more fun.</p>
+</div>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="music-viewer-features">
+<h3>Music Viewer Features<a class="headerlink" href="#music-viewer-features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Locate music by searching for the song title, composer or lyricist in the music index,
+the title in the music index matching the artist or album in the audio index, and the the
+title in the music filename.</p></li>
+<li><p>Locate audio by searching for the song title, artist, and album in data extracted from
+metadata in the audio files.  Audio file names are not searched because they normally
+overlap the metadata.  The titles obtained from searching the audio index may optionally
+be included in a search of the music index.  This provides a means of identifying titles
+by artist and album metadata, which is in the audio files index but not in the music file
+index.</p></li>
+<li><p>Locate midi by searching for the song title in the midi filename.  Midi files contain no
+reliable and uniform metadata so only the filename is searched.</p></li>
+<li><p>Locate ChordPro songs by searching for the song title and artist in data<br />extracted from the ChordPro file and folder names. Presently no metadata is extracted
+from the ChordPro file content.</p></li>
+<li><p>Locate JJazzLab songs by searching for the song title the in data
+extracted from the JJazzLab filenames. Presently no metadata is extracted
+from the JJazzLab file content.</p></li>
+<li><p>Locate YouTube pages by searching a table created by looking up all titles in the
+authors library.</p></li>
+<li><p>Manage setlists.</p></li>
+<li><p>Edit the <em>Canonical to File</em> table.</p></li>
+<li><p>Option to use built in PDF viewer or external one.</p></li>
+</ul>
+</div>
+<div class="section" id="index-management-features">
+<h3>Index Management Features<a class="headerlink" href="#index-management-features" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Compare indexes from multiple sources. View the title indicated by sheet number of each source
+to determine the correct one. Go directly to the line in the raw index to edit incorrect
+titles or sheet numbers. Harmonize alternate title spellings by selecting one from two or more
+alternate choices.</p></li>
+<li><p>Inspect the raw index for each <em>Src</em> and <em>Local</em> book name and view the title to establish
+correct sheet offsets.</p></li>
+<li><p>Create an index for a book not previously indexed. Workflow-optimized user interface with
+user-guided title OCR. Automatic title OCR where titles are in the same location on successive
+pages. Automatic sheet number increment.</p>
+<p>Where the song titles are clearly legible, i.e., not written over a staff lines as is the case in some of
+the <em>Real Books</em>, and especially if they are in the same location on all pages, it is
+possible to index a book quickly with user input only to enter the first sheet number and correct OCR errors.</p>
+</li>
+<li><p>Edit the Local to Canonical file for each <em>Src</em> and <em>Local</em> book name.</p></li>
+<li><p>Screen magnifier for viewing small sheet numbers when creating an index.</p></li>
+</ul>
+</div>
+<div class="section" id="other-features">
+<h3>Other Features<a class="headerlink" href="#other-features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Birdland uses the Sqlite3 database by default but will use MySql  via a command-line
+option. To use MySql you must first manually create a MySql database called <em>Birdland</em> with appropriate permissions.
+Thereafter, Birdland will create and populate the tables just as it does with Sqlite3.</p></li>
+<li><p>Support for use on multiple hosts using a shared configuration file with host-specific
+sections for settings likely to vary by host.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="download">
+<h3>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h3>
+<p>Birdland is packaged in several forms:</p>
+<ul class="simple">
+<li><p>As a tarball.
+This is likely to be familiar to techy users but does nothing automatically. You will
+have to be sure all required Python modules are installed.</p></li>
+<li><p>For installation via <em>PyPi</em>.
+This is also likely to be familiar to techy users and automatically installs all require
+Python modules.</p></li>
+<li><p>As as self-contained file build by <em>PyInstaller</em>.</p></li>
+<li><p>As as self-contained file build by <em>Nuitka</em>.
+These are likely to be the easiest to install as they include the Python
+interpreter and all required modules but they still require a recent glibc and the
+download files are quite large.</p></li>
+</ul>
+<p>See the Birdland web site for download links and package-specific instructions.
+The package-specific instructions
+(one of ReadMe-Tar.md, ReadMe-Pypi.md, ReadMe-Nuitak.md, and ReadMe-PyInstaller.md) are also included
+in the installation package
+for reference during installation.</p>
+</div>
+<div class="section" id="system-requirements">
+<h3>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h3>
+<p>Birdland is presently supported on Linux.</p>
+<p>Birdland requires the Python 3 interpreter. This is likely installed on most modern Linux
+distributions, is included in the self-contained packages, but will have to be installed
+for the Tar and PyPi installation if not already present.</p>
+<p>Birdland requires the following Python modules. These are installed automatically if installing
+Birdland from PyPi, are included in the self-contained package, but have to be installed manually
+when installing Birdland from the tarball.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">click</span>
+<span class="n">configobj</span>
+<span class="n">Levenshtein</span>
+<span class="n">mutagen</span>
+<span class="n">mysqlclient</span>
+<span class="n">pandas</span>
+<span class="n">pillow</span> <span class="p">(</span><span class="n">only</span> <span class="k">if</span> <span class="n">using</span> <span class="n">Create</span> <span class="n">Index</span> <span class="n">feature</span><span class="p">)</span>
+<span class="n">PyMuPDF</span>
+<span class="n">PySimpleGUI</span>
+<span class="n">pytesseract</span> <span class="p">(</span><span class="n">only</span> <span class="k">if</span> <span class="n">using</span> <span class="n">Create</span> <span class="n">Index</span> <span class="n">feature</span><span class="p">)</span>
+<span class="n">tk</span>
+<span class="n">unidecode</span>
+<span class="n">youtubesearchpython</span> <span class="p">(</span><span class="n">only</span> <span class="n">to</span> <span class="n">run</span> <span class="n">get</span><span class="o">-</span><span class="n">youtube</span><span class="o">-</span><span class="n">links</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Birdland includes the source and binary for one module, <em>fullword</em> (a misnomer of fulltext), written in C but falls back to an alternate match strategy if that is not available. There are presently no build instructions in the installation process to recompile that if the existing binary is incompatible with your system. Execute <em>run.sh</em> in the <em>Fullword-Match</em> directory under the birdland source directory if you have a C-development environment on your system.</p>
+<p>Birdland optionally need one or more of the following if you want to view or hear the
+related files from your libraries.</p>
+<ul class="simple">
+<li><p>An audio file player to play audio files matching a music title.
+We have tested with the <em>vlc</em> audio player.</p></li>
+<li><p>A PDF viewer if you prefer to use an external one in lieu of the built-in one.
+We tested with the <em>okular</em> PDF viewer though we generally use the build-in viewer.</p></li>
+<li><p>A midi player to play midi files.
+We tested with the <em>timidity</em> midi player with the <em>FluidR3_GM.sf2</em> sound fount.  The
+<em>FluidR3_GM.sf2</em> sound font has good coverage of General Midi instruments and remarkably
+good samples.</p></li>
+<li><p>ChordPro viewer to view ChordPro files.
+We tested with the <em>chordpro</em> ChordPro viewer.</p></li>
+<li><p>JJazzLab to work with JJazzLab files.
+No choice here but JJazzLab.</p></li>
+<li><p>A web browser for viewing YouTube links.<br />We like the <em>qutebrowser</em> browser for its simple, non-distracting user interface.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="status">
+<h2>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h2>
+<p>A wise sage posited that <em>Perfect is the Enemy of Good</em>. With that in mind we decided to release
+Birdland with a few known issues to expose it to a wider user base.</p>
+<p>At this stage in development and packaging, especially packaging, Birdland will be more attractive to techy users.</p>
+<p>The Birdland application has been reasonably well tested during development but has not
+yet been exposed to many users.  Corner cases or un-anticipated inputs and sequence of
+inputs will inevitably emerge.</p>
+<p>Development and testing was done on an up-to-date Arch Linux system with the Plasma (KDE) desktop environment.
+Incompatibilities with
+other Linux distributions or older versions of Python and Python modules, and other system software are
+possible. Conflicts with the glibc library are specifically a concern with the self-contained packages.</p>
+<p>The consolidation of the multiple index sources is not complete. The correct page is found for most titles
+in popular fakebooks but some page errors and alternate spellings of titles remain.</p>
+<p>Birdland has a <em>theme</em> option but light themes are discouraged.  Most of the testing was
+done with the <em>Dark</em> theme - we recommend that for early users.  Birdland specifies a few
+user-interface colors that work better with dark themes. No work has been done yet to adapt
+the specified colors to light themes.  Most embarrassing, the <em>Birdland</em> title just about
+disappears with light themes.  While color is used sparingly in most of the user interface
+(just the title, input boxes, and tabs) it is used in the <em>Create Index</em> feature to convey the source of the title, either manual, manual OCR, or automatic OCR.</p>
+<p>The power of <em>Full Text</em> searching is available only if using the MySql database.  Since
+most, if not all, users will prefer Sqlite3 for its simplicity and speed, MySql <em>full text</em>
+serching is not possible.  We were unable to use the <em>full text</em> feature of Sqlite3 either because
+it is buggy, we didn’t understand it, or both.  However, we did implement approximations of <em>full
+text</em> in a number of different ways.  By default, Birdland uses a small <em>C</em>-language
+routine for <em>full-text</em> matching.  Because of the uncertainties of access to that routine in
+some environments Birdland will fall back to an alternate implementation using SQL
+<em>LIKE</em> matching if the C implementation cannot be loaded.  There will be small variation
+in search results between the two implementations and <em>LIKE</em> is a bit slower.</p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="settings">
+<h3>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h3>
+<p>When Birdland starts for the first time it:</p>
+<ul class="simple">
+<li><p>Creates a folder, <em>.birdland</em>, in your home directory
+(and also as specified by the <em>-c confdir</em> option, if given).</p></li>
+<li><p>If using <em>Sqlite3</em> (the default case if MySql is not specified) it creates an empty database in ~/.birdland/Birdland.db.</p></li>
+<li><p>It populates the default or specified configuration directory with:</p>
+<ul>
+<li><p>A default configuration file, <em>birdland.conf</em></p></li>
+<li><p>An empty setlist file, <em>setlist.json</em></p></li>
+<li><p>An empty canonical to file map file, <em>hostname-Canonical2File.txt</em></p></li>
+<li><p>A sample canonical to file map file, <em>Example-Canonical2File.txt</em></p></li>
+<li><p>An empty audio index, <em>hostname-Audio-Index.json.gz</em>,</p></li>
+</ul>
+</li>
+</ul>
+<p>Note that <em>hostname</em> above is the name of your host.
+The hostname is included in the canonical to file and audio index filenames so you can run Birdland
+on multiple hosts with a common, shared configuration directory, each with different music and audio
+libraries.</p>
+<ul class="simple">
+<li><p>Birdland then prompts you set up your configuration in the settings menu:
+<em>File-&gt;Settings</em>.  The <em>birdland.conf</em> file is an ordinary text file, which
+you can edit it directly with a text editor if you prefer.</p></li>
+<li><p>There you tell Birdland the location of your music, audio, midi, ChordPro and JJazzLab
+libraries.  Each of these is specified by a root directory and a list of one or more
+directories under the root.</p></li>
+<li><p>Birdland needs to know the mapping between the canonical music file names used in the
+index and the names of the music files on <em>your</em> system.  You can populate the
+canonical-to-file map file using the build-in tool in the <em>Edit Canonical-&gt;File</em> tab or
+with a text editor.  The file consists of one line per music file containing the canonical
+name and the music file name separated by a vertical bar.  A reasonably-complete example
+is in <em>Example-Canonical2File.txt</em> to use as a starting point.  You may find that the file
+names in that are quite close to your music file names and only minor edits are needed.
+Or you might prefer to change the names of your music files to match that file.</p></li>
+<li><p>Next click <em>Database-&gt;Scan Audio Library</em> if you intend to include your audio library in the
+Birdland database.  This can take some time if you have a large audio library, perhaps
+around a half-hour for a half-terabyte of audio files. You can defer this until later if
+you are anxious to get started. Birdland gives you chance to cancel the scan if you accidentally click
+this item.</p></li>
+<li><p>Finally click <em>Database-&gt;Rebuild All Tables</em> to build the database from the
+index data shipped with Birdland and the additional data you entered
+above.  This typically takes thirty seconds or so.</p></li>
+</ul>
+<p>There are several more options that are not needed to get started.  We’ll
+get to those later.</p>
+</div>
+<div class="section" id="operation">
+<h3>Operation<a class="headerlink" href="#operation" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Enter a title in the green text box labeled <em>Title</em> and hit <em>Enter</em> or click <em>Search</em>.</p>
+<p>Birdland searches for <em>all</em> the words entered in the order they appear.
+This is similar, but not identical, to <em>full text</em> supported by
+MySql and Sqlite databases.</p>
+<p>Birdland searches for the title in the music index, the audio index, in the music
+filenames, the midi filenames, the ChordPro index, the JJazzLab index and the YouTube
+index and activates the tab for the first match found in the above order.</p>
+</li>
+<li><p>Click on a row in the <em>Music Index</em> tab to view the music file found by title (or other search parameters),
+the <em>Audio Index</em> to play the audio file,
+the <em>Music Files</em> tab to view the music file found by filename,
+the <em>Midi Files</em> tab to play the
+midi file, the <em>ChordPro</em> tab to view the ChordPro file,
+the <em>JJazzLab</em> tab to launch JJazzLab for
+the title, and the <em>YouTube Index</em> to view the YouTube video for the title.</p>
+<p>The number of matches of each type appears in <em>Status Bar</em> at the bottom of Birdland.  Note that
+the maximum of number of matches returned is limited by an options in <em>Settings</em>, default 100.</p>
+<p><img alt="lets-hear" src="_images/lets-hear.png" /></p>
+<ul class="simple">
+<li><p>And now, the multimedia feature manifests.  If a speaker icon appears in the <em>Status Bar</em> then
+the title of an audio file matches the title shown in the music viewer.  Click on the <em>Audio of
+Title</em> tab in the left sidebar and then a line in the <em>Title/Artist</em> table to play the audio.</p></li>
+</ul>
+</li>
+<li><p>If a music notes icon appears in the <em>Status Bar</em> then the above applies but for midi files</p></li>
+<li><p>Add a title to a set list by clicking the <em>Add</em> button in the <em>Add Title to Setlist</em> panel. Create a new set list by typing the new name in the drop-down menu in lieu of selecting an existing one.</p></li>
+</ul>
+<p><img alt="setlist" src="_images/setlist.png" /></p>
+</div>
+</div>
+<div class="section" id="abbreviated-reference-manual">
+<h2>Abbreviated Reference Manual<a class="headerlink" href="#abbreviated-reference-manual" title="Permalink to this headline">¶</a></h2>
+<p>UNIX Programmer’s Manual, Seventh Edition (now 43 years old) includes the following comment:</p>
+<blockquote>
+<div><p>Within the area it surveys, this volume attempts to be timely, complete and concise. Where the latter two objectives conflict, the obvious is often left unsaid in favor of brevity.</p>
+</div></blockquote>
+<p>In that spirit the function of most the user menus and controls should be self-explanatory from the
+tab, button, or panel labels.  Here are just a few items that may not be obvious for reference while using Birdland.</p>
+<div class="section" id="command-line">
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h3>
+<p>Birdland is executed from the comand line with <em>birdland</em> and it may appear in the system menu if supported.</p>
+<div class="section" id="c-confdir">
+<h4>-c confdir<a class="headerlink" href="#c-confdir" title="Permalink to this headline">¶</a></h4>
+<p>Use <em>confdir</em> for the configuration directory instead of the default <em>~/.birdland</em>.  You may want to
+do this to locate the configuration information in a shared or cloud-based directory such
+as Dropbox so that you can use the same configuration information on multiple systems and
+so that it is backed up.</p>
+<p>This option does not affect the location of Sqlite3 database, which is always in <em>~/.birdland</em>. It can be easily and quickly
+regenerated and you may not want it in cloud storage because of its size.</p>
+</div>
+<div class="section" id="d-mysql">
+<h4>-d mysql<a class="headerlink" href="#d-mysql" title="Permalink to this headline">¶</a></h4>
+<p>Use the MySql database in lieu of the default Sqlite3 database.</p>
+</div>
+</div>
+<div class="section" id="additional-commands">
+<h3>Additional Commands<a class="headerlink" href="#additional-commands" title="Permalink to this headline">¶</a></h3>
+<p>Birdland includes a few additional commands.</p>
+<ul class="simple">
+<li><p>bl-build-tables (links to build_tables.py)</p></li>
+<li><p>bl-diff-index (links to diff_index.py)</p></li>
+</ul>
+<p>Ordinarily, the above are run via the menu in Birdland but are exposed for advanced users who prefer to run them outside of Birdland. These commands are not further documented. Use the <em>–help</em> option for some guidance on use.</p>
+<ul class="simple">
+<li><p>Index-Sources/ExtractedIndex/extract-index-from-pdf.py - This scans your music library and extracts indexes from PDF files containing indexes.</p></li>
+<li><p>build-pdf-from-image.py - This converts image files in your music library to PDF files and places them in the folder indicated by the <em>music_from_image</em> option in the configuration file, default the <em>Converted_from_Image</em> directory under the root of your music library.  It assumes that all image files for a single song are in one folder and places the PDF output in a file named for that folder.</p></li>
+</ul>
+</div>
+<div class="section" id="menus">
+<h3>Menus<a class="headerlink" href="#menus" title="Permalink to this headline">¶</a></h3>
+<p><img alt="top-menu-bar" src="_images/top-menu-bar.png" /></p>
+<div class="section" id="file-settings">
+<h4>File-&gt;Settings<a class="headerlink" href="#file-settings" title="Permalink to this headline">¶</a></h4>
+<p><img alt="settings" src="_images/settings.png" /></p>
+<div class="section" id="folders-containing-music-files-permitting-canon-file-editing">
+<h5>Folders containing music files permitting Canon-&gt;File editing<a class="headerlink" href="#folders-containing-music-files-permitting-canon-file-editing" title="Permalink to this headline">¶</a></h5>
+<p>This was used to restrict the files in the <em>Canonical Name</em> table in the <em>Edit Canonical-&gt;File</em> tab to just files in the folders included in this option. It is not currently used.</p>
+</div>
+<div class="section" id="canonical-file-map-file-s">
+<h5>Canonical-&gt;File map file(s)<a class="headerlink" href="#canonical-file-map-file-s" title="Permalink to this headline">¶</a></h5>
+<p>This defines one or more files containing the canonical to file mapping. Presently, one map file was created by hand while the other was created by the program that built the <em>Ext</em> raw index by extracting index data from all PDF files in the music library containing an index.</p>
+</div>
+<div class="section" id="editable-canonical-file-map-file">
+<h5>Editable Canonical-&gt;File map file<a class="headerlink" href="#editable-canonical-file-map-file" title="Permalink to this headline">¶</a></h5>
+<p>Only the canonical to file map in this option is shown in the <em>Edit Canonical-&gt;File</em> tab. This is the file in the above option that was created by hand. There is no reason to edit the map created by the index extraction program and it cluttered the table.</p>
+</div>
+<div class="section" id="include-titles-missing-in-music-files">
+<h5>Include titles missing in music files<a class="headerlink" href="#include-titles-missing-in-music-files" title="Permalink to this headline">¶</a></h5>
+<p>When searching the music index titles without a corresponding music present are ordinarily excluded from the results shown in the <em>Music Index</em>. Check this option to include those files. You may want to do this to explore the music index before you have set up the canonical to file map for your music library.</p>
+</div>
+</div>
+<div class="section" id="database">
+<h4>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="rebuild-sheet-offset-table-rebuild-canonical-to-file-table">
+<h5>Rebuild Sheet-Offset Table, Rebuild Canonical to File Table<a class="headerlink" href="#rebuild-sheet-offset-table-rebuild-canonical-to-file-table" title="Permalink to this headline">¶</a></h5>
+<p>These items are a subset of <em>Rebuild All Tables</em> item. They are includes separately so users working on the <em>Sheet Offset</em> and <em>Canonical to File</em> files don’t have to rebuild the entire database when working on just those files.</p>
+</div>
+</div>
+<div class="section" id="index-management">
+<h4>Index Management<a class="headerlink" href="#index-management" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="process-raw-index-sources">
+<h5>Process Raw-Index Sources<a class="headerlink" href="#process-raw-index-sources" title="Permalink to this headline">¶</a></h5>
+<p>This executes each of the <em>do_*.py</em> scripts in the source-specific folders in the <em>Index-Source</em> directory. Each of those scripts converts their associated raw indexes into a consistent format in the <em>Music-Index</em> directory. It must be run after editing the raw index files. It does not have to be run after editing the <em>Sheet Offset</em> or <em>Canonical to File</em> files.</p>
+<p>The remainder of the items show reports summarizing differences between index sources for the same book and another report showing the details of such differences. The summary reports show progress on harmonizing index sources and identify books needing attention. The detail report is redundant with the information on the <em>Index-Management -&gt; Index Comparison</em> tab but some users might prefer to see the differences in a report.</p>
+</div>
+</div>
+<div class="section" id="view">
+<h4>View<a class="headerlink" href="#view" title="Permalink to this headline">¶</a></h4>
+<p>The controls here are redundant with options in the <em>Settings</em> menu but are provided for users who want to quickly view one of the indicated tabs without going to <em>Settings</em>. Most users will have no need for <em>Index Management</em> and little need for <em>Edit Canonical-&gt;File</em> once they have configured Birdland for their system. Hiding these tabs reduces clutter and hides unused tabs.</p>
+</div>
+<div class="section" id="help">
+<h4>Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="about-birdland">
+<h5>About Birdland<a class="headerlink" href="#about-birdland" title="Permalink to this headline">¶</a></h5>
+<p>Please copy-and-paste the contents of the <em>About Birdland</em> window into the <em>Contact</em> form when
+contacting us with a problem.  You may also find it handy as a reminder of the directories used by
+Birdland.</p>
+<p><img alt="about" src="_images/about.png" /></p>
+</div>
+</div>
+</div>
+<div class="section" id="search-and-search-controls">
+<h3>Search and Search Controls<a class="headerlink" href="#search-and-search-controls" title="Permalink to this headline">¶</a></h3>
+<p><img alt="top-controls" src="_images/top-controls.png" /></p>
+<div class="section" id="also-search-audio-title-in-music">
+<h4>Also Search Audio Title in Music<a class="headerlink" href="#also-search-audio-title-in-music" title="Permalink to this headline">¶</a></h4>
+<p><img alt="also-search" src="_images/Also-Search.png" /></p>
+<p>The metadata accompanying some titles includes composer and lyricist but never artist and album as neither has a unique mapping to a title. Nevertheless, users may want to search for a title based on an artist who recorded it or an album where it appears. With this option checked and with a value for artist and or album the audio index is first searched for these items. The titles found in the search are then searched for in the music index as if they were entered in the <em>Title:</em> search box.</p>
+</div>
+<div class="section" id="browse-music">
+<h4>Browse Music<a class="headerlink" href="#browse-music" title="Permalink to this headline">¶</a></h4>
+<p>Title shown in the <em>Music Index</em> tab include the <em>Src</em> and <em>Local</em> for the raw index from which the title was obtained. That is not the case for books selected from the the <em>Browse Music</em> tab in the left sidebar, a file browser for all books in your music library. Select the index <em>Src</em> in the drop-down menu to use the  associated index when viewing the book it in the <em>Music Viewer</em> tab.</p>
+<p><img alt="left-sidebar" src="_images/left-sidebar.png" /></p>
+</div>
+<div class="section" id="audio-of-title-midi-of-title">
+<h4>Audio of Title, Midi of Title<a class="headerlink" href="#audio-of-title-midi-of-title" title="Permalink to this headline">¶</a></h4>
+<p>As each title is displayed in the <em>Music Viewer</em> tab the audio and midi tables are searched for the title. Titles found there are displayed in the <em>Audio of Title</em> and <em>Midi of Title</em> tabs in the sidebar on the left of the window. Click on an item in either tab to immediately hear the song while viewing the music for it without the need to locate it in the <em>Audio</em> or <em>Midi</em> tabs.</p>
+</div>
+</div>
+<div class="section" id="tabs">
+<h3>Tabs<a class="headerlink" href="#tabs" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="edit-canonical-file">
+<h4>Edit Canonical-&gt;File<a class="headerlink" href="#edit-canonical-file" title="Permalink to this headline">¶</a></h4>
+<p>Unless your music library directory structure and book names matches that in *<em>Example-Canonical2File.txt</em> you will have to tell Birdland how to map canonical book names to your music files. This is done in the <em>Edit Canonical to File Tab</em>.</p>
+<p><img alt="edit-canonical-to-file" src="_images/Edit-Canonical-to-File.png" /></p>
+<ul class="simple">
+<li><p>Click on a book in the <em>Canonical Names</em> table and a book in the <em>Canonical Name / File Name</em> table.</p></li>
+<li><p>Click the <em>Canonical to File</em> button to link the selected canonical name to the file name.</p></li>
+<li><p>Click <em>Clear One Link</em> to undo a link.</p></li>
+<li><p>Click <em>Save</em> to save the table to the <em>Canonical2File.txt</em> file.</p></li>
+</ul>
+<p>Presently there is no control on this tab to add a new canonical name or file name. This has to be done by manually editing the <em>CanonicalNames.txt</em> and <em>Canonical2File.txt</em> files.</p>
+</div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Index Management<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The material in this section is applicable only if you are working at the raw index level.
+This includes adding a new index source from an external source, correcting errors in the
+indexes shipped with Birdland, or creating an new index.</p>
+<p>Many Birdland users will never deal with index management. For that reason you can hide the
+<em>Index Management</em> tab with an option in settings.</p>
+<p>Here we use the term <em>Left Click</em> to indicate mouse button 1, and <em>Right Click</em> for mouse button 3.
+Apply the obvious correction if you have mapped your mouse buttons differently. The <em>Right Click</em> is often used for a quick view of a title in a pop-up window.</p>
+<p><img alt="popup" src="_images/pdf-popup.png" /></p>
+<div class="section" id="index-comparison-tab">
+<h3>Index Comparison Tab<a class="headerlink" href="#index-comparison-tab" title="Permalink to this headline">¶</a></h3>
+<p>Here you compare the sheet number (and offset-mapped page number) for all <em>Src</em>s covering all indexed
+books, correct errors in the raw indexes, and determine the offset between sheet and page.</p>
+<p><img alt="index-comparison" src="_images/index-comparison.png" /></p>
+<ul>
+<li><p>Click in the <em>Canonical Book Name</em> table on in the column on the right to display all titles from that
+book and the sheet number and page number mapped from the sheet number for all <em>Src</em>s covering the book.</p></li>
+<li><p>Left click on a value in the <em>Src</em>-specific columns to view the
+page indicated by the number to the right of the arrow (the page number). Use this
+to identify pages with incorrect sheet numbers in the raw index.</p></li>
+<li><p>Left Click on the column headers of the <em>Index Comparison</em> table to display a chart of the
+<em>Sheet Offsets</em> for <em>Src</em> indicated by the column header.  This is pure eye candy and will
+likely disappear.  Most of the fakebooks have a constant sheet offset.  Only the
+<em>Standards Real Book - Chuck Sher</em> with a <em>Src</em> of <em>Buf</em> or <em>Shr</em> have an interesting
+chart. The original book included many photographs of performers but those sheets were omitted in the
+scanned PDF. The <em>Buf</em> and <em>Shr</em> indexes have correct sheet numbers and, thus, the sheet offset has to be adjusted
+for each photograph. The <em>Asp</em> and <em>Mik</em> indexes have sheet numbers matching page numbers so that a constant
+sheet offset of 0 is used for the entire book.</p>
+<blockquote>
+<div><p><em>BUG</em> - because of a limitation of the user-interface software this feature only works when the table
+is scrolled to the <em>top</em>. Otherwise, a PDF page is displayed.</p>
+</div></blockquote>
+<p><img alt="sheet-offset-graph" src="_images/sheet-offset-graph-1.png" /></p>
+</li>
+<li><p>Right click on a value in the <em>Src</em>-specific columns to launch a text editor with the raw index file opened
+to the line containing the title. This is an important feature, which makes it easy to correct errors in the raw index without the need to navigate the raw-index directories and search for titles.</p></li>
+<li><p>Right click on in the <em>Title</em> column to launch a text editor with the raw indexes for each of the
+<em>Src</em>s opened. Only one of the lines will be correctly selected - you will have to search for the title in
+the other raw index files.</p></li>
+<li><p>Changes you make to the raw index will appear the next time the raw index is processed.</p></li>
+</ul>
+<p>Titles from different index <em>Src</em>s for the same song frequently differ in small ways such as punctuation, sub-title, parenthesis, and more. While it would be possible to edit the raw indexes to bring them into agreement that can get tedious. Instead, Birdland has a much faster solution.</p>
+<ul class="simple">
+<li><p>Click on <em>Enable Select</em> in the <em>Select One Among Similar Titles</em> panel in the right sidebar.</p></li>
+<li><p>Control-Left-Click on two or more similar titles.</p></li>
+<li><p>Right-Click on any of the selected titles or click <em>Show Select</em> in the right sidebar to display a popup with all the selected titles.</p></li>
+<li><p>Click the desired title and <em>Save</em>.</p></li>
+<li><p>That will add an entry to a corrections file (<em>Canonical/Corrections.A.txt</em>) that will be applied to the raw index the next time it is processed.</p></li>
+</ul>
+<p><img alt="select-one-from-similar" src="_images/select-one-from-similar.png" /></p>
+</div>
+<div class="section" id="index-page-list-tab">
+<h3>Index Page List Tab<a class="headerlink" href="#index-page-list-tab" title="Permalink to this headline">¶</a></h3>
+<p>Here you view the index details for one book from one Src.
+Use this to determine the sheet offset for the manual creation of the <em>Sheet Offset</em> file.</p>
+<p><img alt="index-page-list" src="_images/index-page-list.png" /></p>
+<ul class="simple">
+<li><p>Click on a <em>Src</em> in the <em>Index Source Name</em> table in the column on the right. That will display a list of <em>Local</em> book
+names covered by the <em>Src</em>.</p></li>
+<li><p>Click on a book in the <em>Local Book Name</em> table to display index information for that <em>Src</em> and <em>Local</em> name
+combination in the main table.</p></li>
+<li><p>Left click anywhere in a row in the table to view the PDF page indicated by the <em>Page</em> column.</p></li>
+</ul>
+</div>
+<div class="section" id="create-edit-user-index-tab">
+<h3>Create/Edit User Index Tab<a class="headerlink" href="#create-edit-user-index-tab" title="Permalink to this headline">¶</a></h3>
+<p>Here you create an index for books that have not yet been indexed or continue work on an index
+you already started here. Books for indexing are shown in the table at the bottom of the left side of the tab.
+By default this shows <em>Canonical Books - With No Index</em>. This can be changed with a <em>Settings</em> option though
+the default setting is likely suitable for most needs.</p>
+<p><img alt="create-edit-user-index" src="_images/create-edit-user-index.png" /></p>
+<ul>
+<li><p>Click the <em>Title Number</em> check box if the book you are indexing has <em>Title Numbers</em>, otherwise they will be considered <em>Sheet Numbers</em>. Remember, the distinction only concerns how the number is incremented on <em>Skip</em>.</p></li>
+<li><p>Click on a canonical book name in the <em>Canonical Books - With No Index</em> table. This will display the
+PDF file for that book in the PDF display. Page 1 is shown if this is the first time you are working on this book.
+The last page you indexed is shown if you are returning to a book on which you previously worked.</p>
+<blockquote>
+<div><p>Reminder, you have already entered a sheet and title for this page. Click the <em>Next</em> button to advance to the first page that has not been labeled.</p>
+</div></blockquote>
+</li>
+<li><p>Draw a box around the title by left click and drag. The title will be processed by OCR and displayed in the <em>Title</em> box. Correct any OCR errors. Alternatively, you can type the title
+in the <em>Title</em> box but there is little reason to do so when the title is clear and easily recognized.</p></li>
+<li><p>Enter the <em>Sheet/Title</em> number. This is the number printed in the book, not the PDF page number. On subsequent pages
+the number will increment automatically. If the book does not have sheet/title numbers then, and only then, use the page number.</p></li>
+<li><p>Right-Click and drag in the viewer window to magnify sheet numbers or other content that is too small to see.</p>
+<p><img alt="magnifier" src="_images/magnifier-crop.png" /></p>
+</li>
+<li><p>Click <em>Save</em> to save the current title but stay on the page. Appropriate when the page contains multiple titles.</p></li>
+<li><p>Click <em>Save+</em> to save the current title and advance to the next page. Appropriate when the page contains one
+title or on the last title when it contains multiple titles.</p>
+<blockquote>
+<div><p>For both <em>Save</em> or <em>Save+</em> the current entry is added to the raw-index file and the sheet-offset file is updated.</p>
+</div></blockquote>
+</li>
+<li><p>Click <em>Skip</em> to save a dummy title of <em>_<em>Skip</em>_</em> and advance to the next page.  Appropriate
+when the page contains a continuation of a page previously indexed page, a photo, or other non-titled content.
+The <em>_<em>Skip</em>_</em> title is a marker to indicate that the page was processed in the <em>Coverage Map</em> but is not included in the database.</p></li>
+<li><p>If the <em>Auto OCR</em> box is checked (the default) when <em>Save+</em> or <em>Skip</em> is
+clicked then the title selection box is retained and the content of that box on the next page is processed
+by OCR. This is appropriate where titles are in the same location on the page and are not obscured by
+staff lines.</p></li>
+<li><p><em>Save</em>, <em>Save+</em>, and <em>Skip</em> require a title and sheet/title number to prevent inadvertent errors. For the same
+reason they do not permit saving a title that has already been saved for the same page. You must first <em>Update</em> it
+or <em>Delete</em> it.</p></li>
+<li><p>The navigation buttons <em>Go To</em>, <em>Prev</em>, <em>Next</em>, and <em>Last</em> have no such requirements. Be careful. <em>Last</em> navigates
+to the last page indexed, not the last page in the book.</p></li>
+<li><p>Click on <em>Show Map</em> to display an index coverage map.</p></li>
+</ul>
+<p><img alt="coverage" src="_images/index-coverage-map.png" /></p>
+</div>
+<div class="section" id="edit-local-canonical">
+<h3>Edit Local-&gt;Canonical<a class="headerlink" href="#edit-local-canonical" title="Permalink to this headline">¶</a></h3>
+<p><img alt="edit-local-to-canonical" src="_images/edit-local-to-canonical.png" /></p>
+<ul>
+<li><p>Select an <em>Src</em> from the <em>Index Src</em> drop-down menu. This populates the <em>Local Name / Linked Canonical Name</em> table
+with all books indexed by the selected <em>Src</em>.</p></li>
+<li><p>Click on a book in the <em>All Canonical Names</em> table and a book in the <em>Local Name / Linked Canonical Name</em> table.</p></li>
+<li><p>Click the <em>Link Local to Canonical</em> button to link the selected canonical name to the local name.</p></li>
+<li><p>Click <em>Clear One Link</em> to undo a link.</p></li>
+<li><p>Click <em>Save</em> to save the table to the <em>Local2Canon.txt</em> file for the selected <em>Src</em>.</p></li>
+<li><p>Click <em>Show Profile for Src/Local</em> to display the first 25 titles from the index for the
+selected <em>Src/Local</em>, the number of pages, and a list of books from other <em>Src/Local</em> indexes
+similar to the selected book based on the Levenshtein distance (a measure of similarity) between
+the titles. That metric is shown next to the <em>Src/Local</em> names. Use this feature to help identify the correct <em>Src/Local</em> to link to the canonical.</p>
+<p><img alt="profile" src="_images/local-src-profile.png" /></p>
+</li>
+</ul>
+</div>
+<div class="section" id="adding-a-new-music-book">
+<h3>Adding A New Music Book<a class="headerlink" href="#adding-a-new-music-book" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add book to one of the folders in <em>music_file_folders</em> item in the [[hostname]] section in birdland.conf.</p></li>
+<li><p>Add/verify canonical book name in <em>Canonicals/CanonicalNames.txt</em></p></li>
+<li><p>Add/verify the canonical to file mapping in <em>Hostname-Canonical2file.txt</em> in your Birdland config directory.</p></li>
+<li><p>Verify that the canonical names in <em>Canonicals/CanonicalNames.txt</em> and <em>Hostname-Canonical2file.txt</em> match.</p></li>
+<li><p>Rebuild the <em>canonical2file</em> table.</p></li>
+</ul>
+</div>
+<div class="section" id="adding-an-index-source">
+<h3>Adding An Index Source<a class="headerlink" href="#adding-an-index-source" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Create new folder in <em>Index-Sources</em>.</p></li>
+<li><p>Add new <em>Src</em> to the <em>source_priority</em> item in birdland.conf.</p></li>
+<li><p>Add a new section named for the new <em>Source</em> in the [<em>System</em>] section of birdland.conf</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">User</span><span class="p">]]</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">Usr</span>
+<span class="n">folder</span> <span class="o">=</span> <span class="n">User</span>
+<span class="n">command</span> <span class="o">=</span> <span class="n">do</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Build and run the do_&lt;source name&gt;.py script in the folder for your new source.</p></li>
+</ul>
+</div>
+<div class="section" id="source-specific-processing">
+<h3>Source-Specific Processing<a class="headerlink" href="#source-specific-processing" title="Permalink to this headline">¶</a></h3>
+<p>For each source there is a python script, do-&lt;source name&gt;.py, in a source-specific
+directory.  That script reads the raw data in a source-specific form and writes a
+<em>json</em> file in a common form in the data directory <em>Music-Index</em>. The
+json file is named with the <em>src</em> and <em>local</em> name. It contains:</p>
+<ul class="simple">
+<li><p>Local book name</p></li>
+<li><p>Source name</p></li>
+<li><p>Title and page number for each song in the book.</p></li>
+</ul>
+<p>A few lines from the file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;book&quot;</span><span class="p">:</span> <span class="s2">&quot;ColoBk&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;AdamSpiers&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;contents&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Afternoon In Paris&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="s2">&quot;17&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Algo Bueno&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="s2">&quot;274&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;All Blues&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="s2">&quot;18&quot;</span>
+    <span class="p">},</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="future-work">
+<h2>Future Work<a class="headerlink" href="#future-work" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Harmonize all raw-index sources.</p></li>
+<li><p>Port to Windows.</p></li>
+<li><p>Expand ChordPro support with lyrics search and key transposition.</p></li>
+<li><p>Add GUI tool to build <em>Sheet Offset</em> file. This happens so infrequently that manual editing may be sufficient.</p></li>
+<li><p>New feature to add entries to CanonicalNames.txt and Canonical2File.txt</p></li>
+<li><p>Package in Linux distribution-specific formats.</p></li>
+</ul>
+</div>
+<div class="section" id="random-comments">
+<h2>Random Comments<a class="headerlink" href="#random-comments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="symmetry">
+<h3>Symmetry<a class="headerlink" href="#symmetry" title="Permalink to this headline">¶</a></h3>
+<p>We are generally sticklers on symmetry in design - if a feature applies in one case it should apply in all similar cases.
+Unfortunately, there are a few instances in Birdland where this was either not possible or desirable.</p>
+<p>The sidebar on the left side of the window include tabs for browsing music and audio files. With perfect symmetry it would
+also include tabs for browsing midi, ChordPro, and JJazzLab files. Real estate constraints prevent this and, we believe,
+with little loss of functionality.</p>
+</div>
+<div class="section" id="book-errors">
+<h3>Book Errors<a class="headerlink" href="#book-errors" title="Permalink to this headline">¶</a></h3>
+<p>The <em>Standards Real Book</em> music file as found online had a couple of groups of pages out of order. Two of the raw indexes indexed the sheets as found out of order while two others indexed them with
+the correct sheet number. We’re not sure if this was a scanning error or done intentionally by the person doing
+the scanning as a means of tracing copies of the work. Rather than jumping through hoops to correct the out-of-order
+pages with sheet offsets it was much easier to just rearrange the pages in the book using the linux <em>PdfArranger</em>
+tool. If you have such a copy of <em>Standards Real Book</em> consider rearranging using <em>PdfArranger</em>.</p>
+</div>
+<div class="section" id="raw-index-independence">
+<h3>Raw Index Independence<a class="headerlink" href="#raw-index-independence" title="Permalink to this headline">¶</a></h3>
+<p>We found a number of cases where the same errors existed in the raw index from different sources. This strongly implies
+the one of them is a copy of the other. Despite this we continued to harmonize all the sources because of the possibility
+that there were also differences worth correcting.</p>
+</div>
+<div class="section" id="indexes-vs-indices">
+<h3>Indexes vs Indices<a class="headerlink" href="#indexes-vs-indices" title="Permalink to this headline">¶</a></h3>
+<p>While using <em>Indexes</em> as the plural of <em>Index</em> may sound a bit strange it is correct for
+textual work with <em>Indices</em> being used in mathematics.</p>
+</div>
+</div>
+<div class="section" id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<p>First an foremost we are indebted to the developers of <em>PySimpleGUI</em>. That library, more than any other, enabled the development of Birdland. Earlier work based on the <em>Qt</em> library moved at a much, much slower pace.</p>
+<p>We acknowledge the indexing work done by creators of each of the raw indexes: Alan Spiers, Jason A. Donenfeld, Mike Nelson, Stomp Box, Skrivarna Software, the Library at the University of Buffalo, and Sher Music. It was specifically the indexes Alan Spiers published on <em>GitHub</em> that rekindled our interest to resume the work on Birdland that we started many years ago.</p>
+</div>
+<div class="section" id="dedication">
+<h2>Dedication<a class="headerlink" href="#dedication" title="Permalink to this headline">¶</a></h2>
+<p>When I, the author of Birdland, was a child my dad gave me a piano lesson every night from the time
+I was four until I was twelve, at which point he got fed up out of frustration with my attitude
+towards lessons and practice.  I had a good ear but was not very good at sight-reading so I would
+often ask him <em><strong>Let’s hear how it goes.</strong></em> Once I heard him play the lesson I had no trouble with it.
+Eventually, he got wise to my trick and forced me to sight read on my own.  While I may not have
+appreciate them at the time, in hindsight his piano lessons were his greatest gift to me.  I
+dedicate Birdland to the memory of my dad.  He would have loved to have a library of thousands of
+songs at his fingertips.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="index.html" title="Birdland Documentation"
+             >previous</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">Birdland 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""> Birdland Musician’s Assistant</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022.
+    </div>
+  </body>
+</html>

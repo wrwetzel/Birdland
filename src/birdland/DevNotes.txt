@@ -1,0 +1,794 @@
+# ---------------------------------------------------------------------------
+#   DevNotes.txt - A collection of notes related to the development of Birdland.
+#   WRW 2 March 2022 - Organized, expanded, and consolidated from several readmes elsewhere.
+
+# ---------------------------------------------------------------------------
+#   ToDo Lists
+# ---------------------------------------------------------------------------
+
+ToDo:
+    Review usage of chdir and PYTHONPATH.
+    diff_index.py - data retained from one call to next when running as module?
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ToDo A Little Later:
+    Add more table-specific builds to menu?
+    Look at searching for composer and other secondary boxes?
+    Include GuitarGuy .html chord files - parse composer/artist in build_table.py(),
+        display as text or convert to pdf with htmldoc.
+    build_composite.py - Build composite index from highest priority of all index sources
+        including usr and ext. One file per canonical; include page and sheet.
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ToDo Later:
+    Look at typesense: typesense.org
+    Look at http://millionsongdataset.com/
+    Think about removing dummy elements at top of tab, include 'use_default_focus=False' in main Window() def,
+        and set focus explicitly. Simple but will take a little testing.
+    Check if can import modules instead of passing class name. Should be OK if no state maintained.
+    Move do_pdf_popup() to fb_pdf.py.
+    Move viewer code from birdland.py into fb_music_viewer.py. No, little/none to move. Still, think about it.
+    Do anything with MuseScore files?
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ToDo - Done:
+    Remove music_file_extensions in favor of a glob pattern?  
+        Removed, glob not needed, just ext.lower() == '.pdf' is fine.
+
+    Remove index_sources in config file in favor of new approach? Done.
+    Build config section for hostname. Done.
+    Remove focus from 'Link Canonical to File' button in Edit Canon->File tab. Done.
+    audiofile_index is problematic - it is a system option but required hostname as part of file name.
+        Add hostname automatically? Done. 'C' option in data definition table.
+    Issue when running external commands as package with database opening/closing. Add save/restore of dc.
+    Convert build-pdf-from-image.py to use config file. Rebuild from my images into more sensible directory.
+    Additional files in:
+        /home/wrw/Downloads/Fake-Book-Matters on laptop
+        Check to see if should include in master collection
+        Just one new fakebook there it appears.
+        Copied from Gershwin and Paganini to external drive then to Windows, organized, then back
+            to external drive.
+    PDF scroll with keys & mouse off a bit. Lot of work but fine now.
+    Check setlist - looks like buggy in one test. Can't reproduce.
+    Update get-youtube-links.py: conf file, sqlite3.
+    Think about selecting by multiple sources and multiple books. Not working intuitively.
+    Tabs not updating when change visibility via Settings.
+    Add option to Index Diff tab to only show src count mismatches.
+    Make Command_as_Module in fb_utils.py conditional on packaging type? Probably no reason to do it.
+    Include hostname in c2f filename?  Yes, but not sure if what we want.
+        Test on new install.  Maybe just for initial file.
+    Add default c2f options in birdland.conf. Believe it is done.
+    Crash from line 244 in fb_pdf.py 'page not in document'.
+    26 Apr 2022 - Filtered process_events() by Tab. 
+        Call pdf.process_events() from fb_index_create().
+        Clean up and add some keyboard events for pdf. 
+        Return back to keyboard events from bound keys.
+        Clean up focus on pdf Graph() in fb_index_create(). 
+        Changed means to identify row in fb_index_mgmt.py
+        Add hidden catcher to fb_index_create() to update sheet on page changes done internally in fb_pdf.py
+        Clean up spelling check in OCR - use fb_title_correction.py
+        Paramaterize colors in fb_index_create.py.
+        Change name of fb_index_mgmt.py to fb_index_page_list.py
+    Why 'arriba!' not matched by sqlite with my_match_c? - Rewrote a good bit of fullwordmodule.c.
+    Cache issue in Fullword_Match. No hurry, just for optimization and don't see any latencies now.
+    Maybe later move raw csv files one level below Index-Sources/Sher, etc..
+    Select Viewer tab after click in TOC.
+
+# ---------------------------------------------------------------------------
+#   ToDo - Of no interest.
+
+    Build tables of YouTube indexes:
+        ytroot: book (canonical), source_short, contents
+        ytcontents: name, links
+        ytlinks: title, duration, link
+
+        No, I think just map title to duration, link. Don't need to consider index source.
+
+    Look for duplicates titles in DB tables. Resolved, should be OK now with quite a bit of work
+        cleaning up the titles: extraneous spaces, diacriticals, etc.
+
+    Make html index from YouTube table.
+        Have it but see little use for it.
+
+    Don't change name to Birdland. Keep that separate to avoid confusion with earlier work. No, changed it.
+
+# --------------------------------------------------------------------------
+#   Moved from top of birdland.py
+
+#   /// RESUME - Check if implemented.
+
+#       Option - exclude results with no matching canonical or file.
+#           No, now exclude books from database if not in local2canonial data.
+#           Check above statement.
+#       Check _test pages, some last running off end. Add sensible error for that. In status bar?
+
+#       Switch to pathlib.Path() - In progress as work on affected areas.
+#       Add fb_util routine to map Canonical to TOC for one of several locals???
+
+#       Prob adding to setlist when no canonical, understood, fix.
+#       Prob with crash from empty select list, not understood.
+#       Test earlier suppress logic for setlist select.
+#       Why no canonical names in metadata when they appear in index table?
+#       Cleanup metadata from setlist with partial information. Believe done.
+
+#       Icon / note in Status bar when 'TOC', 'Select Audio' available. Wishlist, needs object for status bar to
+#           remember contents.
+
+# ---------------------------------------------------------------------------------------
+#   Reminder Notes
+# ---------------------------------------------------------------------------------------
+    Run build-tables.py again after download YouTube links.
+        First time to get titles_distinct used to drive getting YouTube links.
+        Second time to build title2youtube table.
+
+    window.perform_long_operation(my_long_operation, '-OPERATION DONE-')
+    
+    Generate event as if from PySimpleGui. Include hidden button and call click()
+        window['ButtonKey'].click()     hide 'ButtonKey' visible=False.
+    
+    pad:
+        (left/right, top/bottom)
+        ((left, right), (top, bottom))
+        int => (int, int)
+    
+    relief:
+        RELIEF_RAISED RELIEF_SUNKEN RELIEF_FLAT RELIEF_RIDGE RELIEF_GROOVE RELIEF_SOLID
+    
+    fitz:
+        pip install pymupdf --user
+    
+    pysimplegui:
+        paru -S python-pysimplegui
+    
+    Setup:
+        import PySimpleGUI as sg
+        sg.main()
+    
+    settings (for themes):
+        /home/wrw/.config/PySimpleGUI/settings
+    
+    PySimpleGUI - Window layout is a "list of lists" (LOL).  Windows are broken down
+        into "rows".  Each row in your window becomes a list in your layout.
+        Concatenate together all of the lists and you've got a layout...a list of
+        lists.
+    
+    For Tree information see:
+        https://github.com/PySimpleGUI/PySimpleGUI/issues/1170
+    
+    For incremental tree information and demo see:
+        https://github.com/jason990420/PySimpleGUI-Solution/issues/97
+        That was a big help and works great.
+    
+    Relief constants:
+        RELIEF_RAISED RELIEF_SUNKEN RELIEF_FLAT RELIEF_RIDGE RELIEF_GROOVE RELIEF_SOLID
+    
+    Shortcuts - The following are equivalent:
+        window.FindElement(key).update(new_value)
+        window[key].update(new_value)
+        window[key](new_value)
+    
+    Get location of sqlite3 file.
+        dc.execute('PRAGMA database_list')
+        rows = dc.fetchall()
+        for row in rows:
+            print(row[0], row[1], row[2])
+
+    Sqlite3 selected meta-commands
+        .databases
+        .tables
+        .indices [table]
+        .schema [table]
+        .fullschema
+        .explain on|off default on
+        .headers on|off
+        .stats on|off
+
+    Python path[]
+        As initialized upon program startup, the first item of this list, path[0],
+        is the directory containing the script that was used to invoke the Python
+        interpreter.  If the script directory is not available (e.g. if the
+        interpreter is invoked interactively or if the script is read from
+        standard input), path[0] is the empty string, which directs Python to
+        search modules in the current directory first.  Notice that the script
+        directory is inserted before the entries inserted as a result of
+        PYTHONPATH.
+
+
+    Adding to Linux Main Menu:
+
+        https://wiki.archlinux.org/title/desktop_entries#:~:text=desktop%20files%2C%20are%20generally%20a,%2F%20for%20user%2Dspecific%20applications.
+        https://specifications.freedesktop.org/desktop-entry-spec/latest/
+
+        copy birdland.desktop to:
+            /home/wrw/.local/share/applications     user-wide
+            /usr/share/applications                 system-wide
+    
+        Menu-related commands:
+            desktop-file-validate birdland.desktop
+            desktop-file-install --dir=$HOME/.local/share/applications birdland.desktop
+            update-desktop-database ~/.local/share/applications
+            gtk-launch birdland.desktop
+
+# ---------------------------------------------------------------------------------------
+#    PySimpleGUI issues, suggestions:
+# ---------------------------------------------------------------------------------------
+
+    Add 'visible' option to HorizontalSeparator element.
+    Add 'row_height' option to Multiline and Text elements to control vertical spacing like row_height in Table.
+    Fix extra events from table update with selected item. See demo.
+    Delay in getting size of Graph element in tab.
+    Graph change_coordinates issue?
+    One row in empty table.
+    Padding inside Multiline element.
+    StatusBar disappears on window resize getting smaller.
+    Add set_echo_stdout_stderr( True/False ) as method for Multiline element.
+    click() event not working when sent when mouse is down.
+
+# ---------------------------------------------------------------------------
+#   Birdland Development History
+# ---------------------------------------------------------------------------
+
+    2 Mar 2022 - A brief history of the development of Birdland for when I forget.
+
+    Original Birdland - Started development work around 2011, got most working, but never
+        completed it. Work still exists. Around Sept 2020 I cleaned it up to the point
+        that it would run again, commented a lot out, more remains to get it running
+        without crashing.
+
+    FBIndex - Jan 2017 - Looks like an attempt at a FakeBook interface using a web-based GUI.
+        Never did much with it.
+
+    Bluebird - Sept 2019 - A small GUI-based tool to locate and play audio files via search. Started
+        with some of the ideas there for this current work.
+
+    Birdland -
+        Sept 2020 I did some exploration of a number of index sources, developed the
+            structure to work with multiple sources, and did some processing to json. A
+            comment from do_adamspiers.py:
+                "WRW 20 Sept 2020 - Found a bunch of csv fakebook indexes at github"
+
+        All development of the present work was done in FBIndex-2020 folder where 
+            the Sept 2020 work started. 2 Mar 2022 - Changed name to Birdland. Changed
+            original Birdland to Birdland-2011. Bluebird remains as described above.
+
+        Didn't do much more until late 2021 when I explored PySimpleGUI a bit and realized
+            it would be a good GUI interface, a lot easier tha Qt to get started with.
+
+        I used the Bluebird name during the early development of the present work. Eventually
+        changed it to Birdland though it has no connection with the Original Birdland other
+        than function.
+
+        The Bluebird name likely survives in comments and identifier names in the present work.
+
+        The early thinking was focused on fakebook indexes. Hence the fb_*.py names for
+            all of the modules.                               
+
+        By 2 March 2022 it is pretty solid and I'm thinking of how to release it. Feature complete
+            except for possibly index creation.
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Progression of the names of databases:
+        Bluebird - titles: table of local audio files. Dropbox/Work/Bluebird. Expanded for work here.
+        Songbird - looks like same as Bluebird, old name for Bluebird. Removed.
+        FakeBooks - canonicals: canonical fb names; titles: map title, composer, lyricist to page in fb
+            Dropbox/Work/FBIndex-2020. Moved all into Bluebird and removed FakeBooks.
+
+        WRW 24 Dec 2021 - Change DB FakeBooks to Bluebird.
+        Early Feb 2022 - Change DB name to Birdland.
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Notes from Canonical/ReadMe.txt (originally Library directory)
+    
+    WRW Unknown Date - I created CanonicalNames.txt from the names of music books in the files in the
+        Book-Lists dir. As of 9 Jan 2022 it is incomplete as I stopped before going through all of the
+        books. Added a few as new books identified in index sources.
+    
+    WRW 7 Dec 2021 - I Creaated Canonical2Local.txt by hand by merging a list of all of the
+        books in my library with the names in CanonicalNames.txt. Maintained it by hand as new
+        books identified.
+    
+    WRW 26 Dec 2021 - Manually removed './' in front of filenames
+    
+    Ext-Canonical2File.txt - This is a list of all books in my music library containing and
+        index in the PDF file.  It is copy from ExtractedIndex/Proto-Canonical2File.txt with a
+        little hand editing.  This starts with the assumption that the canonical name is the
+        same as the music book name.  That is fine since there is no overlap with the books
+        with indexes obtained online.
+    
+    WRW 1 Mar 2022 - Canonical2File* now live in Config folder. Only CanonicalNames here now.
+
+# ---------------------------------------------------------------------------
+#   Media Sources
+# ---------------------------------------------------------------------------
+
+Midi:
+    Source of midi files with relatively clean filenames.
+        https://colinraffel.com/projects/lmd/
+
+    De-duplicated all midifiles:
+            dedupe-midi
+        with output into ~/Library/Midi/DeDuplicated
+        Significant savings in space.
+
+# ---------------------------------------------------------------------------
+
+ChordPro:
+    http://www.theguitarguy.com/    - Interesting collection, consider scraping, done!
+        ascii/html charts, not chordpro.
+
+
+# ---------------------------------------------------------------------------
+#   Index Sources
+# ---------------------------------------------------------------------------
+#   Notes on index sources including links and local name maps.
+#   WRW 12 Mar 2022 - Converted all index-source directories to a flat
+#       structure because Setuptools doesn't package sub-directories
+#       [options.data_files] and I didn't want to list all of them.
+#       Maybe later put raw csv files one level below and name that.
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Alan Spiers:
+    https://github.com/aspiers/book-indices
+    Includes links to alternate sources shown below
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Jason A. Donenfeld:
+    This is what I referred to as 'splitter' in earlier work.
+    Renamed to JasonDonenfeld (Jad) on 9 Jan 2022.
+    Jason@zx2c4.com
+    https://git.zx2c4.com/realbook-splitter/tree/listing.txt
+    WRW 13 Apr 2022 - RealBk1 does not align with same from other sources, excluded it
+
+    bookmap = {
+            'Colorado': {
+            'file': 'COLORADO BOOK.PDF',
+            'pages': 292,
+            'offset': 3
+        },
+        'JazzLTD': {
+            'file': 'JAZZ LTD BOOK.PDF',
+            'pages': 402,
+            'offset': 7
+        },
+        'RealBk3': {
+            'file': 'REAL BOOK III.PDF',
+            'pages': 366,
+            'offset': 5
+        },
+        'JazzFake': {
+            'file': 'JAZZ FAKE BOOK.PDF',
+            'pages': 448,
+            'offset': -1
+        },
+        'EvansBk': {
+            'file': 'BILL EVANS FAKE BOOK.PDF',
+            'pages': 106,
+            'offset': 3
+        },
+        'Library': {
+            'file': 'LIBRARY.PDF',
+            'pages': 217,
+            'offset': 4
+        },
+        'RealBk1': {
+            'file': 'REAL BOOK I.PDF',
+            'pages': 512,
+            'offset': 13
+        },
+        'NewReal2': {
+            'file': 'NEW REAL BOOK II.PDF',
+            'pages': 497,
+            'offset': 12
+        },
+        'NewReal3': {
+            'file': 'NEW REAL BOOK III.PDF',
+            'pages': 448,
+            'offset': 10
+        },
+        'RealBk2': {
+            'file': 'REAL BOOK II.PDF',
+            'pages': 422,
+            'offset': 7
+        },
+        'NewReal1': {
+            'file': 'NEW REAL BOOK I.PDF',
+            'pages': 453,
+            'offset': 15
+        }
+    }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Mikel Nelson:
+    Note: I found several more books in the csv that were not in this list from online.
+    These appear to be from 'forScore'.
+
+    WRW 11 Apr 2022 - the LatinRealBkC.csv doesn't align with Sher Latin Real Book. Omit it.
+
+    Map:
+        557 Standards - 557Standards.csv
+        Colorado Cookbook - Colorado.csv
+        Digital Standards Songbook (Sher) - DigitalStandardsSongbookC.csv
+        Firehouse Jazz Band - FirehouseJazzBand.csv
+        Jazz LTD - JazzLTD.csv
+        The Latin Real Book (Sher) - LatinRealBkC.csv
+        The New Real Book 1 (Sher) - newrbk1C.csv
+        The New Real Book 2 (Sher) - newrbk2C.csv
+        The New Real Book 3 (Sher) - newrbk3C.csv
+        New Digital Real Book (Sher) - nrealbk1d.csv
+        Real Book 1 v6 (Hal Leonard) - realbk1h.csv
+        Real Book 2 v6 (Hal Leonard) - realbk2h.csv
+        Real Book 3 v6 (Hal Leonard) - realbk3h.csv
+        Real Book 4 (scanned) - realbk4h.csv (page offset has to be +300 due to pdf wierdness)
+        Old Real Book 1 - realbk1.csv
+        Old Real Book 2 - realbk2.csv
+        Old Real Book 3 - realbk3.csv
+        The Standards Real Book (Sher) - standardsrbkC.csv
+            NOTE: This is for a scanned copy with no images
+        A Charlie Brown Christmas - cbxmas.csv
+        Christmas Real Book - realxmasC.csv
+        24 Gypsy Jazz Standards - djangoinjune.csv
+        Charlie Parker Omnibook (bass clef)- parkeromnibookbc.csv
+        101 Sinatra Songs - sinatra101C.csv
+        Vocal Real Book - VocalRealBook.csv
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Stomp Box:
+    http://diystompboxes.com/unrealbook/csvindexes/
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Skrivarna Software:
+    https://www.skrivarna.com/p/fakebook.html
+    Indexes
+        http://www.skrivarna.com/2014/02/automatic-indexing-of-pdf-real-books.html
+        Notes about indexing.
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Buffalo:
+    https://library.buffalo.edu/music/collections/fake-book/
+    Downloaded entire index by clicking 'Search' with empty search boxes.
+    Includes page numbers as FB sheet number.
+
+    WRW 2 Mar 2022 - Updated source but it contained identical books.
+
+# --------------------------------------------------------------------------
+#   Fakebook-related sources but not used for index sources.
+# --------------------------------------------------------------------------
+Berklee:
+    https://library.berklee.edu/browse/leadsheet/books
+    List of books, didn't see any page numbers.
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Seventh String:
+    https://www.seventhstring.com/fbi/aboutfbi.html
+    No downloadable index. Also no page numbers I believe.
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+San Francisco Public Library:
+    Sent note around 24 Sept 2020 asking for copy of their DB.
+    No response but no matter as their DB does not appear to have page numbers.
+
+    https://sfpl.org/locations/main-library/art-music/fakebooks
+    No page numbers
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+PSR Tutorial:
+    https://psrtutorial.com/music/fbSongIndex/booklist.html
+    Lots of indexes.
+    No page numbers
+
+# --------------------------------------------------------------------------
+#   Packaging
+# --------------------------------------------------------------------------
+#   WRW 8 Mar 2022 - Getting started with flatpak as a packaging tool for Birdland
+# ------------------------------------------------------------------------------------------
+
+Flatpak: Explored. Building huge file, lots of rough edges, abandoned.
+    Explored python virtualenv in the process.                 
+
+Build:
+    flatpak-builder build com.wrwetzel.Hello.yml
+
+Test:
+    flatpak-builder --user --install --force-clean build com.wrwetzel.Hello.yml
+    flatpak run com.wrwetzel.Hello
+
+Put in repository:
+    flatpak-builder --repo=repo --force-clean build com.wrwetzel.Hello.yml
+
+Install:
+    Show remotes:
+        flatpak remotes
+
+    Add remote:
+        flatpak --user remote-add --no-gpg-verify wrw-test-repo repo
+
+    Show installs:
+        flatpak list
+
+    Install:
+        flatpak --user install wrw-test-repo com.wrwetzel.Hello
+
+Run:
+    flatpak run com.wrwetzel.Hello
+
+# ------------------------------------------------------------------------------------------
+
+Setup:
+    Intall flatpak-pip-generator:
+        https://github.com/flatpak/flatpak-builder-tools/tree/master/pip
+        copy into bin and chmod +x
+
+Virtual Env:
+    pip install virtualenv
+    python -m venv testenv
+    source testevn/bin/activate
+    deactivate
+
+    in virtual env
+        pip install packages
+            pandas
+            PySimpleGUI
+            mysqlclient     MySQLdb     *** Problem here with flatpak, return to it
+            PyMuPDF         fitz        *** Problem here with flatpak, return to it
+            tk              tkinter
+            mutagen
+            click
+            configobj
+            unidecode
+
+        pip freeze > requirements.txt
+
+    Dependencies:
+         flatpak-pip-generator --requirements-file=requirements.txt
+
+# ------------------------------------------------------------------------------------------
+#   WRW 9 Mar 2022 - Getting started with PyInstaller for packaging Birdland.
+# ------------------------------------------------------------------------------------------
+#   Looks much better.
+
+    PyInstaller: Much simpler than Flatpak
+        Required:
+            paru -S pyinstaller
+            pacman -S python-asttokens
+
+    WRW 9 Mar 2022 - With a lot of experimentation got PyInstaller to approach working.
+
+# ------------------------------------------------------------------------------------------
+#   WRW 11 Mar 2022 - Getting started with setuptools and PyPi build for packaging Birdland.
+# ------------------------------------------------------------------------------------------
+
+Documentation:
+    https://packaging.python.org/en/latest/tutorials/packaging-projects/
+    https://setuptools.pypa.io/en/latest/userguide/quickstart.html
+
+    Create ~/.pypirc
+        See: https://packaging.python.org/en/latest/specifications/pypirc/
+            [distutils]
+            index-servers =
+                testpypi
+
+            [testpypi]
+            username = __token__
+            password = ***
+
+    Note that directory structure with src then bluebird is critical. 
+        Got no python files without that because of automatic discovery.
+
+    Directory structure:
+        bluebird/
+            src/
+                bluebird/
+
+    Preparation:
+        Created several files in root directory:
+            MANIFEST.in
+            setup.cfg
+            LICENSE
+
+        Registered for PyPi test account.
+        pacman -S twine
+
+    Build:
+        python -m build
+            Output in dist/
+                source archive: birdland_wrwetzel-1.0.0-py3-none-any.whl
+                build distribution: birdland-wrwetzel-1.0.0.tar.gz
+    
+    Test Install:
+        pip install dist/birdland-wrwetzel-*.*.*.tar.gz
+
+    Upload:
+        python -m twine upload --repository testpypi dist/*
+            __token__       now in .pypirc
+            long password   now in .pypirc
+
+    Install from PyPi:
+        pip install -i https://test.pypi.org/simple/ birdland-wrwetzel --user
+
+    View at PyPi:
+        https://test.pypi.org/project/birdland-wrwetzel/1.0.0/
+
+# ------------------------------------------------------------------------------------------
+
+    __main__.py - executed when the package itself is invoked directly
+    from the command line using the -m flag.
+    
+    __init__.py - executed when package containing it is imported.
+                  allows you to define any variable at the package level.
+
+    __all__ is a list of strings defining what symbols in a module will be
+    exported when from <module> import * is used on the module.
+
+
+# ------------------------------------------------------------------------------------------
+#   WRW 17 Mar 2022 - Getting started with nuitka
+# ------------------------------------------------------------------------------------------
+
+    On first try:
+        python -m nuitka --enable-plugin=tk-inter --standalone birdland.py
+
+    Produced something that ran after I:
+        cd birdland.dist
+        touch Package_Type_Development.txt
+        cp -r ../Icons .
+        cp ../birdland.pdf .
+
+    because I included no datafiles. Looks promising but took a long time to build.
+    Trying again with full description in Makefile.
+
+
+# ------------------------------------------------------------------------------------------
+#   WRW 21 Mar 2022 - Explored fpm for making .deb and .rpm packages from .tar
+# ------------------------------------------------------------------------------------------
+
+    Not much success with this.
+
+    fpm -t output-type  (rpm, dep, pacman, sh, ...)
+        -s input-type   (I was using only tar)
+        -p output-path
+        -f              (force overwrite of output file)
+        -n package-name
+
+    I made a deb, could not make a rpm.          
+
+        fpm -t deb -s tar -p junk -n birdland birdland-user.tar.gz
+
+    Installed rpm-tools to get rpmbuild (or something similar that fpm
+    needed), no good, reinstalled rpmextract.
+
+
+# ------------------------------------------------------------------------------------------
+#   WRW 16 Mar 2022 - Installation details by packaging type.
+# ------------------------------------------------------------------------------------------
+
+Birdland can be installed in several different ways and launched in different
+    ways from the associated installation location.
+
+    # -------------------------------------------------------------
+    Development:
+        ~/Dropbox/Work/Birdland/src/birdland
+
+        Birdland is run from the development directory, not any installation directory.
+            birdland.py                       
+            build_tables.py
+            diff_index.py,
+
+        Or via an alias:
+            bb - Alias to birdland.py, possibly with configuration directory specified.
+                alias bb='~/Dropbox/Work/Birdland/src/birdland/birdland.py'
+                alias bb='~/Dropbox/Work/Birdland/src/birdland/birdland.py --confdir ~/Dropbox/Config/birdland'
+
+        Also and a few other commands in same directory.
+
+        Data in:
+            ~/Dropbox/Work/Birdland/src
+
+    # -------------------------------------------------------------
+    Setuptools:
+        ~/.local/bin/birdland
+
+        Birdland is run from the directory where installed by pip.
+        Assuming ~/.local/bin must in $PATH.
+            birdland
+            bl-build-tables
+            bl-diff-index
+        Or:
+            python -m birdland
+
+        Or:
+            ~/.local/bin/birdland
+            ~/.local/bin/bl-build-tables
+            ~/.local/bin/bl-diff-index
+
+        Package installed:
+            ~/.local/lib/python3.10/site-packages/birdland
+            ~/.local/lib/python3.10/site-packages/birdland_wrwetzel-1.0.8.dist-info
+
+        Data in:
+            ~/.local/share/birdland
+
+        Executable console script names come from setup.cfg file:
+
+            [options.entry_points]
+            console_scripts =
+                birdland = birdland:start_birdland
+                bl-build-tables = birdland:start_build_tables
+                bl-diff-index = birdland:start_diff_index
+
+            and are run from __init__.py.
+
+    # -------------------------------------------------------------
+    PyInstaller:
+        Includes python and all required libraries.
+        Process index sources (running Index-Sources/<source>/do_*.py) not supported.
+
+        Install in directory of user's choice: <InsDir>.
+
+        Executable:
+            <InsDir>/birdland
+
+        Data in:
+            <Insdir>
+
+# ------------------------------------------------------------------------------------------
+#   Launch sequence by packaging type.
+# ------------------------------------------------------------------------------------------
+
+    Development:
+    Setuptools:
+    PyInstaller:
+        startup.py -> __init__.py -> __main__.py -> birdland.py
+
+# ------------------------------------------------------------------------------------------
+#   WRW 24 Mar 2022
+#   Beginning git integration
+# ------------------------------------------------------------------------------------------
+
+    Setup ssh authentication at github using id_rsa.pub for Gershwin.
+
+    Enable ssh authentication:
+        git remote set-url origin git@github.com:wrwetzel/Birdland.git
+
+    git init
+    git add README.md
+    git commit -m "Initial commit"
+    git branch -M main
+    git remote add origin https://github.com/wrwetzel/Birdland.git
+    git push -u origin main
+    ssh -T git@github.com
+    git push -u origin main
+    git remote set-url origin git@github.com:wrwetzel/Birdland.git
+    git push -u origin main
+
+# ------------------------------------------------------------------------------------------
+#   Random Hold
+# ------------------------------------------------------------------------------------------
+#   WRW 25 Mar 2022 - Moved from birdland.py, of no general interest.
+# ---------------------------------------------------------------------------------------
+
+#   Originally GUI Interface to the Bluebird database. Search database for title and
+#   show tables of titles in music files, audio files, and links to YouTube.
+
+#   WRW 6 Oct 2020 - Converted from db-play.py to use pure Qt with UI from QtDesigner.
+#       db-play.py was an interface to just local audio files.
+
+#   WRW 15 Dec 2021 - Don't see where did any qt work except to make the gui .ui file.
+#       Switched back to system-wide installation of pysimplegui and an updated version of it.
+
+#   WRW Dec 2021 - Used the above as a starting point and expanded it to pretty much
+#       all of Birdland from years ago.
+#       This is a PySimpleGUI implementation of the function of Birdland, which I worked on
+#       ten to eleven years ago.
+
+#   WRW 4 Feb 2022 - Changed name to birdland.py and database to Birdland. Lots of bluebird references
+#       will inevitably linger here.
+
+#   WRW 22 Feb 2022 - During startup (no database) I saw a situation where all files in Music Index showed
+#       none independent of the show missing file option.
+
+# ---------------------------------------------------------------------------------------

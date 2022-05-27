@@ -1,0 +1,15 @@
+557_jazz_standards | 557_jazz_standards
+bluesrealbook | bluesrealbook
+colorado_cookbook | colorado_cookbook
+creole | creole
+django_fakebook | django_fakebook
+firehouse_jazzband | firehouse_jazzband
+greatgigbook | greatgigbook
+jazzltd | jazzltd
+realbook5th | realbook5th
+realbookvol2 | realbookvol2
+realbookvol3 | realbookvol3
+realvocalbook | realvocalbook
+slickbook | slickbook
+slickbook2 | slickbook2
+thebook | thebook

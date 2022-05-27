@@ -17,6 +17,7 @@
 import os
 
 Bluebird_Program_Title = "Birdland Musician's Assistant"
+Bluebird_Program_SubTitle = "A Multimedia Music Viewer"
 
 MyTableColors = True
 MyTableColors = False
@@ -37,7 +38,11 @@ Table_Font        = ("Helvetica", 9)
 Table_Font_Small  = ("Helvetica", 8)
 
 Table_Row_Height  = 20                  # pixels
+Table_Row_Height_Small  = 16                  # pixels
 Table_Row_Count   = 20
+
+Short_Table_Row_Count   = Table_Row_Count - 5       # For tables in sub-tabs
+
 Tab_Font          = ("Helvetica", 9)
 
 Tree_Font         = ("Helvetica", 9)
@@ -54,7 +59,7 @@ Current_Table_Row_Height  = 18                  # pixels
 #   Moved into a function so that it is not executed when loaded but when called
 #       to pick up value of Table_Row_Count.
 
-def get_layout( sg, fb ):
+def get_layout( sg, fb, conf ):
 
     BL_Icon = fb.get_bl_icon()
 
@@ -64,23 +69,73 @@ def get_layout( sg, fb ):
         if sg.theme() == 'Dark':
             Background_Color  = '#4d4d4d'
             Alternating_Color = '#3d3d3d'
+        else:
+            Background_Color  = None
+            Alternating_Color = None
 
     # --------------------------------------------------------------------------------
     #   Hidden button defs. These are used to trigger events in main event loop.
     
     #     Generate event as if from PySimpleGui. Include hidden button and call click()
-    #     window['ButtonKey'].click()     hide 'ButtonKey' visible=False.
+    #     Trigger with: self.window['hidden-page-change'].click()     # tell others there is a new page
+    #     sg.Button( key='hidden-new-pdf', visible=False ),
     
     hidden_buttons = [
-        sg.Button( key='hidden-new-pdf', visible=False ),
-        sg.Button( key='hidden-page-change', visible=False ),
+        sg.Button( key='pdf-hidden-page-change', visible=False ),
+        sg.Button( key='ci-hidden-page-change', visible=False ),
     ]
     
     # --------------------------------------------------------------------------------
     #   Left tab group definitions
     
-    browse_music_files = [[
-        sg.Tree( data = sg.TreeData(),
+    selected_book_info = \
+        sg.Text( text='\n\n',
+                 key='browse-book-info',
+                 font=("Helvetica", 9),
+                 justification='left',
+                 pad=((8,8),(0, 0)),
+        )
+
+    selected_book_info_frame = sg.Frame( 'Selected Music File Information',
+              [[selected_book_info]],
+              font=("Helvetica", 8),
+              element_justification = 'left',
+              pad = ((8,8), (10,0)),
+              vertical_alignment='top',
+              expand_x = True,
+            )
+
+    browse_src_title = \
+        sg.Text( text='Select src for offsets for selected music file:',
+                 key='browse-src-title',
+                 font=("Helvetica", 9),
+                 justification='left',
+                 pad=((8,8),(10, 0)),
+        )
+
+    # srcs = fb.get_srcs()
+    # priority_src = fb.get_priority_src()
+    # print( priority_src )
+
+    browse_src_combo = \
+        sg.Combo(
+              [],
+              # srcs,
+              # default_value = priority_src,
+              key = 'browse-src-combo',
+              font=("Helvetica", 10),
+              pad=((8,8),(5,0)),
+              auto_size_text = True,
+              size = 10,
+              enable_events = True,
+              expand_x = True
+        )
+
+    browse_music_files = [
+        [ selected_book_info_frame ],
+        [ browse_src_title ],
+        [ browse_src_combo ],
+        [ sg.Tree( data = sg.TreeData(),
             key='browse-music-files',
             font=Tree_Font,
             pad=[(0, 0), (10, 0)],
@@ -93,8 +148,8 @@ def get_layout( sg, fb ):
             row_height = 22,
             expand_x = True,
             expand_y = True,
-        )
-    ]]
+        )]
+    ]
     
     browse_audio_files = [[
         sg.Tree( data = sg.TreeData(),
@@ -322,6 +377,56 @@ def get_layout( sg, fb ):
         )
     ]]
 
+    chordpro_index_table = [[
+        sg.Table(
+            key='current-chordpro-table',
+            headings = [ "Title", "Artist", "File"  ],
+            # visible_column_map = [ True, True, True ],
+            col_widths = [ 30, 30, 40 ],
+            values = [],
+            font=Table_Font,
+            row_height = Table_Row_Height,
+            auto_size_columns = False,  # Must be false for col_width to work.
+            justification = 'left',
+            # max_col_width = 100,
+            num_rows = Table_Row_Count,
+            # default_col_width = 100,
+            pad=[(0, 0), (10, 0)],
+            select_mode = None,
+            enable_events = True,
+            text_color = Text_Color,
+            background_color = Background_Color,
+            alternating_row_color= Alternating_Color,
+            expand_x = True,
+            expand_y = True,
+        )
+    ]]
+
+    jjazzlab_index_table = [[
+        sg.Table(
+            key='current-jjazz-table',
+            headings = [ "Title", "File"  ],
+            # visible_column_map = [ True, True ],
+            col_widths = [ 40, 40 ],
+            values = [],
+            font=Table_Font,
+            row_height = Table_Row_Height,
+            auto_size_columns = False,  # Must be false for col_width to work.
+            justification = 'left',
+            # max_col_width = 100,
+            num_rows = Table_Row_Count,
+            # default_col_width = 100,
+            pad=[(0, 0), (10, 0)],
+            select_mode = None,
+            enable_events = True,
+            text_color = Text_Color,
+            background_color = Background_Color,
+            alternating_row_color= Alternating_Color,
+            expand_x = True,
+            expand_y = True,
+        )
+    ]]
+
     # --------------------------------------------------------------------------------
     
     set_list_controls = [
@@ -420,33 +525,57 @@ def get_layout( sg, fb ):
     # --------------------------------------------------------------------
     
     main_menu_definition = [
-        ['&File',  ['&Exit::menu-exit'  ]],
-        ['&Edit',  ['&Settings::menu-configure' ]],
-        ['&Tools', [
-                   '&Show Database Stats::menu-stats',
-                 # 'Show Canonical to File Map::menu-canon2file',       # No longer needed with canon->file edit tab.
-                   '---',
-                   'Rebuild Database::menu-rebuild-all',
+        ['&File',  [
+                    '&Settings::menu-configure',
+                    '&Exit::menu-exit',
+                   ]
+        ],
+    #   ['&Edit',  ['&Settings::menu-configure' ]],
+        ['&Reports', [
+                   'All::menu-stats-all',
+                   '----',
+                   'Database Stats::menu-stats-database',
+                   'Title Count by Src::menu-stats-title-count-src',
+                   'Title Count by Src and Canonical::menu-stats-title-count-canon-src',
+                   'Title Coverage by Src and Canonical::menu-stats-title-coverage-by-canonical',
+                   'Canonical Coverage by Canonical Name::menu-stats-canon-coverage-alpha',
+                   'Canonical Coverage by Src Count::menu-stats-canon-coverage-count',
+                   'Canonical Names in Canonical Missing in Canonical2File::menu-stats-canon-missing-c2f',
+                   'Canonical Names in Local2Canonical Missing in Canonical::menu-stats-canon-missing-l2c',
+                   'Canonical Names in Canonical2File Missing in Canonical::menu-stats-c2f-missing-canon',
+                   'Files in Canonical2File Missing in Music Library::menu-stats-canon-missing-music',
+                   'Top 100 Titles in Music Index::menu-stats-top-forty',
+                   ]
+        ],
+        ['&Database', [
+                   'Rebuild All Tables::menu-rebuild-all',
+                   'Rebuild Sheet-Offset Table::menu-rebuild-page-offset',
+                   'Rebuild Canonical to File Table::menu-rebuild-canon2file',
+                 # 'Rebuild Source Priority Table::menu-rebuild-source-priority',
                    'Scan Audio Library (slow for large libraries)::menu-rebuild-audio',
                   ]
         ],
 
         ['&Index Management', [
-                   'Process Index Sources::menu-convert-raw-sources',
-                   'Rebuild Sheet-Offset Table::menu-rebuild-page-offset',
-                   'Compare Sheet Numbers From Index Sources::menu-compare-pages',
+                   'Process Raw Index Sources::menu-convert-raw-sources',
+                   '----',
+                   'Show Page Mismatch and Src Coverage Summary::menu-summary',
+                   'Show Page Number Differences Summary::menu-page-summary',
+                   'Show Page Mismatch and Src Coverage Detail::menu-verbose',
                     ]
         ],
 
         [ '&View', [ 
-                    'Toggle Index Management Tabs::menu-index-mgmt-tabs',
+                    'Toggle Index Management Tab::menu-index-mgmt-tabs',
                     'Toggle Edit Canonical->File Tab::menu-canon2file-tab',
                    ]
         ],
 
-        ['&Help',  ['Show &Tutorial::menu-tutorial',
-                    'Show Recent &Log::menu-show-recent-log',
-                    'Show Recent &Event Histogram::menu-show-recent-event-histo',
+        ['&Help',  ['Show Documentation in Music Viewer Tab::menu-tutorial',
+                  # 'Show Recent &Log::menu-show-recent-log',
+                  # 'Show Recent &Event Histogram::menu-show-recent-event-histo',
+                    'Show Birdland Website URL::menu-website',
+                    'Contact::menu-contact',
                     '&About Birdland::menu-about',
                   ]
         ]
@@ -570,7 +699,7 @@ def get_layout( sg, fb ):
     ]
     
     pdf_display_controls_frame = \
-        [ sg.Frame( 'Viewer Controls', pdf_display_controls, font=("Helvetica", 8), pad=((0,0),(0,0)), expand_x = True ) ] ,
+        [ sg.Frame( 'Viewer Controls', pdf_display_controls, font=("Helvetica", 8), pad=((0,0),(0,0)), expand_x = True ) ],
 
     pdf_display_controls_column = \
         sg.Column(
@@ -598,10 +727,11 @@ def get_layout( sg, fb ):
     # hr = sg.HorizontalSeparator()
 
     pdf_display_sidebar = [ [pdf_display_controls_column], [pdf_display_metadata_column] ]
-    
+
     pdf_display_sidebar_column = \
         sg.Column(
             pdf_display_sidebar,
+            key = 'pdf-display-sidebar',
           # background_color='#404040',
             vertical_alignment='Top',
             justification='left',
@@ -609,19 +739,36 @@ def get_layout( sg, fb ):
             pad=((0,0),(0,0)),
         )
     
-    pdf_display_graph = \
-        sg.Graph( (400, 400),
+    pdf_display_graph = sg.Graph( 
+            (400, 400),
             key = 'display-graph-pdf',
-            drag_submits = True,
-            enable_events = True,
             graph_bottom_left=(0, 400),
             graph_top_right=(400,0),
             background_color = GraphBackground,
             pad=((8,0),(14,8)),                     # Must be 8 lower than pdf_display_control_buttons_column
             expand_x = True,
             expand_y = True,
+            enable_events = True,
+            drag_submits = True,
         )
     
+    # Has potential but can't control size, wants to expand horizontally when exapnd_y = True.
+    if False:
+        pdf_display_slider = sg.Slider(
+                range = (1, 100),
+                key='display-graph-slider',
+                orientation='vertical',
+                disable_number_display = True,
+                border_width = 0,
+                enable_events = True,
+                size = (40,10),                      # (Chars/rows, width in pixels)
+                pad = ((8,0),(14,8)),
+                expand_y = True,
+                expand_x = False,
+              )
+
+    #   [[ pdf_display_sidebar_column, pdf_display_graph, pdf_display_slider ]]
+
     display_pdf_layout = \
         [[ pdf_display_sidebar_column, pdf_display_graph ]]
     
@@ -787,7 +934,7 @@ def get_layout( sg, fb ):
             justification = 'left',
             # default_col_width = 100,
             # max_col_width = 100,
-            num_rows = Table_Row_Count,
+            num_rows = Short_Table_Row_Count,
             pad=[(0, 0), (8, 0)],
             select_mode = None,
             enable_events = True,
@@ -811,7 +958,7 @@ def get_layout( sg, fb ):
             justification = 'left',
             # default_col_width = 100,
             # max_col_width = 100,
-            num_rows = 10,
+            num_rows = 8,
             pad=[(10, 0), (8, 0)],
             select_mode = None,
             enable_events = True,
@@ -835,7 +982,7 @@ def get_layout( sg, fb ):
             justification = 'left',
             # default_col_width = 100,
             # max_col_width = 100,
-            num_rows = 10,
+            num_rows = 8,
             pad=[(10, 0), (10, 0)],
             select_mode = None,
             enable_events = True,
@@ -881,7 +1028,7 @@ def get_layout( sg, fb ):
             justification = 'left',
             # default_col_width = 100,
             # max_col_width = 100,
-            num_rows = Table_Row_Count,
+            num_rows = Short_Table_Row_Count,
             pad=[(0, 0), (10, 0)],
             select_mode = None,
             # enable_events = True,
@@ -905,7 +1052,7 @@ def get_layout( sg, fb ):
             justification = 'left',
             # default_col_width = 100,
             # max_col_width = 100,
-            num_rows = Table_Row_Count,
+            num_rows = Short_Table_Row_Count,
             pad=[(10, 0), (10, 0)],
             select_mode = None,
             # enable_events = True,
@@ -916,8 +1063,28 @@ def get_layout( sg, fb ):
             expand_y = True,
         )
 
+    canon_find_a = [
+        sg.Text('Find:', font=search_title_font, pad=((0,4),(11,0))  ),
+        sg.InputText( key = 'canon-find-text-a',
+                     size=(20,1),
+                     font=("Helvetica", 10 ),
+                     pad=((0,0),(7,0)),
+                     enable_events=True,
+                    ),
+    ]
+
+    canon_find_b = [
+        sg.Text('Find:', font=search_title_font, pad=((0,4),(11,0))  ),
+        sg.InputText( key = 'canon-find-text-b',
+                     size=(20,1),
+                     font=("Helvetica", 10 ),
+                     pad=((0,0),(7,0)),
+                     enable_events=True,
+                    ),
+    ]
+
     src_text = \
-        sg.Text( text='Index Source: ',
+        sg.Text( text='Index Src: ',
              font=("Helvetica", 10 ),
              justification='right',
              pad=((10, 4), (14, 0)),
@@ -938,10 +1105,11 @@ def get_layout( sg, fb ):
         sg.Button('Link Local to Canonical', key='local2canonical-mgmt-link', font=("Helvetica", 9), pad=((0,8),(8,0)), expand_x = False  ),
         sg.Button('Clear One Link', key='local2canonical-mgmt-clear-one', font=("Helvetica", 9), pad=((0,8),(8,0)), expand_x = False  ),
         sg.Button('Save', key='local2canonical-mgmt-save', font=("Helvetica", 9), pad=((0,8),(8,0)), expand_x = False  ),
+        sg.Button('Show Profile for Src/Local', key='local2canonical-mgmt-profile', font=("Helvetica", 9), pad=((0,8),(8,0)), expand_x = False  ),
     ]
 
     l2c_help = \
-        sg.Text( text="""Select an index source from the 'Index Source' menu. Select a row in the 'All Canonical Names' table. \
+        sg.Text( text="""Select an index source from the 'Index Src' menu. Select a row in the 'All Canonical Names' table. \
 Select a row in the 'Local Name/Linked Canonical Name' table. Click 'Link Local to Canonical'.""",
              font=("Helvetica", 10 ),
              justification='right',
@@ -949,7 +1117,7 @@ Select a row in the 'Local Name/Linked Canonical Name' table. Click 'Link Local 
         )
 
     local2canonical_mgmt_layout = [
-        [src_text, local2canonical_mgmt_src_combo, * local2canonical_mgmt_buttons ],
+        [ src_text, local2canonical_mgmt_src_combo, * local2canonical_mgmt_buttons, *canon_find_a ],
         [l2c_help ],
         [ 
           local2canonical_mgmt_canonical_table,
@@ -1024,7 +1192,7 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
         )
 
     canon2file_mgmt_layout = [
-        [* canon2file_mgmt_buttons ],
+        [* canon2file_mgmt_buttons, *canon_find_b ],
         [c2f_help ],
         [ 
           canon2file_mgmt_canonical_table,
@@ -1099,10 +1267,11 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
             values = [],
             # values=[values],
             justification = 'left',
-            num_rows = Table_Row_Count,
+            num_rows = Short_Table_Row_Count,
             pad=[(0, 0), (8, 0)],
             select_mode = None,
           # enable_events = True,           # Done later with bind()
+          # enable_click_events=True,       # Per Jason for mouse release
             text_color = Text_Color,
             background_color = Background_Color,
             alternating_row_color= Alternating_Color,
@@ -1113,14 +1282,14 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
     index_diff_canonical_table = \
         sg.Table(
             key='index-diff-canonical-table',
-            headings = [ "Canonical Book Name" ],
+            headings = [ "Canonical Book Name, >1 Src" ],
             col_widths = [ 30 ],
             font=Table_Font,
             row_height = Table_Row_Height,
             auto_size_columns = False,     # Must be false for col_width to work.
             values = [],
             justification = 'left',
-            num_rows = 15,
+            num_rows = 10,
             pad=[(10, 0), (8, 0)],
             select_mode = None,
             enable_events = True,
@@ -1132,31 +1301,75 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
         )
 
     index_diff_controls_1 = \
-        sg.Radio( 'Show all Titles',
+        sg.Radio( 'All',
                      'diff-controls',
                      key='index-diff-controls-1', 
                      enable_events = True,
                      default=True,
                      auto_size_text=True,
                      font=("Helvetica", 10),
-                     pad=[(10, 0), (10, 0)],
+                     pad=[(8, 0), (0, 0)],
                    )
 
     index_diff_controls_2 = \
-        sg.Radio( 'Show only Page Mismatches',
+        sg.Radio( 'With Page Mismatches',
                      'diff-controls',
                      key='index-diff-controls-2',
                      enable_events = True,
                      default=False,
                      auto_size_text=True,
                      font=("Helvetica", 10),
-                     pad=[(10, 0), (10, 0)],
+                     pad=[(8, 0), (2, 0)],
                    )
+
+    index_diff_controls_3 = \
+        sg.Radio( 'With Partial Src Coverage',
+                     'diff-controls',
+                     key='index-diff-controls-3',
+                     enable_events = True,
+                     default=False,
+                     auto_size_text=True,
+                     font=("Helvetica", 10),
+                     pad=[(8, 0), (2, 4)],
+                   )
+
+    index_diff_edit_titles = \
+        sg.Checkbox( 'Enable Select',
+                      key='index-diff-edit-titles',
+                      enable_events = False,
+                      default=False,
+                      auto_size_text=True,
+                      font=("Helvetica", 10),
+                      pad=[(8, 8), (0, 4)],
+                      )
+
+    index_diff_select_button = \
+        sg.Button( 'Show Select',  key='index-diff-select-button', enable_events = True, font=("Helvetica", 9), pad=((0,0),(0,4)) )
+
+    select_among_similar_controls = \
+        [[ index_diff_edit_titles, index_diff_select_button ]]
+
+    show_titles_controls = [
+        [ index_diff_controls_1 ],
+        [ index_diff_controls_2 ],
+        [ index_diff_controls_3 ],
+    ]
+
+    select_among_similar_frame = \
+        sg.Frame( 'Select One Among Similar Titles', select_among_similar_controls, font=("Helvetica", 8), pad=((8,8),(0,8)), expand_x = True )
+
+    show_titles_frame = \
+        sg.Frame( 'Show Titles', show_titles_controls, font=("Helvetica", 8), pad=((8,8),(8,8)), expand_x = True )
 
     index_diff_column = \
         sg.Column(
             # [[ index_mgmt_src_table], [index_mgmt_local_table], [index_mgmt_open_button ]],
-            [[ index_diff_canonical_table ], [index_diff_controls_1 ], [index_diff_controls_2 ]],
+            [
+               [ index_diff_canonical_table ],
+               [ show_titles_frame ],
+               [ select_among_similar_frame ],
+            ],
+
           # background_color='#404040',
             vertical_alignment='Top',
             justification='left',
@@ -1168,6 +1381,260 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
           index_diff_info,
         [ index_diff_table, index_diff_column ]
     ]
+
+    # --------------------------------------------------------------------------------
+    #   WRW 17 Apr 2022 - Finally, and hopefully lastly, tools for creating an index.
+
+    ci_dummy_input = sg.Input(          # Dummy first element to get focus to keep it away from other input boxes.
+        key='ci-dummy-input',
+        visible=False,
+        )
+
+    if False:
+        ci_canon_label = sg.Text( text='Canonical:',
+             font=("Helvetica", 10 ),
+             justification='left',
+             pad=((0,0), (10, 0)),
+            )
+
+        ci_canon_value = sg.Multiline(
+            key='create-index-canonical',
+            font=("Helvetica", 10 ),
+            justification='left',
+            write_only = True,
+            size = (40, 1),
+            expand_x = False,
+            pad=((10,0), (10,0)),
+            auto_refresh = True,
+            no_scrollbar = True,
+            border_width = 0,
+            )
+
+    CI_Main_Font_Size = 14
+    CI_Main_Button_Size = 12
+
+    ci_title_label = sg.Text( text='Title:',
+         font=("Helvetica", CI_Main_Font_Size ),
+         justification='left',
+         pad=((10,0), (10, 0)),
+        )
+
+    ci_title_value = sg.Multiline(
+        key='create-index-title',
+        font=("Helvetica", CI_Main_Font_Size ),
+        justification='left',
+        write_only = False,
+        size = (30, 2),
+        expand_x = False,
+        pad=((10,10), (10,0)),
+        auto_refresh = True,
+        no_scrollbar = True,
+        border_width = 0,
+        visible = True,
+        )
+
+    ci_sheet_label = sg.Text( text='Sheet #:',
+         key = 'create-index-sheet-label',
+         font=("Helvetica", CI_Main_Font_Size ),
+         justification='left',
+         pad=((10,0), (10, 0)),
+        )
+
+    ci_sheet_value = sg.Input(
+        key='create-index-sheet',
+        font=("Helvetica", CI_Main_Font_Size ),
+        justification='left',
+    #   write_only = False,
+        size = (5, 1),
+        expand_x = False,
+        pad=((10,0), (10,0)),
+    #   auto_refresh = True,
+    #   no_scrollbar = True,
+        border_width = 0,
+        )
+
+    # ci_experiment_button = sg.Button( 'Ex', key='create-index-experiment', font=("Helvetica", 9), pad=((0,10),(10,10)), expand_x = False  )
+
+    ci_save_button = sg.Button( 'Save', key='create-index-save', font=("Helvetica", CI_Main_Button_Size), pad=((10,0),(15,0)), expand_x = False  )
+    ci_save_plus_button = sg.Button( 'Save+', key='create-index-save-plus', font=("Helvetica", CI_Main_Button_Size), pad=((10,0),(15,0)), expand_x = False  )
+    ci_skip_button = sg.Button( 'Skip', key='create-index-skip', font=("Helvetica", CI_Main_Button_Size), pad=((10,10),(15,0)), expand_x = False  )
+
+    ci_auto_ocr_switch = \
+        sg.Checkbox( 'Auto\nOCR',
+                      key='ci-auto-ocr-switch',
+                      enable_events = False,
+                      default=True,
+                      auto_size_text=True,
+                      font=("Helvetica", 9),
+                      pad=((10,0),(10,10)),
+                      )
+
+    ci_title_number_switch = \
+        sg.Checkbox( 'Title\nNumber',
+                      key='ci-title-number-switch',
+                      enable_events = True,
+                      default=False,
+                      auto_size_text=True,
+                      font=("Helvetica", 9),
+                      pad=((10,0),(10,10)),
+                      )
+
+    ci_delete_button = sg.Button('Delete', key='create-index-delete', font=("Helvetica", 9), pad=((10,0),(10,10)), expand_x = False  )
+    ci_update_button = sg.Button('Update', key='create-index-update', font=("Helvetica", 9), pad=((10,0),(10,10)), expand_x = False  )
+    ci_show_map_button = sg.Button('Map', key='create-index-show-map', font=("Helvetica", 9), pad=((10,0),(10,10)), expand_x = False  )
+
+    ci_goto_button = sg.Button( 'Go To', 
+        key='create-index-goto',
+        font=("Helvetica", 9),
+        pad=((10,10),(8,8)),
+        expand_x = False,
+        )
+
+    ci_page_label = sg.Text( text='Page:',
+         font=("Helvetica", 10 ),
+         justification='left',
+         pad=((0,0), (8, 8)),
+        )
+
+    ci_page_value = sg.Input(
+        key='create-index-page',
+        font=("Helvetica", 10 ),
+        justification='left',
+      # write_only = False,
+        size = (5, 1),
+        expand_x = False,
+        pad=((10,0), (8,8)),
+    #   auto_refresh = True,
+    #   no_scrollbar = True,
+        border_width = 0,
+        enable_events = False,
+        )
+
+    ci_hrule1 = sg.HorizontalSeparator( color = '#808080' )
+
+    ci_prev_button = sg.Button('Prev', key='create-index-prev', font=("Helvetica", 9), pad=((10,0),(8,8)), expand_x = False  )
+    ci_next_button = sg.Button('Next', key='create-index-next', font=("Helvetica", 9), pad=((10,0),(8,8)), expand_x = False  )
+    ci_last_button = sg.Button('Last', key='create-index-last-created', font=("Helvetica", 9), pad=((10,10),(8,8)), expand_x = False  )
+
+    ci_graph_size = 350
+
+    ci_pdf_graph = sg.Graph( 
+        (ci_graph_size, ci_graph_size),
+        key = 'create-index-graph',
+        graph_bottom_left=(0, ci_graph_size),
+        graph_top_right=(ci_graph_size, 0),
+        background_color = GraphBackground,
+        pad=((10,0),(10,0)),
+        expand_x = True,
+        expand_y = True,
+        # enable_events = True,           # Both True did not affect Graph focus.
+        # drag_submits = True,            # Doing it all with bind() for consistency
+    )
+
+    ci_canon_table = sg.Table(
+        key='create-index-canonical-table',
+        headings = [ f"Canonical Books - {conf.val( 'ci_canon_select' )}" ],
+        col_widths = [ 30 ],
+        num_rows = 6,
+        font=Table_Font,
+        row_height = Table_Row_Height,
+        auto_size_columns = False,     # Must be false for col_width to work.
+        values = [],
+        pad=[(0, 0), (10, 0)],
+        select_mode = None,
+        enable_events = True,
+        text_color = Text_Color,
+        background_color = Background_Color,
+        alternating_row_color= Alternating_Color,
+        justification = 'right',
+        expand_x = True,
+        expand_y = True,
+    )
+
+    ci_titles_table = sg.Table(
+        key='create-index-review-table',
+        headings = [ 'Page', 'Sheet', 'Title' ],
+        col_widths = [ 4, 5, 35 ],
+        num_rows = 3,
+        font=Table_Font_Small,
+        row_height = Table_Row_Height_Small,
+        auto_size_columns = False,     # Must be false for col_width to work.
+        values = [],
+        pad=[(8, 8), (4, 8)],
+        select_mode = None,
+        enable_events = True,
+        text_color = Text_Color,
+        background_color = Background_Color,
+        alternating_row_color= Alternating_Color,
+        justification = 'left',
+      # hide_vertical_scroll = True,
+        expand_x = True,
+        expand_y = True,
+    )
+
+    ci_main_frame_content = [
+        [ ci_title_label, ci_title_value, ],
+        [ ci_sheet_label, ci_sheet_value, ci_save_button, ci_save_plus_button, ci_skip_button ],
+        [ ci_auto_ocr_switch, ci_title_number_switch, ci_delete_button, ci_update_button, ci_show_map_button ],
+        [ ci_titles_table ],
+    ]
+
+    ci_main_frame = sg.Frame( 'Create / Edit User Index',
+        ci_main_frame_content,
+        key = 'create-index-main-frame',
+        font=("Helvetica", 8),
+        pad=((0,0),(6,0)),
+        expand_x = False,
+        visible = True,
+    )
+
+    ci_nav_frame_content = [
+        [ ci_goto_button, ci_page_label, ci_page_value, ci_prev_button, ci_next_button, ci_last_button ],
+    ]
+
+    ci_nav_frame = sg.Frame( 'Navigation',
+        ci_nav_frame_content,
+        key = 'create-index-nav-frame',
+        font=("Helvetica", 8),
+        pad=((0,0),(6,0)),
+        expand_x = True,
+        visible = True,
+    )
+
+    ci_column_1_content = [
+        [ ci_main_frame ],
+        [ ci_nav_frame ],
+        [ ci_canon_table ],
+    ]
+
+    ci_column_1 = sg.Column(
+            ci_column_1_content,
+            vertical_alignment='Top',
+            justification='left',
+            element_justification='left',
+            pad=((10,0),(0,0)),
+        )
+
+    if False:       # Don't need and don't want (caused spacing problems) separate column for canonical table.
+        ci_column_2_content = [
+            [ ci_canon_table ],
+        ]
+
+        ci_column_2 = sg.Column(
+                ci_column_2_content,
+                vertical_alignment='Top',
+                justification='right',
+                element_justification='right',
+                pad=((8,0),(8,0)),
+                expand_y = True,
+            )
+
+    create_index_layout = [
+        [ci_dummy_input],
+        [ ci_column_1, ci_pdf_graph ],
+      # [ ci_column_1, ci_pdf_graph, ci_column_2 ],
+    ]
+
 
     # --------------------------------------------------------------------------------
     #   Layout elements used in frames
@@ -1200,13 +1667,15 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
         sg.Text('Src:', font=search_title_font ),
         sg.InputText( key = 'local-src', size=(5,1), font=("Helvetica", 10 ) ),
     
-        sg.Text('Canonical Book Name:', font=search_title_font ),
+        sg.Text('Canonical:', font=search_title_font ),
         sg.InputText( key = 'canonical', size=(10,1), font=("Helvetica", 10 ) ),
     ]]
     
     search_5 = [[
-        sg.Checkbox( 'Sources',   key='search-multiple-src',       default=True, auto_size_text=True, font=("Helvetica", 9) ),
-        sg.Checkbox( 'Books',     key='search-multiple-canonical', default=True, auto_size_text=True, font=("Helvetica", 9) ),
+        sg.Radio( 'None',           group_id = 'search_5', enable_events = True, key='exclude-duplicate-none',       default=True, auto_size_text=True, font=("Helvetica", 9) ),
+        sg.Radio( 'Titles',         group_id = 'search_5', enable_events = True, key='exclude-duplicate-titles',     auto_size_text=True, font=("Helvetica", 9) ),
+        sg.Radio( 'Canonicals',     group_id = 'search_5', enable_events = True, key='exclude-duplicate-canonicals', auto_size_text=True, font=("Helvetica", 9) ),
+        sg.Radio( 'Srcs',           group_id = 'search_5', enable_events = True, key='exclude-duplicate-srcs',       auto_size_text=True, font=("Helvetica", 9) ),
     ]]
     
     search_6 = [[
@@ -1226,7 +1695,7 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
         sg.TabGroup( [[
             sg.Tab( ' Browse\n Music ', browse_music_files, key='tab-browse-music-files', font=("Helvetica", 8) ),
             sg.Tab( ' Browse\n Audio ', browse_audio_files, key='tab-browse-audio-files', font=("Helvetica", 8) ),
-            sg.Tab( ' Table of\n Contents ', table_of_contents_table,  key='tab-browse-book-titles', font=("Helvetica", 8) ),
+            sg.Tab( ' Table of\n Contents ', table_of_contents_table,  key='tab-table-of-contents', font=("Helvetica", 8) ),
             sg.Tab( ' Audio of \n Title  \U0001F50a ', current_audio_table,  key='tab-current-audio-table', font=("Helvetica", 8) ),
             sg.Tab( ' Midi of \n Title  \U0001f39d ', current_midi_table,  key='tab-current-midi-table', font=("Helvetica", 8) ),
         ]],
@@ -1238,22 +1707,39 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
             expand_x=False,
             expand_y=True,
          )
+
+    index_mgmt_tabgroup_layout = [[
+        sg.TabGroup( [[
+            sg.Tab(' Index Comparison ',        index_diff_layout,              key='tab-index-compare', font=Tab_Font ),
+            sg.Tab(' Index Page List ',         index_mgmt_layout,              key='tab-index-page-list', font=Tab_Font ),
+            sg.Tab(' Create/Edit User Index ',  create_index_layout,            key='tab-create-index', font=Tab_Font ),
+            sg.Tab(' Edit Local->Canonical ',   local2canonical_mgmt_layout,    key='tab-local2canon-mgmt', font=Tab_Font ),
+        ]],
+            key='index-mgmt-tabgroup',
+            enable_events=True,
+            font=("Helvetica", 10),
+            pad=((0,0),(8,0)),
+            selected_background_color = '#800000',
+            expand_x=True,
+            expand_y=True,
+        )
+    ]]
     
     main_tabgroup_layout = \
         sg.TabGroup( [[
-            sg.Tab(' Set List',             setlist_layout,                 key='tab-setlist-table', font=Tab_Font ),
-            sg.Tab(' Music Viewer ',        display_pdf_layout,             key='tab-display-pdf', font=Tab_Font ),
-            sg.Tab(' Music Index ',         indexed_music_file_table,       key='tab-indexed-music-file-table', font=Tab_Font ),
-            sg.Tab(' Audio Index ',         audio_file_table,               key='tab-audio-file-table', font=Tab_Font  ),
-            sg.Tab(' Music Files ',         music_file_table,               key='tab-music-filename-table', font=Tab_Font  ),
-            sg.Tab(' Midi Files ',          midi_file_table,                key='tab-midi-file-table', font=Tab_Font  ),
-            sg.Tab(' YouTube Index ',       youtube_file_table,             key='tab-youtube-table', font=Tab_Font  ),
-            sg.Tab(' Results Text ',        results_text,                   key='tab-results-text', font=Tab_Font, visible=False  ),
-            sg.Tab(' Results Table ',       results_table,                  key='tab-results-table', font=Tab_Font, visible=False ),
-            sg.Tab(' Index Mgmt ',          index_mgmt_layout,              key='tab-index-mgmt', font=Tab_Font ),
-            sg.Tab(' Index Diff ',          index_diff_layout,              key='tab-index-diff', font=Tab_Font ),
-            sg.Tab(' Edit Local->Canonical ',   local2canonical_mgmt_layout,    key='tab-local2canon-mgmt', font=Tab_Font ),
+            sg.Tab(' Set List',                 setlist_layout,                 key='tab-setlist-table', font=Tab_Font ),
+            sg.Tab(' Music Viewer ',            display_pdf_layout,             key='tab-display-pdf', font=Tab_Font ),
+            sg.Tab(' Music Index ',             indexed_music_file_table,       key='tab-indexed-music-file-table', font=Tab_Font ),
+            sg.Tab(' Music Files ',             music_file_table,               key='tab-music-filename-table', font=Tab_Font  ),
+            sg.Tab(' Audio ',                   audio_file_table,               key='tab-audio-file-table', font=Tab_Font  ),
+            sg.Tab(' Midi ',                    midi_file_table,                key='tab-midi-file-table', font=Tab_Font  ),
+            sg.Tab(' ChordPro ',                chordpro_index_table,           key='tab-chordpro-index-table', font=Tab_Font  ),
+            sg.Tab(' JJazzLab ',                jjazzlab_index_table,           key='tab-jjazzlab-index-table', font=Tab_Font  ),
+            sg.Tab(' YouTube ',                 youtube_file_table,             key='tab-youtube-table', font=Tab_Font  ),
+            sg.Tab(' Results ',                 results_text,                   key='tab-results-text', font=Tab_Font, visible=False  ),
+            sg.Tab(' Results  ',                results_table,                  key='tab-results-table', font=Tab_Font, visible=False ),
             sg.Tab(' Edit Canonical->File ',    canon2file_mgmt_layout,         key='tab-canon2file-mgmt', font=Tab_Font ),
+            sg.Tab(' Index Management ',        index_mgmt_tabgroup_layout,     key='tab-mgmt-subtabs', font=Tab_Font ),
         ]],
             key='main-tabgroup',
             enable_events=True,
@@ -1263,6 +1749,7 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
             expand_x=True,
             expand_y=True,
         )
+
     
     # --------------------------------------------------------------------------------
     #   Build up the layout. Each addition is a horizontal unit.
@@ -1278,19 +1765,21 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
     ]]
 
     layout += [[
-        sg.Image( source=BL_Icon, subsample=2),
+        sg.Image( source=BL_Icon, subsample=2, pad=((8,0),(0,0)) ),
 
         # sg.Image( source='Icons/Saxophone_128.png', subsample=4),
         # sg.Image( source='Icons/piano-icon.png', subsample=8),
         # sg.Image( source='Icons/Piano-2-red.png', subsample=16),
 
-        sg.Text( Bluebird_Program_Title, font=("Helvetica", 20, "bold"), text_color='#e0e0ff', justification='left' ),
-        sg.Text( "\"Let's hear how it goes.\"", font=("Times", 16, "italic"), text_color='#e0e0ff', justification='right', expand_x = True ),
+        sg.Text( Bluebird_Program_Title, pad=((4,0),(4,0)), font=("Helvetica", 20, "bold"), text_color='#e0e0ff', justification='left', expand_x = True ),
+      # sg.Text( Bluebird_Program_SubTitle, font=("Helvetica", 10, 'italic', 'bold' ), text_color='#e0e0ff', justification='center', expand_x = True ),
+        sg.Text( "\"Let's hear how it goes.\"", pad=((0,0),(6,0)), font=("Times", 18, "italic"), text_color='#e0e0ff', justification='right', expand_x = True ),
       # sg.Image( source= 'Icons/156px-Warning.svg.png', subsample=5, key='warning-icon', visible=False )
     
-    ]]
+    ],
+    ]
     
-#    search_1_tt = """
+#   search_1_tt = """
 #   Search Music Index, Audio Index, YouTube Index,  \n\
 #   Music Filenames, Midi Filenames.
 # """
@@ -1299,7 +1788,7 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
     layout += [[
         sg.Frame( 'Search Indexes, Music/Midi Filenames', search_1, font=("Helvetica", 8) ),
         sg.Frame( 'Search Music Index', search_2, font=("Helvetica", 8) ),
-        sg.Frame( 'Search Audio Index', search_3, font=("Helvetica", 8) ),
+        sg.Frame( 'Search Audio Index for Artist/Album, ChordPro Index for Artist', search_3, font=("Helvetica", 8) ),
     ]]
     
     layout += [[
@@ -1310,11 +1799,12 @@ Select a row in the 'Canonical Name/Linked File Name' table. Click 'Link Canonic
         sg.Button('Search', bind_return_key = True, key='search', font=("Helvetica", 9)),
         sg.Button('Clear', key='clear', font=("Helvetica", 9)),
         sg.Button('Stop Audio/Midi/YouTube', key='stop-audio-youtube', font=("Helvetica", 9)),
+    #   sg.Button('Stop', key='stop-audio-youtube', font=("Helvetica", 9)),
         sg.Button('Close PDF', key='close-music', font=("Helvetica", 9)),
         sg.Button('Exit', font=("Helvetica", 9)),
     
         sg.Sizer( h_pixels = 10 ),
-        sg.Frame( 'Include Duplicate', search_5, font=("Helvetica", 8) ),
+        sg.Frame( 'Exclude Duplicate', search_5, font=("Helvetica", 8) ),
     
         sg.Sizer( h_pixels = 10 ),
         sg.Frame( 'Filter Music Index By', search_4, font=("Helvetica", 8) ),
@@ -1396,7 +1886,7 @@ if __name__ == '__main__':
     window = sg.Window( Bluebird_Program_Title,
                         return_keyboard_events=True,
                         resizable=True,
-                       ).Layout( get_layout( sg, fb))
+                       ).Layout( get_layout( sg, fb, conf))
 
     window.finalize()
 

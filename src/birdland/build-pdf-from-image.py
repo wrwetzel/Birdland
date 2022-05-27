@@ -3,7 +3,7 @@
 #   build-pdf-from-image.py - Make a pdf file from image files in
 #       a directory. Name pdf file from parent directory.
 
-#       Put resultant pdf files in one folder name with indication of conversion.
+#       Put resultant pdf files in one folder named with indication of conversion.
 
 #   This assumes that all image files for a single song are in one folder. The output
 #       pdf is named after the folder.
@@ -29,7 +29,7 @@ Image_File_Extensions = [ '.jpg', '.tif', '.gif', '.bmp', '.JPG' ]
 #       in 'folder'.
 
 def listfolders( folder ):
-    for root, folders, files in os.walk(folder):
+    for root, folders, files in os.walk( folder ):
         for folder in folders:
             yield (root, folder)
 
@@ -49,10 +49,12 @@ def convert_music_files( confdir ):
     fb.set_class_config()
 
     file_count = 0
+    ofile_count = 0
     file_count_by_ext = {}
 
     for folder in conf.val( 'music_file_folders' ):
-        if folder == conf.val( 'music_from_image' ):        # Don't even look at destination folder. Only .pdf anyway.
+        if folder == conf.val( 'music_from_image' ):        # Don't even look at destination folder. Only contins .pdf anyway.
+            print( "Skipping", folder )
             continue
 
         path = Path( conf.val( 'music_file_root' ), folder )
@@ -67,10 +69,10 @@ def convert_music_files( confdir ):
             image_files = []
             # base_histo = {}
 
+            # print( fpath )
             found = False
-            print( fpath )
             for file in files:
-                print( "   ", file )
+                # print( "   ", file )
 
                 base = Path( file ).name
                 ext =  Path( file ).suffix.lower()
@@ -93,13 +95,15 @@ def convert_music_files( confdir ):
 
                 ofile = Path( conf.val( 'music_file_root' ), conf.val( 'music_from_image' ), f"{folder}-cnv.pdf" )
                 cmd = [ "convert", *image_files, ofile.as_posix() ]
-                print( cmd )
+                # print( cmd )
 
-                #/// subprocess.run( cmd )
+                subprocess.run( cmd )
+                ofile_count += 1
 
-    print( f"   Fakebook files: {file_count}" )
+    print( f"   Input files: {file_count}" )
     for ext in file_count_by_ext:
         print( f"      {ext}: {file_count_by_ext[ ext ]}" )
+    print( f"   Output files: {ofile_count}" )
 
 # --------------------------------------------------------------------------
 
@@ -107,3 +111,27 @@ if __name__ == '__main__':
     convert_music_files()
 
 # --------------------------------------------------------------------------
+#   WRW 24 March 2022 - On Paganini
+
+#  Fakebook files: 1277
+#      .jpg: 631
+#      .gif: 257
+#      .bmp: 87
+#      .tif: 302
+
+#   real    4m17.245s
+#   user    4m41.011s
+#   sys 0m31.868s
+
+#   WRW 25 March 2022 - On Gershwin after removed three trailing spaces on 'Sheet Music' in birdland.conf.
+
+#   Input files: 1277
+#      .jpg: 631
+3      .gif: 257
+#      .bmp: 87
+#      .tif: 302
+#   Output files: 219
+
+#   real    3m36.966s
+#   user    3m11.739s
+#   sys 0m31.319s

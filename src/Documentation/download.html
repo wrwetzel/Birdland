@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- 
+    Download page for Birdland website.
+    WRW 20 May 2022
+
+    A very simple web page for just the downloads and installation instructions.
+
+-->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<title>Birdland Musician's Assistant</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<meta name="author" content="birdland.wrwetel.com">
+<meta name="theme-color" content="#f8f8ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="[Birdland Musician's Assistant]">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Fakebook viewer, fakebook index, music viewer, music manager, fakebook, ChordPro,
+JJazzLab, audio player" >
+
+<!--
+<link rel="canonical" href="[canonical]" id=canonical-link />
+<link rel="manifest" href="[manifest]" id=manifest-link />
+-->
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js'></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous"></script>
+
+<link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<style>
+
+body {
+
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+    font-size: 10pt;
+    letter-spacing: -0.01em;
+    line-height: 150%;
+    background-color: #f0f0ff;
+    color: #000000;
+    padding: 0;
+    min-width: 640px;
+    margin: 0px 30px 0px 30px;
+}
+
+#md-display {
+    font-size: 10pt;
+    background-color: #f0f0ff;
+    padding: 10px;
+    margin: 10px 10px 10px 0px;
+    border-radius: 8px;
+    border: 2px solid #0000ff;
+    display: none;
+}
+
+table, th, td {
+    border: 1px solid;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 4px;
+}
+
+</style>
+
+</head>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<script>
+$(document).ready(function() {
+
+});     // END of: $(document).ready(function() {
+
+function show_md( url ) {
+    $.ajax({
+        url: url,
+        dataType: 'text',
+        type: 'GET',
+        success: function( data, status ) {
+            var t = markdownit({html: false}).render( data );
+            $( '#md-display' ).html( t );
+            $( '#md-display' ).show();
+        }
+    });
+}
+
+</script>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<body>
+
+<h1> <img src=/Images/Saxophone_64.png width=32/> Birdland Musician's Assistant</h1>
+
+<table>
+<thead>
+<tr>
+<th>Package</th> <th>Download </th> <th>Notes </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>Tar</td>
+    <td><a href=/Downloads/birdland-user.tar.gz>Tarball</a><br></td> 
+    <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-Tar.md' )" >Notes</a></td>
+
+
+</tr>
+</tbody>
+</table>
+
+<div id = md-display>
+</div>
+
+</body>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

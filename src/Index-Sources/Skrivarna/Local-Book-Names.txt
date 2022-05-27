@@ -1,0 +1,15 @@
+557_jazz_standards
+bluesrealbook
+colorado_cookbook
+creole
+django_fakebook
+firehouse_jazzband
+greatgigbook
+jazzltd
+realbook5th
+realbookvol2
+realbookvol3
+realvocalbook
+slickbook
+slickbook2
+thebook

@@ -21,22 +21,24 @@ class C2F():
         self.dirty = False
         self.local_loaded = False
         self.table_loaded = False
+        self.find_current_row = None
 
     # -----------------------------------
 
-    def set_elements( self, dc, canonical_table, link_table ):
+    def set_elements( self, dc, canonical_table, link_table, find ):
         self.dc = dc
         self.canonical_table = canonical_table
         self.link_table = link_table
+        self.find_text = find
+        self.find_text.bind("<Return>", "_Enter")
 
     # -----------------------------------
 
-    def set_classes( self, conf, fb, pdf, meta, toc ):
+    def set_classes( self, conf, fb, pdf, meta ):
         self.conf = conf
         self.fb = fb
         self.pdf = pdf
         self.meta = meta
-        self.toc = toc
 
     # -----------------------------------
     #   Populate the tables. Can't do this at init as don't have self.fb yet.
@@ -154,6 +156,38 @@ class C2F():
                     print( f'{canonical} | {file}', file=ofd )
 
                 self.conf.do_popup( f"\nSaved to: {self.canon2file_path}\nSaved backup to {backup_file}\n" )
+            return True
+
+        # ------------------------------------------
+
+        elif event == 'canon-find-text-b':
+            val = values[ 'canon-find-text-b' ].lower()
+            if not val:
+                return True
+
+            for row in range( len( self.canonicals )):
+                if val in self.canonicals[ row ][0].lower():
+                    self.canonical_table.update(select_rows = [ row ] )
+                    self.canonical_table.Widget.see( row + 1)
+                    self.find_current_row = row + 1
+                    break
+
+            return True
+
+        elif event == 'canon-find-text-b' + '_Enter':
+            val = values[ 'canon-find-text-b' ].lower()
+            if not val:
+                self.find_current_row = None
+                return True
+
+            else:
+                for row in range( self.find_current_row, len( self.canonicals )):
+                    if val in self.canonicals[ row ][0].lower():
+                        self.canonical_table.update(select_rows = [ row ] )
+                        self.canonical_table.Widget.see( row + 1)
+                        self.find_current_row = row + 1
+                        break
+
             return True
 
         # ------------------------------------------

@@ -4,11 +4,65 @@
 
 #   WRW 21 Jan 2022 - module for displaying music file metadata in the
 #       PDF display window.
-# ---------------------------------------------------------------------------------------
 
-# MYSQL = True
-# SQLITE = False
-# FULLTEXT = False        # /// RESUME - pass with option
+#   WRW 29 Apr 2022 - As I approach the completion of the development of Birdland I bumped into
+#       still some confusion regarding the source and display of metadata. 
+#       The problem was I was thinking that show() should make the best of whatever parameters it is
+#       called with and show whatever data possible. In reality it is called with only a small
+#       number of arg profiles.
+
+#       In the hope of simplifying this I added a 'mode' parameter, which identifies the
+#       set of arg profile and reduces the number of paths through the code.
+
+#       Primary calls to this are only from birdland.py 
+#       A secondary call is also from fb_setlist.py but that is with data from a primary call.
+#       Additional calls in fb_index_pagelist.py and fb_index_diff.py are 'if False:' removed.
+
+#       'mode':
+#           'Ft' - Text / Chordpro file, index data not meaningful.                         
+#           'Fi' - Music File with index data.
+#           'Fp' - Music File, possibility of inferring index data.
+#           'Fs' - Music File, src may be explicitly given in browse combo box.
+#           'N'  - Bug catacher on code removed by 'if False:'
+
+#       Inferring index data:
+#           Music File -> none                          Canonical to File not mapped
+
+#           Music File -> Canonical -> none             Local to Canonical not mapped
+
+#           Music File -> Canonical -> local/src        One to many relationship that must
+#                                   -> ...              be resolved by src_priority, imperfect.
+#                                   -> local/src
+
+#           Music File -> Canonical -> local/src        Src give explicitly by browse combo
+
+#       Note that browse combo can change while viewing one book and must be checked on every
+#           page change.
+
+#       Note also that this approach will include some redundant code but it will
+#           be simpler and offer more peace-of-mind. At first blush it looks great, much simpler.
+
+#       Metadata here is infomation related to the current book and page including
+#           page, sheet, title(s), src, local, canonical, the table of contents, and
+#           the current audio and midi tables (i.e. audio/midi files matching current title)
+
+#       Redo table of contents logic: built toc from metadata.show(), move toc Click processing to here,
+#           remove toc entirely from birdland.py.
+
+# --------------------------------------------------------------
+#       In all cases populate these metadata gui elements with either constructive data or blanks.
+#           src included in local_ele string. Let's try clearing them all and populating only as
+#           have data, not clearing only of don't have data.
+
+#           self.title_ele        
+#           self.local_ele         
+#           self.canonical_ele             
+#           self.file_ele       
+#           self.number_ele          
+#           self.sheet_ele         
+
+#           self.current_audio_ele          # Sidebar, audio files matching title
+#           self.current_midi_ele           # Sidebar, midi files matching title
 
 # ---------------------------------------------------------------------------------------
 
@@ -26,7 +80,8 @@ class Meta():
         self.local = None
         pass
 
-    def set_elements( self, title, local, canonical, file, number, sheet, current_audio, current_midi ):
+    def set_elements( self, title, local, canonical, file, number, sheet, 
+                      current_audio, current_midi, table_of_contents ):
         self.title_ele = title
         self.local_ele  = local
         self.canonical_ele  = canonical
@@ -35,6 +90,18 @@ class Meta():
         self.sheet_ele  = sheet
         self.current_audio_ele = current_audio
         self.current_midi_ele = current_midi
+        self.table_of_contents_ele = table_of_contents
+
+    def clear_elements( self ):         # file current_audio and current_midi always set or cleared explicitly
+        self.title_ele.update( value = '' )
+        self.local_ele.update( value = '' )
+        self.canonical_ele.update( value = '' )
+        self.number_ele.update( value = '' )
+        self.sheet_ele.update( value = '' )
+        self.update_current_audio( [] )         # Content in left-sidebar for audio and midi matching title
+        self.update_current_midi( [] )          
+        self.table_of_contents_ele.update( values = [] )
+        self.table_of_contents_data = []
 
     def set_classes( self, conf, fb, pdf ):
         self.conf = conf
@@ -53,6 +120,28 @@ class Meta():
         SQLITE = t2
         FULLTEXT = t3
 
+    def set_window( self, window ):
+        self.window = window
+
+    def set_hacks( self, select_pdf_tab ):
+        self.select_pdf_tab = select_pdf_tab
+
+    # --------------------------------------------------------------
+
+    def proc_sheet( self, sheet, src, local ):
+        if sheet:
+            self.sheet_ele.update( value = f"Sheet/Title #: {sheet}" )
+            titles_array = self.fb.get_titles_from_sheet( sheet, src, local )
+            titles_text = '\n\n'.join( titles_array )
+            self.title_ele.update( value = titles_text )
+            self.update_current_audio( titles_array )
+            self.update_current_midi( titles_array )
+            self.info[ 'titles' ] = titles_array
+            self.info[ 'sheet'  ] = sheet
+
+        else:
+            self.sheet_ele.update( value = f"Sheet: - " )
+
     # --------------------------------------------------------------
 
     def process_events( self, event, values ):
@@ -61,175 +150,84 @@ class Meta():
         #   User changed PDF page with icons, keystrokes, or scrolling
         #   Don't do anything if don't have database yet.
 
-        if event == 'hidden-page-change':
-
+        if event == 'pdf-hidden-page-change':
             p = self.pdf.get_info()
             self.show_page_update(
-                       page = p[ 'page' ],
-                       page_count = p[ 'page_count' ],
-                     )
+                page = p[ 'page' ],
+                page_count = p[ 'page_count' ],
+                src_from_combo = values[ 'browse-src-combo' ]
+            )
 
             return False        # Others may want this event, too
 
         # ------------------------------------------------------------------
+        #   table_of_contents_data: [ [ row[ 'title' ], row[ 'sheet' ] ]
+
+        elif event == 'table-of-contents-table':
+            if 'table-of-contents-table' in values and len( values[ "table-of-contents-table" ] ):
+                index = values[ "table-of-contents-table" ][0]
+                sheet = self.table_of_contents_data[ index ][1]
+
+                if sheet:
+                    src = self.info[ 'src' ]            # Saved by show()
+                    local = self.info[ 'local' ]
+
+                    page = self.fb.get_page_from_sheet( sheet, src, local )
+                    if page:
+                        self.pdf.goto_page( int( page ) )
+                        self.select_pdf_tab()               # WRW 15 May 2022
+
+            return True
+
+        # ------------------------------------------------------------------
+        return False
 
     # --------------------------------------------------------------
     #   Populate the supplied or found metadata info in PDF window and save a copy.
     #   Called after pdf.show_music_file() with all available parameters.
     #   Fill in missing if possible.
     #   Always have 'file', page, and page_count
-    #   /// RESUME - After cleanup this still may be too complicated. Try to simplify?
+    #   WRW 29 Apr 2022 - added 'mode'.
 
-    def show( self, id=None, file=None, page=None, sheet=None, src=None, local=None,
-                    canonical=None, page_count=None, title=None ):
+    def show( self, id=None, mode=None, file=None, page=None, sheet=None, src=None, local=None,
+                    canonical=None, page_count=None, title=None, src_from_combo = None):
+
+        # print( f"Show: '{id}', '{mode}', '{file}', '{page}', '{sheet}', '{src}', '{local}', '{canonical}', '{page_count}', '{title}', '{src_from_combo}'" )
 
         titles_array = []
+        self.clear_elements()
+
         # ---------------------------------------------------------------------------------
 
         self.info = {               # Save data from most recent call, need some for setlist, may need more later.
-            'id' :          id,
+            'id' :          id,     # Initially used only for debugging but on 28 Apr 2022 it looks useful
+            'mode' :        mode,
             'file' :        file,
             'page' :        page,
             'sheet' :       sheet,
             'src' :         src,
             'local' :       local,
             'canonical' :   canonical,
-            'title' :       title,
-            'titles' :      None,
+            'title' :       title,          # /// RESUME Is this used anywhere?
+            'titles' :      [],
             'page_count' :  page_count,
         }
 
-        # ----------------------------------------------------------------------
-
-        # self.debug_metadata.update( value = id )
-        # print( self.info )
-        # print( '' )
+        # print( "/// Show() Info:", self.info )
 
         # ----------------------------------------------------------------------
+        #   Bug catcher. Mode must be given and must not be 'N'
+
+        if not mode or mode not in [ 'Ft', 'Fi', 'Fp', 'Fs' ]:
+            print( f"ERROR-DEV: Unexpected value of 'mode': {mode}", file=sys.stderr )
+            sys.exit(1)
+
+        # ----------------------------------------------------------------------
+        #   *** File ***
+
         #   WRW 22 Jan 2022 - file is now partial path, i.e., without root to files.
         #   If no file given don't clear display, keep old value.
-        #   File now always given but test anyway.
-
-        if file:
-            if '/' in file:
-                files = file.split('/')
-                file1 = '/'.join( files[ 0:-1] ) + '/'
-                file2 = files[ -1]
-
-            else:
-                file1 = file
-                file2 = ''
-
-            self.file_ele.update( value = f'{file1}\n{file2}' )
-        else:
-            self.file_ele.update( value = f'' )
-
-        # -------------------------------
-        #   If don't have canonical may be able to get it from file, which we always have.
-
-        if not canonical:
-            canonical = self.fb.get_canonical_from_file( file )
-
-            if canonical:
-                self.info[ 'canonical' ] = canonical
-                self.canonical_ele.update( value = canonical )
-            else:
-                self.canonical_ele.update( value = '' )
-        else:
-            self.canonical_ele.update( value = canonical )
-
-        # -------------------------------
-        #   Populate titles
-
-        if src and local:
-            self.local_ele.update( value = f"{local} - {src}" )
-
-            #   Only get sheet if don't already have it.
-            if not sheet:
-                sheet = self.fb.get_sheet_from_page( page, src, local )
-
-            if sheet:
-                self.sheet_ele.update( value = f"Sheet: {sheet}" )
-                self.info[ 'sheet'  ] = sheet
-
-                titles_array = self.fb.get_titles_from_sheet( sheet, src, local )
-                # print( f"/// titles: {titles_array}, '{sheet}', '{src}', '{local}'" )
-
-                titles_text = '\n\n'.join( titles_array )
-
-            else:
-                self.sheet_ele.update( value = f"Sheet: - " )
-                titles_array = []
-                titles_text = ''
-
-            self.title_ele.update( value = titles_text )
-            self.info[ 'titles' ] = titles_array
-
-        else:
-            # ---------------------------------------------------------------------------------
-            #   Don't have src/local, may be able to get it from canonical.
-
-            #   WRW 24 Jan 2022 - Exploratory - Try to fill in missing src/local data.
-            #   Most call profiles do not include it, only calling from Click in index music file table has it.
-            #   Get one src/local pair from several possible from file
-            #   I.e., map file back to canonical back to one src/local.
-
-            if canonical:
-                rows = self.fb.get_src_local_from_canonical( canonical )
-
-                if len(rows):                   # Success getting src & local from canonical
-                    src, local = rows[0]        # Ordered by src priority in sql.
-                    self.info[ 'src' ] = src
-                    self.info[ 'local' ] = local
-                    self.local_ele.update( value = f"* {local} - {src}" )     # * signifies src by priority
-
-                    if not sheet:
-                        sheet = self.fb.get_sheet_from_page( page, src, local )
-
-                    if sheet:
-                        self.sheet_ele.update( value = f"Sheet: {sheet}" )
-                        titles_array = self.fb.get_titles_from_sheet( sheet, src, local )
-                        titles_text = '\n\n'.join( titles_array )
-
-                    else:
-                        self.sheet_ele.update( value = f"Sheet: - " )
-                        titles_array = []
-                        titles_text = ''
-
-                    self.title_ele.update( value = titles_text )
-                    self.info[ 'titles' ] = titles_array
-
-                else:
-                    self.title_ele.update( value = '' )
-                    self.local_ele.update( value = '' )
-                    self.sheet_ele.update( value = '' )
-
-        # -------------------------------
-
-        if page and page_count:
-            self.number_ele.update( value = f"Page: {page} of {page_count}" )
-        else:
-            self.number_ele.update( value = '' )
-
-        # -------------------------------
-
-        self.update_current_midi( titles_array )
-        self.update_current_audio( titles_array )
-
-    # ---------------------------------------------------------------------------------------
-
-    def OMIT_show_from_setlist( self, file, page, page_count, title, src, local, canonical ):
-        self.info = {               # Save data from most recent call, need some for setlist, may need more later.
-            'file' : file,
-            'page' : page,
-            'page_count' : page_count,
-            'canonical' : canonical,
-            'title' : title,
-
-            'sheet' : None,
-            'src' : src,
-            'local' : local,
-        }
+        #   File now always given, removed test for it.
 
         if '/' in file:
             files = file.split('/')
@@ -240,55 +238,119 @@ class Meta():
             file1 = file
             file2 = ''
 
-        self.file_ele.update( value = f"{file1}\n{file2}" )
+        self.file_ele.update( value = f'{file1}\n{file2}' )
 
-        page = page if page else ''
-        page_count = page_count if page_count else ''
-        self.number_ele.update( value = f"Page: {page} of {page_count}" )
+        # ----------------------------------------------------------------------
+        #   *** Page ***
 
-        canonical = canonical if canonical else ''
-        self.canonical_ele.update( value = f"{canonical}" )
+        if page and page_count:
+            self.number_ele.update( value = f"Page: {page} of {page_count}" )
 
-        title = title if title else ''
-        self.title_ele.update( value = f"{title}" )
+        # ----------------------------------------------------------------------
+        #           'Ft' - Text / Chordpro file, index data not meaningful.
+        #           'Fi' - Music File with index data.
+        #           'Fp' - Music File, possibility of inferring index data.
+        #           'Fs' - Music File, src may be explicitly given in browse combo box.
+        # ----------------------------------------------------------------------
 
-        self.update_current( [title] )
+        if mode == 'Ft':
+            if title:
+                self.title_ele.update( value = title )
+
+        # ----------------------------------------------------------------------
+        # Have index data in calling args, i.e. click in Music Index
+
+        elif mode == 'Fi':
+            self.canonical_ele.update( value = canonical )
+            self.local_ele.update( value = f"{local} - {src}" )
+            self.proc_sheet( sheet, src, local )
+            self.table_of_contents_data = self.fb.get_table_of_contents( src, local )
+            self.table_of_contents_ele.update( values = self.table_of_contents_data  )
+
+        # ----------------------------------------------------------------------
+        #   May have src explicitly given in browse combo box. 
+        #   Backtrack to get index data, if any from that.
+
+        elif mode == 'Fs':
+            canonical = self.fb.get_canonical_from_file( file )
+            if canonical:
+                self.canonical_ele.update( value = canonical )
+                self.info[ 'canonical' ] = canonical
+                src = src_from_combo
+                if src:
+                    local = self.fb.get_local_from_src_canonical( src, canonical )
+                    if local:
+                        self.info[ 'src' ] = src
+                        self.info[ 'local' ] = local
+                        self.local_ele.update( value = f"{local} - {src}" )                                                  
+                        sheet = self.fb.get_sheet_from_page( page, src, local )
+                        self.proc_sheet( sheet, src, local )
+                        self.table_of_contents_data = self.fb.get_table_of_contents( src, local )
+                        self.table_of_contents_ele.update( values = self.table_of_contents_data  )
+
+        # ----------------------------------------------------------------------
+        #   May possibly be able to recover index data by backtracking and with src_priority
+
+        elif mode == 'Fp':
+            canonical = self.fb.get_canonical_from_file( file )
+            if canonical:
+                rows = self.fb.get_src_local_from_canonical( canonical )
+                src, local = rows[0]         # Returns src/local list ordered by src_priority. Select highest priority.
+                if src and local:
+                    self.info[ 'src' ] = src
+                    self.info[ 'local' ] = local
+                    self.local_ele.update( value = f"* {local} - {src}" )     # * signifies estimate, i.e., src by priority
+
+                    sheet = self.fb.get_sheet_from_page( page, src, local )
+                    self.proc_sheet( sheet, src, local )
+                    self.table_of_contents_data = self.fb.get_table_of_contents( src, local )
+                    self.table_of_contents_ele.update( values = self.table_of_contents_data  )
 
     # ---------------------------------------------------------------------------------------
-    #   WRW 24 Jan 2022 - New page in existing document.
+    #   WRW 24 Jan 2022 - New page in existing document. User can change browse_src_combo 
+    #       while looking at book. Get value for every page if browsing.
+    #   WRW 29 Apr 2022 - Redo using explicit approach.
 
-    def show_page_update( self, page, page_count ):
+    def show_page_update( self, page, page_count, src_from_combo ):
 
-        if self.info[ 'src'] and self.info[ 'local' ]:
-            src = self.info[ 'src'] 
-            local = self.info[ 'local']
+        self.info[ 'titles' ] = []                  # Clear all first, may populate below.
+        self.title_ele.update( value = '' )
+        self.local_ele.update( value = '' )
+        self.sheet_ele.update( value = '' )
+        self.update_current_audio( [] )
+        self.update_current_midi( [] )
 
-            sheet = self.fb.get_sheet_from_page( page, src, local )
-            if sheet:
-                self.sheet_ele.update( value = f"Sheet: {sheet}" )
-                titles_ary = self.fb.get_titles_from_sheet( sheet, src, local )
-                titles_text = '\n\n'.join( titles_ary )
-            else:
-                self.sheet_ele.update( value = f"Sheet: - " )
-                titles_ary = []
-                titles_text = ''
-
-            self.title_ele.update( value = titles_text )
-            self.local_ele.update( value = f"{local} - {src}" )
-
-            self.info[ 'titles' ] = titles_ary
-            self.update_current_audio( titles_ary )
-            self.update_current_midi( titles_ary )
-
-        else:
-            self.title_ele.update( value = '' )
-            self.local_ele.update( value = '' )
-            self.sheet_ele.update( value = '' )
-            self.update_current_audio( [] )
-            self.update_current_midi( [] )
+        # ---------------------------------------------------
 
         self.number_ele.update( value = f"Page: {page} of {page_count}" )
         self.info[ 'page' ] = page
+
+        # ---------------------------------------------------
+        #   First try to get current src if in 'Fs' mode.
+
+        ok = False
+        if self.info[ 'mode' ] == 'Fs':
+            src = src_from_combo 
+            if src:
+                local = self.fb.get_local_from_src_canonical( src, self.info[ 'canonical' ] )
+                if local:                             # Success getting local from src/canonical
+                    ok = True
+
+        if not ok:                          # Otherwise, use src/local saved in show() above.
+            src = self.info[ 'src' ]
+            local = self.info[ 'local' ]
+
+        # ---------------------------------------------------
+        #   Only meaningful to deal with sheet if have src and local
+
+        if src and local:
+            self.info[ 'src' ] = src            # Save values possibly changed in 'Fs' mode.
+            self.info[ 'local' ] = local
+            self.local_ele.update( value = f"{'*' if self.info[ 'mode' ] == 'Fp' else ''} {local} - {src}" )     # * signifies estimate, i.e., src by priority
+
+            sheet = self.fb.get_sheet_from_page( int(page), src, local )
+            # print( "///", sheet, page, src, local )
+            self.proc_sheet( sheet, src, local )
 
     # ---------------------------------------------------------------------------------------
     #   The metadata object stores information for saving to setlist.
@@ -305,7 +367,6 @@ class Meta():
             for title, artist, file in self.get_audio_from_titles( current_title ):
                 table.append( (title, artist, file ) )
 
-        # self.current_audio_ele.update( values = table )
         self.fb.safe_update( self.current_audio_ele, table, None )
 
         if table:
@@ -323,7 +384,6 @@ class Meta():
             for rpath, file in self.get_midi_from_titles( current_title ):
                 table.append( (rpath, file ) )
 
-        # self.current_audio_ele.update( values = table )
         self.fb.safe_update( self.current_midi_ele, table, None )
 
         if table:
@@ -360,7 +420,6 @@ class Meta():
         return res
 
     # -------------------------------
-    #   /// RESUME Not useful so far. Getting too many matches. Perhaps LIKE.
 
     def get_midi_from_titles( self, title ):
         data = []
@@ -407,92 +466,5 @@ class Meta():
         res = [ [row[ 'rpath'], row[ 'file' ]] for row in rows ] if rows else []
 
         return res
-
-# ---------------------------------------------------------------------------------------
-#   WRW 18 Jan 2022 - Exploring table of contents of current book
-#   WRW 22 Jan 2022 - Pulled out into separate module from bluebird.py
-
-class TableOfContents():
-
-    # -------------------------------
-    def __init__( self ):
-        self.current_src = None
-        self.current_local = None
-
-    # -------------------------------
-    def set_elements( self, fb, book_titles ):
-        self.fb = fb
-        self.table_of_contents_ele = book_titles
-
-        self.current_src = None
-        self.current_local = None
-
-    # -------------------------------
-    #   Several call profiles
-    #       toc.show()
-    #       toc.show( src=src, local=local )
-    #       toc.show( file=path )
-    #       toc.show( canonical=canonical )
-
-    #   /// RESUME - needs a little more thought, maybe separate show() functions.
-
-    def show( self, file=None, src=None, local=None, canonical=None ):
-
-        # ---------------------------------------
-        #   Clear TOC
-
-        if not file and not src and not local and not canonical:
-            self.table_of_contents_ele.update( values = [] )
-
-        # ---------------------------------------
-        #   Simple case, get TOC from book index or index management table, toc indicated by src & local
-
-        elif src and local:    # From Click in indexed music file table
-            if self.current_src != src or self.current_local != local:
-                self.current_src = src
-                self.current_local = local
-                self.book_titles_table_data = self.fb.get_table_of_contents( src, local )
-                self.table_of_contents_ele.update( values = self.book_titles_table_data )
-
-        # ---------------------------------------
-        #   Get one src/local pair from several possible from canonical.
-        #   I.e., map canonical back to one src/local.
-        #   /// RESUME - issue here
-
-        elif canonical:     # From Click in setlist
-            rows = self.fb.get_src_local_from_canonical( canonical )
-
-            if len(rows):
-                src, local = rows[0]        # Ordered by src priority in sql.
-                self.book_titles_table_data = self.fb.get_table_of_contents( src, local )
-                self.table_of_contents_ele.update( values = self.book_titles_table_data )
-
-            else:
-                self.table_of_contents_ele.update( values = '' )
-
-        # ---------------------------------------
-        #   Get one src/local pair from several possible from file
-        #   I.e., map file back to canonical back to one src/local.
-
-        elif file:       # From Click in music file table or musie file browse tree.
-            canonical =  self.fb.get_canonical_from_file( file.as_posix() )
-            if canonical:
-                rows = self.fb.get_src_local_from_canonical( canonical )
-                if len(rows):
-                    src, local = rows[0]        # Ordered by src priority in sql.
-                    self.book_titles_table_data = self.fb.get_table_of_contents( src, local )
-                    self.table_of_contents_ele.update( values = self.book_titles_table_data )
-                else:
-                    self.table_of_contents_ele.update( values = '' )
-
-            else:
-                self.table_of_contents_ele.update( values = '' )
-
-    # -------------------------------
-    #   Retrieve sheet number from toc
-    #   toc: row[ 'title' ], row[ 'sheet' ]
-
-    def get_sheet( self, index ):
-        return self.book_titles_table_data[index][1]
 
 # ---------------------------------------------------------------------------------------

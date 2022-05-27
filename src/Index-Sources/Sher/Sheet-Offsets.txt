@@ -1,0 +1,26 @@
+#   sheet# is value given in raw index.
+#   For offset entry: (sheet start, offset), starting at sheet#,
+#           page = sheet start + offset
+#           sheet# = page - offset
+
+All-Jazz Real Book         | (1, 13 )
+Best of Sher Music Co.     | (1, 0 )
+European Real Book         | (1, 0 )
+Latin Real Book            | (1, 19 )
+Latin Real Easy Book       | (1, 0 )
+#   Duplicate sheets 28, 29b
+New Real Book: Vol. 1      | (1, 15 ) (5, 13) (29, 15 )
+New Real Book: Vol. 2      | (1, 12 )
+New Real Book: Vol. 3      | (1, 10 )
+Real Cool Book             | (1, 0 )
+Real Easy Book: Vol. 1     | (1, 0 )
+Real Easy Book: Vol. 2     | (1, 0 )
+Real Easy Book: Vol. 3     | (1, 0 )
+
+#   Photos in Standards Real Book are not included in the online version
+Standards Real Book        | (1, 13 ) (5, 12) (13, 11 ) (19,10) (27,9) (49,8) (63, 7) (83, 6) (107,5) (121,4) \
+    (127,3) (167,2) (175, 1) (239, 0) (243, -1) (253, -2 ) \
+    (269, -3) (315,-4) (329, -5) (335, -6) (361, -7) \
+    (389, -8) (431, -9) (503, -10) (517, -11) (563, -12)
+
+World's Greatest Fakebook  | (1, 14 )

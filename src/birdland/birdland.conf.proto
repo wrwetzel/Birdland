@@ -1,0 +1,224 @@
+# -------------------------------------------------------------------------------
+#   Birdland Musician's Assistant - Configuration file.
+# -------------------------------------------------------------------------------
+
+#   OK to edit this directly or use Birdland 'Edit->Settings'.
+
+#   User expansion '~/' is supported for some settings.
+
+#   Some settings accept one or more values. Surround multiple values               
+#   with three single quotes starting on the line of first item and ending
+#   on the line of the last. For example, see: source_priority, 
+#   audio_file_extensions, themes.
+
+#   This includes many internal setting that are not exposed in 'Edit->Setting'.
+#   Don't modify these unless you have good reason and know what you are doing
+
+#   This is the master file for birdland.conf. It is read by build-config-proto.py -c <this_folder>
+#       which saves a sanitized version in birdland.conf.proto.
+
+#   This built from .birdland/birdland.conf
+#     on Wed, 25-May-2022, 13:04:47
+
+# -------------------------------------------------------------------------------
+
+[System]
+
+# =========================================================
+#   User settings
+
+#   The maximum number of table rows returned for all media searches.
+select_limit = 100
+
+#   The name of the setlist file. Located in the configuration directory.
+setlistfile = setlist.json
+
+include_titles_missing_file = False
+show_index_mgmt_tabs = True
+show_canon2file_tab = True
+
+# ---------------------------------------------------------
+#   MySql database user name and password.
+#   Values required only if using MySql.
+
+database_user = ***
+database_password = ***
+
+# ---------------------------------------------------------
+#   External viewers/players/editor. Be sure they are in your PATH or give full path.
+
+use_external_music_viewer = False
+external_music_viewer = okular
+external_audio_player = vlc
+external_midi_player = timidity
+external_youtube_viewer = qutebrowser --override-restore
+
+#   kate, -ln
+#   featherpad +n
+
+# raw_index_editor = featherpad
+# raw_index_editor_line_num = +?
+
+raw_index_editor = kate
+raw_index_editor_line_num = -l ?
+
+# ---------------------------------------------------------
+#   Music is selected in source_priority order when multiple index sources 
+#   exist for the same title.
+#   Adding new source:
+#       Add entry to [Source] section
+#       Add Src to source_priority
+
+source_priority = '''Usr
+Asp
+Shr
+Ext
+Mik
+Skr
+Jad
+Buf
+Stm'''
+
+# ---------------------------------------------------------
+#   PySimpleGui theme. Possible values in 'themes' below.
+
+theme = Dark
+
+# =========================================================
+#   Internal settings.
+#   Note that audiofile_index has hostname prefix added automatically prior
+#   to access.
+
+music_index_dir = Music-Index
+youtube_index = YouTube-Index/Titles.json.gz
+canonicals = Canonical/CanonicalNames.txt
+audiofile_index = Audio-Index.json.gz
+corrections = Canonical/Corrections.txt
+ci_canon_select = All
+
+#   Folder under music_file_root for pdf from converted image files.
+music_from_image = Converted_from_Image
+
+# ---------------------------------------------------------
+#   The audio_file_root/audio_file_folders are searched 
+#   for files with  these extensions.
+
+audio_file_extensions = '''.mp3
+.flac
+.m4a
+.m3u
+.ape
+.wma
+.ogg
+.mp4
+.mpc
+.m4p
+.wav
+.aif'''
+
+# ---------------------------------------------------------
+#   These PySimpleGUI themes are presented to the user in the 
+#   'themes' setting.  Add more here as desired.
+
+themes = '''Dark
+DarkAmber
+DarkBlue2
+DarkBrown4
+Kayak
+LightBlue1
+LightBrown1
+SystemDefault
+DarkTanBlue
+Default'''
+
+# --------------------------------------------------
+# Sections here are for each host on which Birdland is run.
+
+[Host]
+
+# This is a prototype for the hostname sub-section, which is
+# added the first time Birdland is launched in each host.
+# Do not change or remove it.
+
+[[ProtoHostnameSection]]
+canonical2file = Canonical2File.txt
+
+music_file_root = ""
+music_file_folders = ""
+
+audio_file_root = ""
+audio_folders = ""
+
+midi_file_root = ""
+midi_folders = ""
+
+chordpro_file_root = ""
+chordpro_folders = ""
+
+jjazz_file_root = ""
+jjazz_folders = ""
+
+#   These settings are used only for Canonical 2 File editing.
+#   Music files in c2f_editable_music_folders are presented in the canon2file edit table.
+c2f_editable_music_folders = ""
+
+#   Mapping file in c2f_editable_map is shown in the canon2file edit table.
+c2f_editable_map = ""
+
+# =========================================================
+[Source]
+
+#   Location, abbreviation, process command for each index source.
+#       src - the abbreviation used for the source.
+#       folder - the source-specific directory under the 'Index-Sources' directory.
+#       command - the command executed to process the source, in the source-specific directory.
+#   Additional file names are built into the process command and are not included here.
+#   Prefix all do_*.py files with './' for situation where '.' is not in $PATH.
+
+#   Add a new sub-section here when adding a new index source
+
+[[AdamSpiers]]
+src = Asp
+folder = AdamSpiers
+command = ./do-adamspiers.py
+
+[[Sher]]
+folder = Sher
+src = Shr
+command = ./do-sher.py
+
+[[Buffalo]]
+src = Buf
+folder = Buffalo
+command = ./do-buffalo.py
+
+[[MikelNelson]]
+src = Mik
+folder = MikelNelson
+command = ./do-mikelnelson.py
+
+[[Skrivarna]]
+src = Skr
+folder = Skrivarna
+command = ./do-skrivarna.py
+
+[[JasonDonenfeld]]
+src = Jad
+folder = JasonDonenfeld
+command = ./do-jasondonenfeld.py
+
+[[StompBox]]
+src = Stm
+folder = StompBox
+command = ./do-stompbox.py
+
+[[ExtractedIndex]]
+src = Ext
+folder = ExtractedIndex
+command = ./do-extractedindex.py
+
+#   WRW 25 Apr 2022 - Added
+[[User]]
+src = Usr
+folder = User
+command = ./do-user.py

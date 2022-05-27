@@ -19,7 +19,6 @@ import sys
 import gzip
 import subprocess
 import os
-import MySQLdb
 import re
 
 # ---------------------------------------------------------------------------
@@ -38,6 +37,11 @@ import re
 #           's' - Relative to Index_Sources dir under data directory, filename is in data dict, not config file
 #           'f' - Relative to Index_Sources dir under data directory.
 
+#       type:
+#           'V' - value, textbox
+#           'B' - binary, checkbox
+#           'C' - multi-value, combobox
+
 #       rows: Number of rows in multiline element in config window.
 #             If given, val() returns an array, otherwise a scalar.
 
@@ -45,34 +49,57 @@ import re
 
 # 'table_row_count' :         { 'type' : 'V', 'show' : True, 'section' : 'System', 'title' : 'Visible number of rows 'type' : 'V', 'show'n in tables' },
 
+#   This really belongs in the Create Index tab but no room for it on small screens.
+
+ci_canon_select = [                 
+    'All',                  # Values must agree with selector in fb_create_index.py
+    'With No Index',
+    'Only With Index',
+]
+
 config_data_dict = {
     'music_file_root' :             { 'loc' : 'a', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Root of music files'  },
-    'music_file_folders' :          { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders under music root containing all music files', 'rows' : 5 },
-    'c2f_editable_music_folders' :  { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders with music files permitting\nCanon->File editing', 'rows' : 2 },
+    'music_file_folders' :          { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containing all music files', 'rows' : 5 },
+    'c2f_editable_music_folders' :  { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containing music files permitting\nCanon->File editing', 'rows' : 2 },
     'audio_file_root' :             { 'loc' : 'a', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Root of audio files'   },
     'audio_folders' :               { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containing audio files', 'rows' : 5 },
+
     'midi_file_root' :              { 'loc' : 'a', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Root of midi files'  },
-    'midi_folders' :                { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containint midi files', 'rows' : 5  },
-    'use_external_music_viewer':    { 'loc' : '-', 'type' : 'B', 'col' : 'L', 'show' : True, 'section' : 'System', 'title' : 'Use external music viewer' },
-    'external_music_viewer' :       { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'System', 'title' : 'External Music Viewer' },
-    'external_audio_player' :       { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'System', 'title' : 'External Audio Player' },
-    'external_midi_player' :        { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'System', 'title' : 'External Midi Player' },
-    'external_youtube_viewer' :     { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'System', 'title' : 'External YouTube Viewer' },
+    'midi_folders' :                { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containing midi files', 'rows' : 3  },
+
+    'chordpro_file_root' :          { 'loc' : 'a', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Root of ChordPro files'  },
+    'chordpro_folders' :            { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containing ChordPro files', 'rows' : 3  },
+
+    'jjazz_file_root' :             { 'loc' : 'a', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Root of JJazzLab files'  },
+    'jjazz_folders' :               { 'loc' : '-', 'type' : 'V', 'col' : 'L', 'show' : True, 'section' : 'Host',   'title' : 'Folders containing JJazzLab files', 'rows' : 3  },
+
     'canonical2file' :              { 'loc' : 'c', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'Host',   'title' : 'Canonical->File map file(s)', 'rows' : 3 },
     'c2f_editable_map' :            { 'loc' : 'c', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'Host',   'title' : 'Editable Canonical->File map file'  },
     'setlistfile' :                 { 'loc' : 'c', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Setlist file' },
     'select_limit' :                { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Maximum number of rows returned' },
-    'source_priority' :             { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Src Priority, top is highest', 'rows' : 5  },
-    'show_index_mgmt_tabs':         { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Show index management tabs' },
-    'show_canon2file_tab':          { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Show Edit Canonoical-File tab' },
-    'include_titles_missing_file':  { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Include titles missing music files' },
-    'theme':                        { 'loc' : '-', 'type' : 'C', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Theme, restart required', 'aux1': 'themes' },
+    'show_index_mgmt_tabs':         { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Show index management tab' },
+    'show_canon2file_tab':          { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Show Edit Canonoical->File tab' },
+    'raw_index_editor' :            { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Text Editor for Raw Index'  },
+    'raw_index_editor_line_num' :   { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Editor line number option'  },
+    'include_titles_missing_file':  { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Include titles missing in music files' },
+    'theme':                        { 'loc' : '-', 'type' : 'C', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Theme (restart required)', 'aux1': 'themes' },
+    'ci_canon_select':              { 'loc' : '-', 'type' : 'C', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Create Index Canonicals (restart reqd)', 'aux2': ci_canon_select },
+
+    'use_external_music_viewer':    { 'loc' : '-', 'type' : 'B', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Use external music viewer' },
+    'external_music_viewer' :       { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'External Music Viewer' },
+    'external_audio_player' :       { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'External Audio Player' },
+    'external_midi_player' :        { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'External Midi Player' },
+    'external_youtube_viewer' :     { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'External YouTube Viewer' },
+
 
     #   No user configurable options for these but need them to build conf.v variables.
 
+    'source_priority' :             { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : False, 'section' : 'System', 'title' : 'Src Priority, top is highest', 'rows' : 5  },
+    'documentation_dir' :           { 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
     'music_index_dir' :             { 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
     'canonicals' :                  { 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
-#   'example_canonical2file_source':{ 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
+    'corrections' :                 { 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
+  # 'example_canonical2file_source':{ 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
     'youtube_index' :               { 'loc' : 'i', 'type' : 'V', 'show' : False, 'section' : 'System' },
     'audiofile_index' :             { 'loc' : 'C', 'type' : 'V', 'show' : False, 'section' : 'System' },
   # 'music_file_extensions' :       { 'loc' : '-', 'type' : 'V', 'show' : False, 'section' : 'System' },
@@ -93,7 +120,7 @@ config_data_dict = {
     'src' :                         { 'loc' : '-', 'type' : 'V', 'show' : False, 'section' : 'Source' },
 }
 
-    #   With move to Sqlite these are not needed. /// RESUME include optionally? Yes.
+    #   These are added to config_data_dict only when using MySql.
 
 config_data_dict_mysql = {
     'database_user' :               { 'loc' : '-', 'type' : 'V', 'col' : 'R', 'show' : True, 'section' : 'System', 'title' : 'Database User' },
@@ -162,7 +189,7 @@ class Config():
         #   Constants. This is (should be :-)) the only place where these values are defined.
         #   All references should obtain values from these.
 
-        self.birdland_version = '0.1 Beta'                                      # /// RESUME - be sure to update as version changes.
+        # No longer needed self.birdland_version = '0.1 Beta'                                                                       
         self.home_confdir = Path( '~/.birdland' ).expanduser()                  # Home config directory. Always have this for sqlite DB even of another specified.
         self.config_file = 'birdland.conf'                                      # Name of configuration file, in home or specified dir.
         self.index_source_dir = Path( self.data_directory, 'Index-Sources' )    # Root of source-specific directories.
@@ -186,14 +213,15 @@ class Config():
       # self.audiofile_index_file = 'Audio-Index.json.gz'
         self.audiofile_index_file = f"{self.hostname}-Audio-Index.json.gz"
         self.setlist_file = 'setlist.json'                                                                                                    
-     #  self.canonical2file = 'Canonical2File.txt'
-        self.canonical2file = f"{self.hostname}-Canonical2File.txt"                      
+        self.canonical2file = 'Canonical2File.txt'
+      # self.canonical2file = f"{self.hostname}-Canonical2File.txt"
         self.example_canonical2file = 'Example-Canonical2File.txt'
 
     # ----------------------------------------------------------------------------
 
-    def set_classes( self, sg ):
+    def set_classes( self, sg, fb ):
         self.sg = sg
+        self.fb = fb
 
     # ----------------------------------------------------------------------------
     #   WRW 23 Feb 2022 - Removed set_cwd(). Original idea was to find config file
@@ -273,12 +301,14 @@ class Config():
                 return Path( self.install_cwd, "Index-Sources", source, name )
 
             elif loc == 'f':
-                return Path( self.install_cwd, "Index-Sources", source )
+                val = self.config['Source'][ source ][ item ]
+                return Path( self.install_cwd, "Index-Sources", val )
 
         # ----------------------------------------------------------------
         #   WRW 5 Mar 2022 - Looks like issue here when have empty val. Introduced that 
         #       in the host-specific values in the config file initialized here.
         #       No, working just as expected. For 'c' returned just confdir without any file.
+        #   WRW 16 May 2022 - add test for empty val so don't return [''] or PosixPath( '.' )
 
         dd = config_data_dict[ item ]
         val = getattr( self.v, item )
@@ -287,29 +317,44 @@ class Config():
         rows = dd[ 'rows' ] if 'rows' in dd else None
 
         if loc == '-':
-            return [ x for x in val.split( '\n' ) ] if rows else val
+            if val:
+                return [ x for x in val.split( '\n' ) ] if rows else val
+            else:
+                return [] if rows else val
 
         elif loc == 'c':
-            return [ Path( self.confdir, x ).as_posix() for x in val.split( '\n' ) ] if rows else Path( self.confdir, val ).as_posix()
+            if val:
+                return [ Path( self.confdir, x ).as_posix() for x in val.split( '\n' ) ] if rows else Path( self.confdir, val ).as_posix()
+            else:
+                return [] if rows else ''
 
         # WRW 4 Mar 2022 - Add hostname to filename.
         #   I'd rather put it between stem and suffixes but a general solution too much work and this is fine.
 
         elif loc == 'C':    
-            if rows:
-                res = []
-                for x in val.split( '\n' ):
-                    res.append( Path( self.confdir, f"{self.hostname}-{x}" ).as_posix() )
-                return res
+            if val:
+                if rows:
+                    res = []
+                    for x in val.split( '\n' ):
+                        res.append( Path( self.confdir, f"{self.hostname}-{x}" ).as_posix() )
+                    return res
+                else:
+                    t = Path( self.confdir, f"{self.hostname}-{val}" ).as_posix()
+                    return t
             else:
-                t = Path( self.confdir, f"{self.hostname}-{val}" ).as_posix()
-                return t
+                return [] if rows else ''
 
         elif loc == 'i':
-            return [ Path( self.install_cwd, x ).as_posix() for x in val.split( '\n' ) ] if rows else Path( self.install_cwd, val ).as_posix()
+            if val:
+                return [ Path( self.install_cwd, x ).as_posix() for x in val.split( '\n' ) ] if rows else Path( self.install_cwd, val ).as_posix()
+            else:
+                return [] if rows else ''
 
         elif loc == 'a':
-            return [ Path( x ).expanduser().as_posix() for x in val.split( '\n' ) ] if rows else Path( val ).expanduser().as_posix()
+            if val:
+                return [ Path( x ).expanduser().as_posix() for x in val.split( '\n' ) ] if rows else Path( val ).expanduser().as_posix()
+            else:
+                return [] if rows else ''
 
         elif loc == 's' or loc == 'f':        # Used only when source specified.
             pass
@@ -336,11 +381,15 @@ class Config():
 
     def do_popup( self, txt ):
         txt = re.sub( ' +', ' ', txt )
-        txt = re.sub( '\n ', '\n', txt )          # Remove space at betinning of line
+        txt = re.sub( '\n ', '\n', txt )          # Remove space at beginning of line
+        t = self.do_popup_raw( txt )
+        return t
+
+    def do_popup_raw( self, txt, font=("Helvetica", 10 ) ):                # No space removal, preserve txt as is.
         t = self.sg.popup( txt,
             title='Birdland Notice',
-            font=("Helvetica", 10 ),
-            icon='BL_Icon',
+            font=font,
+            icon=BL_Icon,
             line_width = 200,
             keep_on_top = True,
         )
@@ -352,7 +401,7 @@ class Config():
         t = self.sg.popup_ok_cancel( txt,
             title='Birdland Notice',
             font=("Helvetica", 10 ),
-            icon='BL_Icon',
+            icon=BL_Icon,
             line_width = 200,
             keep_on_top = True,
         )
@@ -368,7 +417,7 @@ class Config():
             \t'{title}'\n
             option or the location\n
             \t'{path}' is not a full path to a file.\n
-            Please update your settings: 'Edit->Settings'.
+            Please update your settings: 'File->Settings'.
         """
         self.do_popup( t )
         return
@@ -433,8 +482,6 @@ class Config():
 
         # --------------------------------------------------
         #   Populate self.v for access by val()
-        #   /// RESUME - separate hostname-specific sections?
-        #       Call from birdland, not from above?
 
         for item, dd in config_data_dict.items():                                                
 
@@ -451,7 +498,7 @@ class Config():
                     self.sg.popup( f"\n\nYour configuration file in {self.confdir} is missing {e}\n\n",
                         title='Birdland Error',
                         font=("Helvetica", 10 ),
-                        icon='BL_Icon',
+                        icon=BL_Icon,
                         line_width = 100,
                         keep_on_top = True,
                     )
@@ -511,6 +558,8 @@ class Config():
         # --------------------------------------------------------------------------
         #   Traverse config_data_dict to build configuration user interface.
 
+        text_line_size = 35
+
         for item, dd in config_data_dict.items():       # Build configuration layout for dd items
             if not dd[ 'show' ]:
                 continue
@@ -538,7 +587,7 @@ class Config():
 
                 # -------------------------
                 line = [
-                    self.sg.Text( title, size=(30, 1), justification='right', pad=((4,4),(8,0)), expand_y = True ),
+                    self.sg.Text( title, size=(text_line_size, 1), justification='right', pad=((4,4),(8,0)), expand_y = True ),
                     self.sg.Multiline(
                         size = ( 30, rows ),
                         font=user_input_font,
@@ -559,24 +608,27 @@ class Config():
                 t = True if val == 'True' else False
 
                 line = [
-                    self.sg.Text( title, size=(30, 1), justification='right' ),
+                    self.sg.Text( title, size=(text_line_size, 1), justification='right' ),
                     self.sg.Checkbox( '', key=item, default=t, auto_size_text=True, font=("Helvetica", 9), pad=((4,4),(8,0))   ),
                 ]
 
             # -------------------------
-            #   Combo box, values come from 'aux1'
+            #   Combo box, values come from 'aux1' or 'aux2'
 
             elif dd[ 'type' ] == 'C':
-                themes = [ x for x in config[ dd['section'] ][ dd['aux1'] ].split('\n' )]
+                if 'aux1' in dd:
+                    content = [ x for x in config[ dd['section'] ][ dd['aux1'] ].split('\n' )]
+
+                elif 'aux2' in dd:
+                    content = dd['aux2']  
 
                 line = [
-                    self.sg.Text( title, size=(30, 1), justification='right' ),
-                    self.sg.Combo( themes,
+                    self.sg.Text( title, size=(text_line_size, 1), justification='right' ),
+                    self.sg.Combo( content,
                         font=user_input_font,
                         default_value=val,
                         key = item,
                         pad=((4,4),(8,0)),
-
                     )
                 ]
 
@@ -693,6 +745,7 @@ class Config():
                 errors.append( f"Midi folder '{path}' not found." )
 
         if MYSQL and values[ 'database_user' ] and values[ 'database_password' ]:
+            import MySQLdb
             try:
                 conn = MySQLdb.connect( "localhost", values[ 'database_user' ] , values[ 'database_password'], self.mysql_database )
 
@@ -815,12 +868,9 @@ class Config():
         return results, success
 
     # --------------------------------------------------------------------------
-
     #   Check if confdir exists if confdir specified.
     #   Check if birdland.conf exists in confdir if confdir specified.
-
-    ##   Check if ~/.birdland/birdland.conf exists if confdir not specified on command line.
-    ##   /// RESUME - redundancy with above in self.home_confdir test. Yes. Removed it.
+    #   Check if ~/.birdland/birdland.conf exists if confdir not specified on command line. No, removed.
 
     def check_specified_config( self, confdir=None ):
         results = []
@@ -871,6 +921,7 @@ class Config():
                 success = False
 
         if MYSQL and database == 'mysql':
+            import MySQLdb
             try:
                 conn = MySQLdb.connect( "localhost", self.val( 'database_user' ), self.val( 'database_password' ), self.mysql_database  )
 
@@ -906,7 +957,7 @@ class Config():
         self.config[ 'Host' ][ self.hostname ].comments = { tag : proto_comments[ tag ] for tag in proto_comments }
 
         # ----------------------------------------
-        #   /// RESUME - Keep till have time to work on this some more.
+        #   /// RESUME OK - Cosmetics, add couple of blank lines in config file.
         #   Trying to add a couple of blank lines above the hostname section but this makes save_config() crap out.
         #       self.config[ 'Host' ].comments = {
         #           self.hostname : [ '', '' ],
@@ -924,7 +975,7 @@ class Config():
                 """
 
         t += f"""Added a section for this host '{self.hostname}' to the configuration file.
-                 \nPlease enter configuration details for this host with 'Edit->Settings'.
+                 \nPlease enter configuration details for this host with 'File->Settings'.
             """
         self.progress.append( t )
 
@@ -1076,7 +1127,7 @@ class Config():
         self.sg.popup( txt,
             title='Birdland Notice',
             font=("Helvetica", 10 ),
-            icon='BL_Icon',
+            icon=BL_Icon,
             line_width = 200,
             keep_on_top = True,
         )
@@ -1085,6 +1136,7 @@ class Config():
     #   This, too, pulled out of get_config(). Called only from birdland.py, never from build-tables.py
 
     def initialize_database( self, database ):
+
         text = []
 
         if SQLITE and database == 'sqlite':
@@ -1101,7 +1153,7 @@ class Config():
                             YouTube index data shipped with Birdland.
                             This will take several seconds to a minute or so.\n""" )
 
-        text.append( f"""When Birdland launches go to Edit->Settings, configure the location of your music, audio, and midi files.
+        text.append( f"""When Birdland launches go to File->Settings, configure the location of your music, audio, and midi files.
                         Then select 'Tools->Scan Media Files' to add your files to the database.""" )
 
         text.append( f"""\nClick OK to continue.\n""" )
@@ -1109,12 +1161,25 @@ class Config():
         self.do_popup( '\n'.join( text ) )
 
         rcode = self.build_database( database )
+
         if rcode:
             sys.exit(1)
 
     # --------------------------------------------------------------------------
-    #   WRW 19 Feb 2022 - Initialize the database with build-tables.py. Has option for
+    #   WRW 19 Feb 2022 - Initialize the database with build_tables.py. Has database option for
     #   mysql vs. sqlite.
+    #   WRW 27 Mar 2022 - Looks like I neglected to consider case where build_tables.py is a module
+    #       here. Use run_external_command() instead of direct call to subprocess.Popen()
+
+    #   WRW 18 May 2022 - There was a nasty (possible) bug in PySimpleGUI introduced between 4.57 and 4.60
+    #       that caused it to hang when all three of:
+    #           echo_stdout_stderr = True
+    #           reroute_stdout = True
+    #           reroute_stdout_to_here() is called.
+    #   I reported it today and will suppress the reroute_stdout_to_here()     
+    #       when run_external_command_quiet() is called from here.
+    #   Also, I see no need for echo_stdout_stderr = True. Don't need the output to stdout/stderr other than
+    #       for debuggin so remove it.
 
     def build_database( self, database ):
 
@@ -1136,7 +1201,7 @@ class Config():
                     expand_x = True,
                     expand_y = True,
                     autoscroll = True,
-                    echo_stdout_stderr = True,
+                #   echo_stdout_stderr = True,          # WRW 18 May 2022 - Removed.
                     reroute_stdout = True,
                     reroute_stderr = True,
                     pad = ((0,0),(0,8)),
@@ -1158,30 +1223,41 @@ class Config():
                            )
 
         # -------------------------------
-        # global extcmd_popen       # /// RESUME - something fishy here.
-
-        # if extcmd_popen:
-        #     extcmd_popen.kill()
-        #     extcmd_popen = None
-
-        command = [ 'build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
+        # command = [ 'build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
         # command = [ 'ls', '-l' ]      # for testing.
 
-        extcmd_popen = subprocess.Popen( command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True )
-        for line in extcmd_popen.stdout:
-            build_window['build-text' ].print( line, end='' )
+        #   WRW 27 Mar 2022 - Migrate to use run_external_command(). Previously neglected to consider
+        #   commands included as modules. Ouch!
 
-        extcmd_popen.stdout.close()
-        rcode = extcmd_popen.wait()
+        if True:
+         #  command = [ 'build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
+            command = [ 'bl-build-tables', '--all', '-c', self.confdir.as_posix(), '-d', database ]
 
-        if rcode:
-            build_window['build-text' ].print( f"\nDatabase build failed, { ' '.join( command )} returned exit code: {rcode}" )
-            build_window['build-text' ].print( f"Click Close exit." )
+            rcode = self.fb.run_external_command_quiet( command, build_window[ 'build-text' ], True )
 
         else:
-            build_window['build-text' ].print( f"\nDatabase build completed successfully." )
-            build_window['build-text' ].print( f"Click Close to launch Birdland with default configuration file." )
-            build_window['build-text' ].print( f"Then Edit->Settings to configure location of music, audio, and midi files." )
+            command = [ 'build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
+            # global extcmd_popen       # /// RESUME - something fishy here.
+
+            # if extcmd_popen:
+            #     extcmd_popen.kill()
+            #     extcmd_popen = None
+
+            extcmd_popen = subprocess.Popen( command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True )
+            for line in extcmd_popen.stdout:
+                build_window['build-text' ].print( line, end='' )
+
+            extcmd_popen.stdout.close()
+            rcode = extcmd_popen.wait()
+
+        if rcode:
+            build_window[ 'build-text' ].print( f"\nDatabase build failed, { ' '.join( command )} returned exit code: {rcode}" )
+            build_window[ 'build-text' ].print( f"Click Close exit." )
+
+        else:
+            build_window[ 'build-text' ].print( f"\nDatabase build completed successfully." )
+            build_window[ 'build-text' ].print( f"Click Close to launch Birdland with default configuration file." )
+            build_window[ 'build-text' ].print( f"Then File->Settings to configure location of music, audio, and midi files." )
 
         while True:
             event, values = build_window.Read( )
@@ -1199,13 +1275,13 @@ class Config():
     #   Get user and password from user if not already in config file.
     #   Set temporarily internal but not in config file?
 
-    def get_user_and_password( self ):
+    def get_user_and_password( self, confdir ):
 
         text = f"""
         Please enter 'Database User' and 'Database Password' fields to access the MySql {self.sqlite_database} database.\
-        You can change them later in the 'Edit->Settings' menu.\n
+        You can change them later in the 'File->Settings' menu.\n
         You can also enter the locations of your media files and other parameters\
-        now or also later through the 'Edit->Settings' menu.\n
+        now or also later through the 'File->Settings' menu.\n
         Please first create the {self.mysql_database} database if you have not already done so.\n
         Click 'Save' to save the parameters in your {self.config_file} file.
         """
@@ -1215,7 +1291,7 @@ class Config():
 
         if( not self.v.database_user or self.v.database_user == '***' and
             not self.v.database_password or self.v.database_password == '***' ):
-            res = self.do_configure( first=True, text=text )
+            res = self.do_configure( first=True, text=text, confdir=confdir )
             return res
 
         return True
@@ -1263,11 +1339,11 @@ if __name__ == '__main__':
     print( conf.val( 'audio_file_root' ) )
     print( conf.val( 'external_music_viewer' ) )
     print( conf.val( 'external_audio_player' ) )
-    print( conf.val( 'source_priority' ) )
+    # print( conf.val( 'source_priority' ) )
 
-    priorities = conf.val( 'source_priority' )
-    for priority in priorities:
-        print( priority )
+    # priorities = conf.val( 'source_priority' )
+    # for priority in priorities:
+    #     print( priority )
 
     config_file = Path( '/tmp/junk-bluebird.conf' )
     conf.save_config( config, config_file )

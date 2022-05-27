@@ -22,7 +22,13 @@
 #       Fit full, vert, hori
 
 #   File here is full path. Calling program adds root to any relative path.
-#   Internal page numbers here are 0-based.
+#   Internal page numbers are 0-based, external (what the user sees) are 1-based.
+
+#   WRW 26 Apr 2022 - Looks like I had some confusion between managing the 'Music Viewer' tab
+#       and the PDF graph. This is common code that is use by 
+#       PDF display in both 'Music Viewer' and 'Create/Edit Index'. That is refelecte in
+#       the need for the fb_meta.py and hidden-page-change event.
+#       /// RESUME OK - working fine now but I don't like the program structure. Later.
 
 # ---------------------------------------------------------------------------------------
 
@@ -44,20 +50,27 @@ class PDF():
         self.pdf_figure =  None
         self.zoom = 1
         self.zoom_set = False
-        self.fit = 'Height'
+        self.fit = 'Both'               # WRW 18 Apr 2022 - Added this to get fit in any aspect ratio.
         self.current_file = None
         self.page_count = None
         self.cur_page = 0
 
-        self.mouse_curr = None
+        self.current_pixmap_y = None               # Position of origin of pixmap relative to origin of graph, 0 or negative.
         self.mouse_start_pos =  None
-        self.mouse_release_pos =  (0,0)
         self.mouse_state = 'up'
 
         self.music_popen = None
         self.UseExternalMusicViewer = None
 
         self.external_viewer = False
+        self.dlist = None
+        self.page_change = None
+
+    # --------------------------------------------------------------
+    #   A little debugging help. for is text description of tab using pdf
+
+    def set_for( self, txt ):
+        self.for_txt = txt
 
     # --------------------------------------------------------------
 
@@ -65,8 +78,26 @@ class PDF():
         self.conf = conf
 
     # --------------------------------------------------------------
+    #   See: https://www.tcl.tk/man/tcl8.6/TkCmd/keysyms.html
+    #     int(graph_element.user_bind_event.delta/120).
 
-    def set_class_config( self ):
+    def do_bind( self ):
+        self.graph_element.bind( '<Configure>', '-Config-Event' )    # size of widget changed
+
+        if False:
+            self.graph_element.bind( '<Left>',      '-Left' )
+            self.graph_element.bind( '<Right>',     '-Right' )
+            self.graph_element.bind( '<Up>',        '-Up' )
+            self.graph_element.bind( '<Down>',      '-Down' )
+            self.graph_element.bind( '<Home>',      '-Home' )
+            self.graph_element.bind( '<End>',       '-End' )
+
+    #   self.graph_element.bind( '<MouseWheel>',        '-MouseWheel' )             # Not working on graph element.
+    #   self.graph_element.bind( '<Shift-MouseWheel>',  '-Shift-MouseWheel' )       # Not working.
+
+    # --------------------------------------------------------------
+
+    def set_class_config( self ):                  
         self.UseExternalMusicViewer =   self.conf.val( 'use_external_music_viewer' )
         self.ExternalMusicViewer    =   self.conf.val( 'external_music_viewer' )
         self.MusicFileRoot          =   self.conf.val( 'music_file_root' )
@@ -76,8 +107,30 @@ class PDF():
         self.window = window
 
     # --------------------------------------------------------------
+    #   WRW 26 Apr 2022 - Made page change announcement selective. Only used when Pdf() created
+    #       from birdland.py, not fb_create_index.py. Nope, added it there, too.
+
+    def register_page_change( self, key ):
+        self.page_change = key
+
+    def report_page_change( self ):
+        if self.page_change:
+            self.window[ self.page_change ].click()     # tell others there is a new page
+
+    # --------------------------------------------------------------
+    #   WRW 18 Apr 2022 - graph_element can change, used for Music Viewer and Create Index.
+    #   WRW 1 May 2022 - Finally got around to adding a slider to change page.
+
+  # def set_graph_element( self, graph_element, slider_element ):      # PySimpleGui Graph element
     def set_graph_element( self, graph_element ):      # PySimpleGui Graph element
         self.graph_element = graph_element
+      # self.slider_element = slider_element
+
+    # --------------------------------------------------------------
+    #   WRW 18 Apr 2022 - For Create Index work.
+
+    def set_fit( self, fit ):
+        self.fit = fit
 
     # --------------------------------------------------------------
 
@@ -93,6 +146,8 @@ class PDF():
             self.music_popen.kill()
 
     # --------------------------------------------------------------
+    #   show_music_file() always uses internal Music Viewer or and external viewer.
+    #   show_music_file_internal() uses whatever is set in self.graph_element.
 
     def show_music_file( self, file=None, page=None, force=None ):
 
@@ -179,10 +234,9 @@ class PDF():
         # ----------------------------------------
         #   A little initialization of mouse-movement parameters
 
-        self.mouse_release_pos = (0,0)
         self.mouse_start_pos = None,
         self.mouse_state = 'up'
-        self.mouse_curr = None
+        self.current_pixmap_y = None                                                                                         
 
         # ----------------------------------------
         #   Get new image and draw it on graph
@@ -198,14 +252,12 @@ class PDF():
 
     # --------------------------------------------------------------
     #   Refresh - Redraw image with new window size, zoom, or page.
-    #   /// RESUME - this could use a little more work to preserve location on page during zoom and resize.
-    #       Rethink mouse_curr as more than mouse.
+    #   /// RESUME OK - Preserve location on page during zoom and resize.
 
     def refresh( self ):
         if self.external_viewer:
             return
 
-        self.mouse_release_pos = (0, 0)     #   WRW 22 Jan 2022 - A little more initialization when go to new page
         self.mouse_start_pos = None
         self.mouse_state = 'up'
 
@@ -217,6 +269,11 @@ class PDF():
         self.image = self.get_image( zoom, self.cur_page )
         if self.image:
             self.pdf_figure = self.graph_element.draw_image( data = self.image.tobytes(), location = (0, 0) )
+
+        # t = self.graph_element.get_size()
+        # print( "size:", t )
+        # self.slider_element.set_size( size=(None, t[1]) )
+        # self.slider_element.update( range = () )
 
     # --------------------------------------------------------------
     #   Get information about the current document
@@ -237,84 +294,210 @@ class PDF():
         return page_count
 
     # --------------------------------------------------------------
-
     #   Get zoom factor from current graph size, not saved graph size, and page size.
     #   Save zoom setting in self.zoom.
+    #   WRW 25 Mar 2022 - Pull out common code from elifs even though may not always be used.
 
     def get_zoom_from_fit( self ):
         if self.doc:
+            if self.cur_page >= self.page_count:
+                t = f"ERROR: Selected page {self.cur_page +1} exceeds document page count {self.page_count +1}"
+                self.conf.do_popup( t )
+                self.cur_page = self.page_count -1    # Fail gracefully with announcement
+
             graph_width, graph_height = self.graph_element.get_size()
-    
+            fitz.TOOLS.mupdf_display_errors(False)  # Suppress error messages in books with alpha-numbered front matter.
+            r = self.doc[self.cur_page].get_displaylist().rect
+            fitz.TOOLS.mupdf_display_errors(True)
+            self.page_height = (r.br - r.tr).y
+            self.page_width =  (r.tr - r.tl).x
+
             if self.fit == 'Full':
                 self.zoom = 1
-    
+
             elif self.fit == 'Height':
                 if self.cur_page < len(self.doc):
-                    fitz.TOOLS.mupdf_display_errors(False)  # Suppress error messages in books with alpha-numbered front matter.
-                    r = self.doc[self.cur_page].get_displaylist().rect
-                    fitz.TOOLS.mupdf_display_errors(True)
-                    page_height = (r.br - r.tr).y
-                    self.zoom = graph_height / page_height
-    
+                    self.zoom = graph_height / self.page_height
+
             elif self.fit == 'Width':
                 if self.cur_page < len(self.doc):
-                    fitz.TOOLS.mupdf_display_errors(False)  # Suppress error messages in books with alpha-numbered front matter.
-                    r = self.doc[self.cur_page].get_displaylist().rect
-                    fitz.TOOLS.mupdf_display_errors(True)
-                    page_width = (r.tr - r.tl).x
-                    self.zoom = graph_width / page_width
-    
-            # elif self.fit == 'User':        # After user adjusted zoom setting with +/-.
-            #     return self.zoom
+                    self.zoom = graph_width / self.page_width
 
-        else:
-            self.zoom = 1
+            elif self.fit == 'Both':
+                if self.cur_page < len(self.doc):
+                    zoom_width = graph_width / self.page_width
+                    zoom_height = graph_height / self.page_height
+                    self.zoom = min( zoom_width, zoom_height )
+
+            elif self.fit == 'User':        # After user adjusted zoom setting with +/-.
+                return self.zoom
+
+            else:
+                self.zoom = 1
 
         return self.zoom
     
+    # ---------------------------------------------------------------------------------------
+    def get_zoom( self ):
+        return self.zoom
+
     # ---------------------------------------------------------------------------------------
 
     def get_image( self, zoom, page ):
     
         if page < self.page_count:
             fitz.TOOLS.mupdf_display_errors(False)  # Suppress error messages in books with alpha-numbered front matter.
-            dlist = self.doc[ page ].get_displaylist()
+            self.dlist = self.doc[ page ].get_displaylist()
             fitz.TOOLS.mupdf_display_errors(True)
     
             zoom_matrix = fitz.Matrix( zoom, zoom )
-            return dlist.get_pixmap( alpha=False, matrix=zoom_matrix )
+            return self.dlist.get_pixmap( alpha=False, matrix=zoom_matrix )
         else:
             return None
     
     # ---------------------------------------------------------------------------------------
+    #   WRW 20 Apr 2022 - This is purely experimental. I want to see if there is any text, like a title,
+    #       in the music books that appear to be scanned images.
+    #   See: https://pymupdf.readthedocs.io/en/latest/tutorial.html#working-with-pages
+    #   Could not find any. Oh, well.
+
+    def get_text( self, page ):
+    
+        if page < self.page_count:
+            fitz.TOOLS.mupdf_display_errors(False)      # Suppress error messages in books with alpha-numbered front matter.
+            text = self.doc[ page ].get_text( 'text' )  # 'text' default
+            fitz.TOOLS.mupdf_display_errors(True)
+            return text
+        else:
+            return None
+    
+    # ---------------------------------------------------------------------------------------
+    #   WRW 18 Apr 2022 - Added for image magnifier for Create Index.
+
+    #   Get image from a square area of page mag_size big,
+    #       at mag_zoom magnification,
+    #       centered on mx, my in graph (not page) coordinates.
+
+    #   Apply limits to coordinates here.
+    #   This was another incredible pain to get working, fatigue mediated. Primary issue
+    #   was that I neglected to understand that the clipping of a zoomed image returns
+    #   an image size which is a factor of the zoom, not the size given by the clip rect.
+    #   With that resolved all is OK.
+
+    def get_magnified_pixmap( self, mx, my, mag_size, mag_zoom ):
+
+        if not self.dlist:      
+            return              # No image shown yet
+
+        r = self.dlist.rect
+        page_width =  (r.tr - r.tl).x       # Page coordinates
+        page_height = (r.br - r.tr).y
+
+        ms2 = mag_size/2
+        cmx = mx / self.zoom            # translate graph to page coordinates.
+        cmy = my / self.zoom
+
+        cmx = max( ms2, cmx )           # Limit to bounds of page less half the size of magnification area.
+        cmx = min( cmx, page_width - ms2 )
+
+        cmy = max( ms2, cmy )
+        cmy = min( cmy, page_height - ms2 )
+
+        mag_clip = (cmx - ms2, cmy - ms2, cmx + ms2, cmy + ms2 )
+        zoom_matrix = fitz.Matrix( mag_zoom, mag_zoom )     # returns transform matrix, array of six values.
+
+        return self.dlist.get_pixmap( alpha=False, matrix=zoom_matrix, clip=mag_clip )
+
+    # ---------------------------------------------------------------------------------------
+    #   Returns the current page size in graph, not page, coordinates, i.e., adjusted for zoom.
+
+    def get_current_page_size( self ):
+        if not self.dlist:      
+            return              # No image shown yet
+
+        r = self.dlist.rect
+        page_width =  (r.tr - r.tl).x * self.zoom                       
+        page_height = (r.br - r.tr).y * self.zoom     
+
+        return (page_width, page_height)
+
+    # ---------------------------------------------------------------------------------------
+    #   Get the contents of the image described by bounding box bb, in graph coordinates
+    #   bb: [(tl_x, tl_y), (lr_x, lr_y)]
+    #   clip: [tl_x, tl_y, lr_x, lr_y]
+
+    def get_pixmap_from_bb( self, bb ):
+        nbb = []
+        nbb.append( bb[0][0] / self.zoom )
+        nbb.append( bb[0][1] / self.zoom )
+        nbb.append( bb[1][0] / self.zoom )
+        nbb.append( bb[1][1] / self.zoom )
+
+        #   Want 300 dpi. Images are 96 dpi in PDF. Zoom to 300 dpi.
+        zoom = 300/96
+        zoom_matrix = fitz.Matrix( zoom, zoom )   # Try larger zoom for better OCR? One doc said 300 dpi is standard.
+
+        return self.dlist.get_pixmap( colorspace=fitz.csGRAY, alpha=False, matrix=zoom_matrix, clip=nbb )
+      # return self.dlist.get_pixmap( colorspace=fitz.csGRAY, alpha=False, dpi=300, clip=nbb )
+
+    # ---------------------------------------------------------------------------------------
+    #   WRW 25 Mar 2022 - next_page() and prev_page() return True if hit bottom or top, False otherwise, i.e., new page.
 
     def first_page( self ):
         if self.doc:
             self.cur_page = 0
             self.refresh()
-            self.window['hidden-page-change'].click()     # tell others there is a new page
+        #   self.window['hidden-page-change'].click()     # tell others there is a new page
+            self.report_page_change()
 
     def next_page( self ):
         if self.doc:
             self.cur_page += 1
             if self.cur_page >= self.page_count:
                 self.cur_page = self.page_count - 1
-            self.refresh()
-            self.window['hidden-page-change'].click()     # tell others there is a new page
+                limit = True
+            else:
+                limit = False
+            #   self.window['hidden-page-change'].click()     # tell others there is a new page
+                self.report_page_change()
+                self.refresh()
+            return limit
 
     def prev_page( self ):
         if self.doc:
             self.cur_page -= 1
             if self.cur_page < 0:
                 self.cur_page = 0
-            self.refresh()
-            self.window['hidden-page-change'].click()     # tell others there is a new page
+                limit = True
+            else:
+                limit = False
+            #   self.window['hidden-page-change'].click()     # tell others there is a new page
+                self.report_page_change()
+                self.refresh()
+            return limit
 
     def last_page( self ):
         if self.doc:
             self.cur_page = self.page_count - 1
             self.refresh()
-            self.window['hidden-page-change'].click()     # tell others there is a new page
+        #   self.window['hidden-page-change'].click()     # tell others there is a new page
+            self.report_page_change()
+
+    def goto_page( self, page ):        # WRW 18 Apr 2022 - added for Create Index
+        if self.doc:
+            self.cur_page = page - 1    # User page refs are 1-based
+            if self.cur_page >= self.page_count:
+                self.cur_page = self.page_count - 1
+
+            elif self.cur_page < 0:
+                self.cur_page = 0
+
+            self.refresh()
+            self.report_page_change()       # WRW 29 Apr 2022 - Added
+            return None
+
+    def get_cur_page(self):
+        return self.cur_page + 1
 
     # def scroll_down( self ):
     #     if self.doc:
@@ -327,6 +510,7 @@ class PDF():
     #   Return False if none recognized.
 
     def process_events( self, event, values ):
+        # print( "/// pdf event:", event, "for:", self.for_txt )
 
         # ================================================================
         #   Keyboard Events, only when tab-display-pdf is selected.
@@ -335,98 +519,126 @@ class PDF():
         #       for keystrokes. Worked initially because it was the last 'if'.
         #       Failed when I moved it higher up.
         #   events in form "Next:117", "MouseWheel:Up", i.e., two parts separated by ':'
+        #   WRW 26 Mar 2022 - Scrolling/key response was an incredible pain to get
+        #       working well but it is now sensible, intuitive, and simpler code than earlier.
+        #   WRW 25 Apr 2022 - I disabled keyboard events at the Window() level a few
+        #       days ago - return_keyboard_events=False. Deal with them via bind() instead.
+        #       Looks like capture <MouseWheel> does not work in graph(), will have to re-enable return_keyboard_events.
+        #       Now only <MouseWheel> is processed here, all else with bound events.
 
-        if ':' in event and values[ 'main-tabgroup' ] == 'tab-display-pdf':
+        if ':' in event:                # WRW 26 Apr 2020 - Events filtered by tab earlier.
 
             t = event.split( ':' )      # We know a ':' is in event here, don't have to worry about 'ab' having len of 2.
             if len( t ) == 2:
 
-                # ------------------------------
+                # ------------------------------------------------------------
                 #   focus is same thing returned by window.Element('key')      
 
                 focus = self.window.find_element_with_focus()
+                # print( "*** focus", focus, "graph:", self.graph_element )
 
-                # ----------------------------------------------
-                #   Scroll DOWN with mouse wheel / touchpad
+                if focus != self.graph_element:         # Remember, graph_element could be in Music Index or Create/Edit User Index
+                    return False                        # Not our event.
 
-                if event in ( "MouseWheel:Down", "Down:116" ) and focus == self.graph_element:
+                # ------------------------------------------------------------
+                #   Scroll DOWN with mouse wheel / touchpad / Down key.
+                #   Moves graph (viewing window) DOWN by moving pixmap up. Remember y == 0 in upper-left corner, + is down.
 
-                    nx = 0              # Must define this
-                    ny = self.mouse_curr[1] if self.mouse_curr else 0
-                    ny -= 20 if event == "MouseWheel:Down" else int( self.image.height / 3 )
-                    # ny -= 20 if event == "MouseWheel:Down" else 60
+                if event in ( "MouseWheel:Down", "Down:116" ):
 
-                    # pixmap_height = self.pdf_pixmap.height
-                    pixmap_height = self.image.height
-                    (width, height) = self.graph_element.get_size()     # /// RESUME - get this just once?
-                    bottom = ny + pixmap_height
-                    top = ny
+                    new_pixmap_y = self.current_pixmap_y if self.current_pixmap_y else 0
+                    new_pixmap_y -= 20 if event == "MouseWheel:Down" else int( self.image.height * .1 )
 
-                    if bottom < height:
-                        self.next_page()
-                        self.mouse_curr = (0, 0)
+                    (graph_width, graph_height) = self.graph_element.get_size()  # Size of graph element on screen
+                    pixmap_bottom = new_pixmap_y + self.image.height    # Bottom of pixmap relative to graph top
+                    pixmap_top = new_pixmap_y                           # Top of pixmap relative to graph top
 
-                    else:
-                        self.graph_element.relocate_figure( self.pdf_figure, nx, ny )
-                        self.mouse_curr = (nx, ny)
+                    if pixmap_bottom < graph_height:                    # Scroll/key past bottom of page?
+                        limit = self.next_page()                        # Yes next_page() draws new page at 0,0
+                        if not limit:
+                            self.current_pixmap_y = 0                   # and update if not reach limit.
 
-                    #   Save in case user uses mouse after scrolling
-                    self.mouse_release_pos = self.mouse_curr
+                    # Did not scroll/key past bottom of page, move top of image up to new_pixmap_y. Off top of graph.
+                    else:                                                                                  
+                        self.graph_element.relocate_figure( self.pdf_figure, 0, new_pixmap_y )
+                        self.current_pixmap_y = new_pixmap_y
 
-                # ----------------------------------------------
-                #   Scroll UP with mouse wheel / touchpad
-                #   RESUME - here and above - click up to top/bottom of page then go to next
+                    return True
 
-                elif event in ("MouseWheel:Up", "Up:111" ) and focus == self.window.Element( 'display-graph-pdf'):
+                # ------------------------------------------------------------
+                #   Scroll UP with mouse wheel / touchpad / Up key.
+                #   Moves graph (viewing window) UP by moving pixmap down. Remember y == 0 in upper-left corner, + is down.
+                #   Remember: relocate_figure() is a PySimpleGUI operation
+                #       to move object in graph to absolute x, y position.
+                #       Here y is 0 or negative. A negative y moves image up showing lower part of it.
 
-                    nx = 0              # Must define this
-                    ny = self.mouse_curr[1] if self.mouse_curr else 0
-                    # ny += 20 if event == "MouseWheel:Down" else int( self.image.height / 3 )
-                    ny += 20 if event == "MouseWheel:Down" else 60
+                elif event in ("MouseWheel:Up", "Up:111" ):
 
-                    # pixmap_height = self.pdf_pixmap.height
-                    pixmap_height = self.image.height
-                    (width, height) = self.graph_element.get_size()      # /// RESUME - just once?
-                    bottom = ny + pixmap_height
-                    top = ny
+                    new_pixmap_y = self.current_pixmap_y if self.current_pixmap_y else 0
+                    new_pixmap_y += 20 if event == "MouseWheel:Up" else int( self.image.height * .1 )
 
-                    if top > 0:
-                        self.prev_page()
-                        ny = height - pixmap_height
-                        self.graph_element.relocate_figure( self.pdf_figure, nx, ny )
-                        self.mouse_curr = (0, ny)
+                    (graph_width, graph_height) = self.graph_element.get_size()     # Size of graph element on screen
+                    pixmap_bottom = new_pixmap_y + self.image.height
+                    pixmap_top = new_pixmap_y
 
-                    else:
-                        self.graph_element.relocate_figure( self.pdf_figure, nx, ny )
-                        self.mouse_curr = (nx, ny)
+                    if pixmap_top > 0:                                                  # Top of pixmap below top of graph?
+                        limit = self.prev_page()                                        # Yes, new page. prev_page() positions at top (0,0).
+                        if not limit:
+                            new_pixmap_y = - (self.image.height - graph_height )        # and position top of pixmap so bottom at bottom of graph
+                            if new_pixmap_y > 0:                                        # unless would move top below top of graph
+                                new_pixmap_y = 0                                        # then put top of pixmap at top of graph.
 
-                    #   Save in case user uses mouse after scrolling
-                    self.mouse_release_pos = self.mouse_curr
+                            self.graph_element.relocate_figure( self.pdf_figure, 0, new_pixmap_y )
+                            self.current_pixmap_y = new_pixmap_y
 
-                # ------------------------------
+                    else:    # No, just draw pixmap at new position in graph
+                        self.graph_element.relocate_figure( self.pdf_figure, 0, new_pixmap_y )
+                        self.current_pixmap_y = new_pixmap_y 
 
-                elif event == "Next:117" and focus == self.window.Element( 'display-graph-pdf'):
+                    return True
+
+                # ------------------------------------------------------------
+
+                elif event in ("Right:114", "Next:117", "Down:116" ):
                     self.next_page()
+                    return True
 
-                elif event == "Prior:112" and focus == self.window.Element( 'display-graph-pdf'):
+                elif event in ("Left:113", "Prior:112", "Up:111"):
                     self.prev_page()
-
-                # elif event == "Down:116" and focus == self.window.Element( 'display-graph-pdf'):
-                #     self.scroll_down()
-
-                # elif event = "Up:111" and focus == self.window.Element( 'display-graph-pdf'):
-                #     self.scroll_up()
+                    return True
 
                 elif event in ("Home:110" ):
                     self.first_page()
+                    return True
 
                 elif event in ("End:115" ):
                     self.last_page()
-            return True
+                    return True
+
+            return False         # Event not processed, propagate it
 
         # ================================================================
-        #   Zoom events
-        #   Add zoom limits? Maybe not.
+        #   WRW 25 Apr 2022
+        #   Bound key events. Not using, went back to keyboard events.
+
+        # elif event == 'display-graph-pdf-Left' or event == 'display-graph-pdf-Up':
+        #     self.prev_page()
+        #     return True
+
+        # elif event == 'display-graph-pdf-Right' or event == 'display-graph-pdf-Down':
+        #     self.next_page()
+        #     return True
+
+        # elif event == 'display-graph-pdf-Home':
+        #     self.first_page()
+        #     return True
+
+        # elif event == 'display-graph-pdf-End':
+        #     self.last_page()
+        #     return True
+
+        # ================================================================
+        #   Zoom button events
 
         elif event == 'display-button-zoom-in':
             self.zoom *= 1.2
@@ -435,7 +647,7 @@ class PDF():
             return True
 
         elif event == 'display-button-zoom-out':
-            self.zoom *= .8
+            self.zoom *= 1/1.2
             self.fit = 'User'
             self.refresh()
             return True
@@ -457,7 +669,7 @@ class PDF():
             return True
 
         # -----------------------------------------------------
-        #   Page change events
+        #   Page change button events
 
         elif event == 'display-button-next':
             self.next_page()
@@ -476,71 +688,50 @@ class PDF():
             return True
 
         # -----------------------------------------------------
-        #   Mouse / Kbd events
-        # -----------------------------------------------------
-        #   WRW 30 Dec 2021 - This was an incredible pain to get working 
-        #       mostly because I had lost sleep and kept plodding along.
+        #   Mouse drag to change page. Not a smooth drag but just to change page.
+        #       This ONLY applies to Music Viewer tab and OK as is. Create Index
+        #       uses mouse drag for drawing and zoom.
+        #   /// RESUME OK - separate this from fb_pdf.py and into new code fb_music_viewer.py
+        #       along with meta code. Someday.
 
-        elif event == 'display-graph-pdf+UP':
-            if self.mouse_curr:
-                self.mouse_release_pos = self.mouse_curr
-                self.mouse_state = 'up'
-            return True
+        #   WRW 30 Dec 2021 - This was also an incredible pain to get working
+        #       mostly because I had lost sleep and kept plodding along.
+        #   WRW 26 Mar 2022 - Looks like PySimpleGUI blocks other events when
+        #       mouse is down. Send 'hidden-page-change' when it comes up to update metadata.
 
         # --------------------------------------
-        elif event == 'display-graph-pdf':
-            mouse = values[ 'display-graph-pdf' ]
-            self.graph_element.set_focus()
+        elif event == 'display-graph-pdf':                  
+            mouse = values[ 'display-graph-pdf' ]           
+            self.graph_element.set_focus()                  
 
             # ------------------------------
             if self.mouse_state == 'up':
                 self.mouse_state = 'down'
-
-                if self.mouse_release_pos:
-
-                  # nx = Graph['mouse_release_pos'][0]      # this allows image to float in x
-                    nx = 0  # This keeps the image locked to the left side
-                    ny = self.mouse_release_pos[1]
-
-                else:
-                    nx = ny = 0
-
                 self.mouse_start_pos = mouse
+                return True
 
             # ------------------------------
-            elif self.mouse_state == 'down':       # Mouse moving, calculat position rel to position when mouse up.
+            #   WRW 25 Mar 2022 - Don't move page in window on mouse movement, just change page. Works
+            #   far more intuitively and what mupdf does. Okular does not as mouse used for selection.
 
-                if self.mouse_release_pos:         # In case user clicks in window before anything shown
-                  # nx = PDF_Display[ 'mouse_release_pos' ][0] + ( mouse[0] - PDF_Display['mouse_start_pos'][0] )
-                    nx = 0
-                    ny = self.mouse_release_pos[1] + ( mouse[1] - self.mouse_start_pos[1] )
-
-                # ------------------------------
-                #  Change page on vertical movement past top and bottom
-                #   Need a little hysterisis on mouse movement before even considering next & prev
-
+            elif self.mouse_state == 'down':                                                                       
                 delta_y = self.mouse_start_pos[1] - mouse[1]
-                delta_y = -delta_y if delta_y < 0 else delta_y
+                abs_delta_y = -delta_y if delta_y < 0 else delta_y
 
-                if delta_y > 0:
-
-                   (width, height) = self.graph_element.get_size()
-                   bottom = ny + self.image.height
-                   top = ny
-
-                   # print( f"pixmap top: {top}, pixmap bottom: {bottom}, window height: {height}" )
-
-                   if bottom < height:
+                if abs_delta_y > 20:        # Hysterisis, definitely need a little.
+                   if delta_y > 0:
                        self.next_page()
-
-                   if top > 0:
+                   else:
                        self.prev_page()
+                return True
 
-            # ------------------------------
-            #   /// RESUME - should some of this be in above?
+            return False
 
-            self.graph_element.relocate_figure( self.pdf_figure, nx, ny )
-            self.mouse_curr = (nx, ny)
+        # --------------------------------------
+        elif event == 'display-graph-pdf+UP':
+            self.mouse_state = 'up'
+          # self.window['hidden-page-change'].click()     # May have new page but event blocked when mouse down.
+            self.report_page_change()
             return True
 
         # ================================================================
@@ -562,7 +753,7 @@ class PDF():
         # ----------------------------------------------
         #   Event processed if don't hit else above.
 
-        print( "/// How'd we get here" )
+        print( "ERROR-DEV: How'd we get here?", file=sys.stderr )
         return False
 
     # ========================================================================================

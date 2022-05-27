@@ -1,0 +1,382 @@
+# -----------------------------------------------------------------------
+#   CanonicalNames.txt
+# -----------------------------------------------------------------------
+#   This created by hand by consolidating book names from various sources
+#   and noralizing / disambiguating some names, particularly the real
+#   and real-related books.
+#   The canonical name consists of the book name and an optional dash
+#   and publisher name. The publisher name is included in the canonical
+#   name for some disambiguation but not otherwise used.
+
+#   Format:
+#       priority | page_of_sheet_1 | canonical
+
+#   priority - smaller number is higher. Used to select one title
+#       among multiple from different canonical books.
+
+#   page_of_sheet_1 can be negative if the first sheet is > 1, e.g.
+#       'Jazz Fakebook' where the cover is page 1 but sheet 2 based
+#       on subsequent sheet numbering.
+#       This is used to generate the consolidated index and offsets.
+
+# -----------------------------------------------------------------------
+
+- | - | 1001 Jumbo Song Book - Unknown
+- | - | 100 Jazz & Blues Greats - Wise
+- | - | 101 Frank Sinatra Hits for Buskers - Music Sales Ltd
+- | - | 101 Hits for Buskers - Book 01 - Music Sales Ltd
+- | - | 101 Hits for Buskers - Book 02 - Wise
+- | - | 101 Hits for Buskers - Book 06 - Music Sales Ltd
+- | - | 101 Hits For Buskers - Book 10 - Unknown
+- | - | 101 Latin Hits For Buskers - Wise
+- | - | 101 Rock n roll Hits for Buskers - Wise
+- | - | 1467 Sheets - Unknown
+- | - | 150 American Jazz Standards (Russian) - Muzyka
+- | - | 1950s Jazz Fake Book
+- | - | 200 Pages Jazz  Standards - Unknown
+- | - | 20s 30s fakebook
+- | - | 462 Jazz Standards
+- | - | 49 Most Popular Jazz Songs
+- | - | 557 Jazz Standards Swing to Pop - Unknown
+- | - | Abbey Lincoln Songbook - Hal Leonard
+- | - | AB Real Book - Associated Board
+- | - | Aebersold Play-A-Long Series - Alfred / Aebersold
+- | - | A Jazz Chord Book - Lionel Grigson
+- | - | All Hit 1001 Songs
+7 | 14 | All Jazz Real Book - Chuck Sher
+- | - | All of the Jazz Standards 1
+- | - | All of the Jazz Standards 2
+- | - | All The Right Changes - Dick Hyman
+- | - | All Time Best Collection Vol 3
+- | - | Alterego Fakebook (Chords)
+- | - | Amazing Jazz Fake Book - Unknown IF
+- | - | Anthologie des Grilles de Jazz - Unknown
+- | - | BbEbop Book - Music Sales
+- | - | Beatles 1962-1974 - Unknown
+- | - | Beatles Fake Book - Hal Leonard
+- | - | Bebop Pianists - Gerard and Sarzin
+- | - | Belter's Hot Standards - Hal Leonard
+- | - | Best Chord Changes for Most-Requested Standards - Hal Leonard
+- | - | Best Chord Changes for the Best Known Songs - Frank Mantooth
+- | - | Best Chord Changes for the Best Standards Ever - Frank Mantooth
+- | - | Best Chord Changes for the Most Popular Songs - Frank Mantooth
+- | - | Best Chord Changes For The Most Requested Standards - Frank Mantooth
+- | - | Best Chord Changes For The World's Greatest Standards - Frank Mantooth
+- | - | Best Fake Book Ever 1st edition - Hal Leonard
+- | - | Best Fake Book Ever 2nd edition - Hal Leonard
+- | - | Best Fake Book Ever 3rd edition - Hal Leonard
+6 | - | Best of Sher Music Co. - Chuck Sher
+- | - | Big Book of Jazz - 2nd Edition - Hal Leonard
+- | - | Big Book Of Torch Songs - Hal Leonard
+- | - | Big Red Fake Book - Giant Hits of the 50's, 60's and 70's - EMI
+- | 4 | Bill Evans Fake Book - Hal Leonard
+- | - | Blues Fake Book - Hal Leonard
+- | - | Bossa Nova Fakebook
+- | - | Brazilian Jazz Real Book - Unknown
+- | - | Brazil Jazz Real Book
+- | - | Broadway Songs - Hal Leonard
+- | - | Burr and Burton Fakebook 07
+- | - | Buskers - 21st Century Pop - Wise
+- | - | Play it Again and Again, a must for buskers - Chappell
+- | - | Celtic Fake Book - Hal Leonard
+- | - | Champ Champagne - Real Chord Changes' series - Hal Leonard
+- | - | Charles Mingus - More Than A Fake Book - Hal Leonard
+- | - | Charlie Parker Omnibook - Atlantic Music
+- | - | Chicago Fake Book - Hal Leonard
+- | - | Choro Fakebook
+- | - | Christmas Jazz Fakebook
+- | - | Christmas Real Book - Hal Leonard
+- | - | Classical Fake Book - 2nd Ed - Hal Leonard
+- | - | Classic Rock Fake Book - 2nd Ed - Hal Leonard
+- | - | Classic Rock Fake Book - Unknown
+- | - | Collection of Golden Standards
+- | 4 | Colorado Cookbook - Unknown
+- | - | Columbia's top 200 of 1987-88 Fake Book - Columbia?
+- | - | Country Fake Book - Unknown
+- | - | Creole Jazz Band Fakebook
+- | - | Creol Jazz Band Fakebook - Unknown
+- | - | Cuban Fake Book - Unknown
+- | - | Cuban Fake Book Vol 1
+- | - | Definitive Jazz Collection - Hal Leonard
+- | - | Disney Fake Book 2nd Edition - Unknown
+- | - | Disney Fake Book - Hal Leonard
+- | - | Dit songboek zocht ik 11 - Reba
+- | - | Dit songboek zocht ik 12 - Reba
+- | - | Dit songboek zocht ik 14 - Reba
+- | - | Dit songboek zocht ik 15 - Reba
+- | - | Dit songboek zocht ik 16 - Reba
+- | - | Dit songboek zocht ik 17 - Reba
+- | - | Dit songboek zocht ik 2  - Reba
+- | - | Dixieland Fake Book (Chords)
+- | - | Dixieland Fake Book Vol 1
+- | - | Dixieland Fake Book Vol 2
+- | - | Dixieland Jazz Standards Book 1
+- | - | Django Fakebook - Unknown
+- | - | Early Rock 'N' Roll Era Fake Book - Hal Leonard
+- | - | Easy Blues - Complete Player Songbook
+- | - | Easy Gospel Fake Book -  Hal Leonard
+- | - | Eddie Harris Fake Book - Alfred, Grove
+- | - | Elvis Fake Book - Hal Leonard
+5 | - | European Real Book - Chuck Sher
+- | - | Fakebook of Swing Jazz
+- | - | Fake Book of the World's Favorite Songs - Hal Leonard
+- | - | Fakebook - Volume I of Over 1000 Songs
+- | - | Fifty Years of (Country) Hits - Unknown
+- | - | Firehouse Jazz Band - Unknown
+- | - | First Time Ever Fake Book - Dover
+- | - | Folksong Fake Book - Hal Leonard
+- | - | Folk Song Fake Book - Unknown
+- | - | Frank Sinatra Anthology - Hal Leonard
+- | - | Frank Sinatra Anthology - Volume 2 - Hal Leonard
+- | - | Gospel's Greatest - Hal Leonard
+- | - | Greatest Rock Guitar Fake Book -  Hal Leonard.
+- | 11 | Great Gig Book (Blue Book) - Unknown
+- | - | Handbook of Jazz Standards - Unknown
+- | - | Horace Silver Complete Volume 1: The 50s - Really Good Music
+- | - | Horace Silver Complete Volume 2: The 60s - Really Good Music
+- | - | Hymn Fakebook - Hal Leonard
+- | - | Irving Berlin Fake Book - Hal Leonard
+- | - | Italian Jazz Standards - Antonio Ongarello
+- | - | Jazz of the 50s - Jazz Bible Series - Hal Leonard
+- | - | Jazz of the 60s - Jazz Bible Series - Hal Leonard
+- | - | Ragtime & Early Jazz 1900-1935 - Jazz Bible Series - Hal Leonard
+- | - | Swing Era 1936-1947 - Jazz Bible Series - Hal Leonard
+- | - | Jazz Club Piano Solos
+- | -1 | Jazz Fake Book - Unknown
+- | 8 | Jazz Ltd - Over 500 Tunes the Real Book Missed - Unknown
+- | - | Jazz of the 60s and Beyond - Hal Leonard
+- | - | Jazz Play-Along Series - Hal Leonard
+- | - | Jazz Sourcebook 2 - Wise Publications
+- | - | Jazz Standards - Budget Books
+- | - | Jazz Standards - Hal Leonard
+- | - | Jazz Standards Progressions Vol 1 - mDecks Music
+- | - | Jazz Standards Progressions Vol 2 - mDecks Music
+- | - | Jazz Standards Progressions Vol 3 - mDecks Music
+- | - | Jewish Fake Book - Hal Leonard
+- | - | Jobim (Guitar)
+- | - | Just Classic Rock Real Book - Warner Brothers
+- | - | Just Gershwin Real Book - Alfred
+- | - | Just Gershwin Real Book - Warner
+- | - | Just Jazz Real Book - Warner Bros
+- | - | Just Standards Real Book - Warner Bros
+- | - | Kenny Barron Collection - Hal Leonard
+- | - | Latin Fake Book - Alfred
+- | - | Latin Fake Book - Hal Leonard
+- | - | Latin Fakebook - Warner Bros
+4 | - | Latin Real Book - Chuck Sher
+- | - | Latin Real Book -  Hal Leonard
+- | - | Latin Real Easy Book - Chuck Sher
+- | 5 | Library of Musicians' Jazz - Unknown
+- | - | Miles Davis Real Book -  Hal Leonard
+- | - | Monster Jazz Fake Book Vol 1
+- | - | Most Amazing Colossal Ultimate Selection -  Hal Leonard
+- | - | Most Fantastic Fakebook In The World - Warner
+- | - | Motown Hits -  Hal Leonard
+- | - | Movie Fake Book 4th Edition - Hal Leonard
+- | - | Music For The Millenium - The Seventies
+- | - | Music Of John Coltrane - Hal Leonard
+- | - | New Bob Book
+- | - | New Orleans Jam Book
+1 | 16 | New Real Book Vol 1 - Chuck Sher
+2 | 13 | New Real Book Vol 2 - Chuck Sher
+3 | 11 | New Real Book Vol 3 - Chuck Sher
+- | - | Norah Jones - Come Away with Me - Hal Leonard
+- | - | Official Red Book Jazz Fake Book
+- | - | Orginal Musicians' Broadway Fake Book
+- | - | Original, Legal, Musician's - Unknown
+- | - | Pat Metheny Songbook - Hal Leonard
+- | - | Performer's Complete Fake Book
+- | - | Pocket Changes Volume 1 - Tracy's Music Service
+- | - | Pocket Changes Volume 2 - Tracy's Music Service
+- | - | Professional Chord Changes And Substitutions - Dick Hyman
+- | - | Professional Pianist's Christmas Fake Book
+- | - | Professional Pianist's Fakebook - Lee Evans
+- | - | Professional Singer's Country Fake Book - Hal Leonard
+- | - | Professional Singer's PopRock Fake Book - Men - Hal Leonard
+- | - | Public Domain Christmas Jazz Fakebook - Unknown
+- | - | R&B Fake Book - 2nd Edition - Hal Leonard
+- | - | Readers Digest Songbooks - Unknown
+- | - | Real Book Argentina
+- | 4 | Real Book Of Blues - Wise Publications
+- | - | Real Book of Greek Music
+- | - | Real Book Of Jazz - Wise Publications
+
+30 | - | Real Book Vol 1 - Hal Leonard
+- | - | Real Book Vol 1 6th ed - Hal Leonard
+31 | - | Real Book Vol 2 2nd ed - Hal Leonard
+32 | - | Real Book Vol 3 2nd ed - Hal Leonard
+33 | - | Real Book Vol 4 - Hal Leonard
+34 | - | Real Book Vol 5 - Hal Leonard
+35 | - | Real Book Vol 6 - Hal Leonard
+
+20 | 14 | Real Book Vol 1 - Orig
+21 | 8 | Real Book Vol 2 - Orig
+22 | 6 | Real Book Vol 3 - Orig
+23 | - | Real Book Vol 4 - Orig
+24 | - | Real Book Vol 5 - Orig
+25 | - | Real Book Vol 6 - Orig
+- | 13 | Real Vocal Book - Orig
+
+- | - | Real Book Vol 1 Bb - Orig
+- | - | Real Book Vol 2 Bb - Orig
+
+- | - | Real Chord Changes For 54 Standards - Hal Leonard
+- | - | Real Christmas Book - Unknown
+8 | - | Real Cool Book - Chuck Sher
+- | - | Real Dixieland Book - Hal Leonard
+12 | - | Real Easy Book Volume 1 - Chuck Sher
+13 | - | Real Easy Book Volume 2 - Chuck Sher
+14 | - | Real Easy Book Volume 3 - Chuck Sher
+- | - | Real Jazz Book - Hal Leonard
+- | - | Real Jazz Book - Warner Bros
+- | - | Real Jazz Classics Fake Book - Hal Leonard
+- | - | Real Jazz Fake Book - Hal Leonard
+- | - | Real Jazz Standards Fake Book - Hal Leonard
+- | - | Real Little Best Fake Book Ever -  Hal Leonard
+- | - | Real Little Classical Fake Book - Hal Leonard
+- | - | Real Little Ultimate Broadway Fake Book-4th Edition -  Hal Leonard
+- | - | Real Little Ultimate Fake Book-3rd Edition -  Hal Leonard
+- | - | Real Little Ultimate Jazz Fake Book - Hal Leonard
+- | - | Real Rock Book 2 - Warner/Chappell
+- | - | Real Rock Book - Warner/Chappell
+- | - | Real Vocal Book Vol 1 - Hal Leonard
+- | - | Real Vocal Book Vol 2 - Hal Leonard
+- | - | Real Vocal Book Vol 3 - Hal Leonard
+- | - | Real Vocal Book Vol 4 - Hal Leonard
+- | - | Richard Wolfe's Legit Professional Fake Book - Unknown
+- | - | Samba Fakebook
+- | - | Sammy Nestico Fake Book Vol 1 - Dick Grove
+- | - | Sample Book - Unknown
+- | - | Satanic Changes - Unknown
+- | - | Slickbook 1 - Unknown
+- | - | Slickbook 2 - Unknown
+- | - | Spaces II - Contemporary Funk Jazz
+- | - | Spaces III - Jazz Mixed Bag
+- | - | Spaces I - Jazz Classics
+- | - | Spaces IV - Compendium of Jazz Tastes
+- | - | Spaces V - Bebop Jazz
+- | - | Spaces VI - Jazz Solos
+9 | 14 | Standards Real Book - Chuck Sher
+- | - | Straight Ahead Jazz Fakebook - Gerard and Sarzin
+- | - | The Book - Unknown
+- | - | Thelonious Monk Fake Book - Hal Leonard
+- | - | The Other Book
+- | - | The Other Book All New
+- | - | This Is The Ultimate Broadway Fakebook - Hal Leonard
+- | - | This Is The Ultimate Fake Book 2nd ed - Hal Leonard
+- | - | Torch Songs - Hal Leonard
+- | - | Torch Songs In Sultry Keys - Hal Leonard
+- | - | Trane Book - Hal Leonard
+- | - | TV Fakebook - Hal Leonard
+- | - | TV Guide 2005 Fake Book
+- | - | Ultimate Broadway Fake Book 4th Ed. - Hal Leonard
+- | - | Ultimate Broadway Fake Book 5th Ed. - Hal Leonard
+- | - | Ultimate Christmas Fake Book - Hal Leonard
+- | - | Ultimate Country Fake Book 5th Ed. - Hal Leonard
+- | - | Ultimate Fake Book 3rd - Hal Leonard
+- | - | Ultimate Jazz Fake Book - Hal Leonard
+- | - | Ultimate Online Fake Book, B-Flat Ed - Unknown
+- | - | Ultimate Pop/Rock Fake Book A-E
+- | - | Ultimate Pop/Rock Fake Book F-L
+- | - | Ultimate Pop/Rock Fake Book L-O
+- | - | Ultimate Pop/Rock Fake Book P-S
+- | - | Ultimate Pop/Rock Fake Book T-Z
+- | - | Ultimate Pop/Rock Fake Book - Hal Leonard
+- | - | Vanilla Real Book 200
+11 | - | Vocal Real Book - Chuck Sher
+- | - | Wedding & Love Fake Book 3rd Edition - Hal Leonard
+- | - | World Hits of Jazz Standard
+10 | - | World's Greatest Fake Book - Chuck Sher
+- | - | Your First Fake Book - Hal Leonard
+
+# --------------------------------------------------------------------------
+#   'Extracted' source book names. These are the same as the file names.
+#       Copied by hand from ExtractedIndex/Local-Book-Names.txt
+#       Any overlap (e.g. Irving Berlin Fake Book) with commented out here
+#       and ExtractedIndex/Local2Canon.txt adjusted.
+
+- | - | 05. Albert Ammons - Swanee River Boogie
+- | - | 08. Clarence 'Pine Top' Smith - Pinetop's Boogie Woogie
+- | - | 09. Jimmy Yancey, Meade Lux Lewis - Yancey Special
+- | - | 101 Hits for Buskers - Book 02
+# - | - | 150 American Jazz Standards (Russian)
+- | - | Aebersold - The Jazz Handbook
+- | - | Amčlie_Soundtrack_YannTiersen
+- | - | Annie - Full Score
+- | - | B.B. King - Blues Master I [book]
+- | - | Beatles - All Songs 1962-1974
+- | - | Beauty and the Beast (Piano Conductor's Score)
+- | - | Bernstein - On the Town (Piano Conductor Score)
+- | - | Billy Joel - Keyboard Book
+- | - | Blood Brothers (Book)
+- | - | Bossa Nova (Bb)
+- | - | Bugsy Malone - Piano Vocal Score
+- | - | Cabaret (Original)
+- | - | Cats Book
+- | - | Charlie Parker - Essential Jazz Lines in the style of
+- | - | ChicagoBook
+- | - | Christmas Real Book
+- | - | Collection of Golden Standards
+- | - | Dixieland Fake Book Vol 1
+- | - | Dixieland Jazz Standards Book 1
+- | - | Doobie Brothers Guitar Anthology
+- | - | Elvis Presley - The compleat (piano guitar chord songbook)
+- | - | Fakebook - Volume I of Over 1000 Songs
+- | - | Fakebook of Swing Jazz
+- | - | Fats Waller - For Piano
+- | - | Fats Waller - The Music Makers
+- | - | Gary Moore - Still got the blues-songbook
+- | - | George Gershwin - The Greatest Songs of George Gershwin
+- | - | George Harrison - The Dark Horse Years 1976-1992 Songbook
+- | - | Great American Music Broadway Musicals
+- | - | Into the Woods
+# - | - | Irving Berlin Fake Book
+# - | - | Jazz standards (Budget books)
+- | - | John Coltrane - Improvised Saxophone Solos
+- | - | John Coltrane Solos
+- | - | John Williams - Star Wars Episode III - Revenge Of The Sith (book)
+- | - | Keith Jarrett - The Koln Concert - Piano Transcription
+- | - | Kiss Me Kate
+- | - | Lippa - Wild Party (pf score)
+- | - | Little Shop of Horrors
+- | - | Miles Davis - Kind Of Blue
+- | - | Miles Davis Real Book
+- | - | Monster Jazz Fake Book Vol 1
+- | - | Nat King Cole - Unforgettable
+- | - | New Orleans Jam Book
+- | - | Oliver (CM Revival)
+- | - | Oscar Peterson - Artist Transcriptions - Hal Leonard
+- | - | Paul Simon - Anthology
+- | - | Pink Floyd - Dark Side of the Moon
+- | - | Real Book Vol 4 (Hal Leonard)
+- | - | Real Book Vol 5 (Hal Leonard)
+- | - | Real Vocal Book
+- | - | Red Hot Chili Peppers - Californication
+- | - | Rent - Songbook
+- | - | Samba Fakebook
+- | - | Satie_-_Choses_vues_%C3%A0_droite_et_%C3%A0_gauche_%28violin_and_piano%29
+- | - | Satie_-_Trois_Gymnopedies_%28typeset%29
+- | - | Sondheim - Sunday in the Park with George
+- | - | Spaces I - Jazz Classics
+- | - | Spaces IV - Compendium of Jazz Tastes
+- | - | Spaces VI - Jazz Solos
+- | - | Spamalot
+- | - | Spirited Away
+- | - | Sting - Fields of Gold - The Best Songbook
+- | - | TV Fakebook (Hal Leonard)
+- | - | The Beatles - Complete Scores
+- | - | The Best of Steely Dan
+- | - | The John Lennon Collection (grab it)
+- | - | The Who - The Who Anthology
+- | - | U2 - The Sweetest Thing
+- | - | Ultimate Online Fake Book, B-Flat Ed
+- | - | Unknown - 1467 sheets
+- | - | Unknown - 200 pgs - Jazz & Standards
+- | - | Vol 111 - JJ Johnson
+- | - | Whistle down the wind-Andrew Lloyd Webber
+- | - | Wicked (Full Book)
+- | - | Wicked Part 1
+- | - | Wicked Part 2
+- | - | World Hits of Jazz Standard
+- | - | high school musical full book
+- | - | Mozart - Fantaisie I - K385g

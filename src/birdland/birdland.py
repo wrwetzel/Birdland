@@ -1,44 +1,20 @@
 #!/usr/bin/python
 # ---------------------------------------------------------------------------------------
 #   birdland.py
-
-#   Originally GUI Interface to the Bluebird database. Search database for title and
-#   show tables of titles in music files, audio files, and links to YouTube.
-
-#   WRW 6 Oct 2020 - Converted from db-play.py to use pure Qt with UI from QtDesigner.
-#       db-play.py was an interface to just local audio files.
-
-#   WRW 15 Dec 2021 - Don't see where did any qt work except to make the gui .ui file.
-#       Switched back to system-wide installation of pysimplegui and an updated version of it.
-
-#   WRW Dec 2021 - Used the above as a starting point and expanded it to pretty much
-#       all of Birdland from years ago.
-#       This is a PySimpleGUI implementation of the function of Birdland, which I worked on
-#       ten to eleven years ago.
-
-#   WRW 4 Feb 2022 - Changed name to birdland.py and database to Birdland. Lots of bluebird references
-#       will inevitably linger here.
-
-#   WRW 22 Feb 2022 - During startup (no database) I saw a situation where all files in Music Index showed
-#       none independent of the show missing file option.
-
 # ---------------------------------------------------------------------------------------
 
 import PySimpleGUI as sg
-import tkinter as tk
+# import tkinter as tk
+# import tk
 
-# import PySimpleGUIQt as sg        # A long way from working.
 import os
 import sys
 import platform
 import signal
 import subprocess
-import MySQLdb
 import socket
 import click
 import fitz
-from pathlib import Path
-from collections import defaultdict
 import sqlite3
 import re
 import configobj                 
@@ -47,32 +23,31 @@ import time
 import copy
 import datetime
 import importlib.metadata        
-
-# import beepy
+from pathlib import Path
+from collections import defaultdict
 
 import fb_utils
 import fb_pdf
 import fb_metadata
 import fb_setlist
 import fb_layout
-import fb_index_mgmt
+import fb_index_pagelist
 import fb_index_diff
 import fb_local2canon_mgmt
 import fb_canon2file_mgmt
 import fb_config
 import fb_make_desktop
+import fb_menu_stats
+import fb_search
+import fb_index_create
 
 # =======================================================================================
 #   A few Constants
 
-# BirdlandVersion = "0.1 Beta"
-
 folder_icon =       'Icons/icons8-file-folder-16.png'
 music_file_icon =   'Icons/Apps-Pdf-icon.png'
 audio_file_icon =   'Icons/audio-x-generic-icon.png'
-BL_Icon = fb_utils.BL_Icon
-
-extcmd_popen = None
+BL_Icon =           fb_utils.BL_Icon
 
 # ---------------------------------------------------------------------------------------
 #   A few globals.
@@ -98,10 +73,16 @@ class Status():
         self.music_len = 0
         self.midi_count = 0
         self.midi_len = 0
+        self.chordpro_count = 0
+        self.chordpro_len = 0
+        self.jjazz_count = 0
+        self.jjazz_len = 0
         self.youtube_count = 0
         self.youtube_len = 0
         self.current_audio = False
         self.current_midi = False
+        self.current_jjazz = False
+        self.current_chordpro = False
 
     def set_music_index( self, count, len ):
         self.pdf_count = count
@@ -119,6 +100,14 @@ class Status():
         self.midi_count = count
         self.midi_len = len
 
+    def set_chordpro_files( self, count, len ):
+        self.chordpro_count = count
+        self.chordpro_len = len
+
+    def set_jjazz_files( self, count, len ):
+        self.jjazz_count = count
+        self.jjazz_len = len
+
     def set_youtube_index( self, count, len ):
         self.youtube_count = count
         self.youtube_len = len
@@ -129,19 +118,29 @@ class Status():
     def set_current_midi( self, val ):
         self.current_midi = val
 
+    def set_current_chordpro( self, val ):
+        self.current_chordpro = val
+
+    def set_current_jjazz( self, val ):
+        self.current_jjazz = val
+
     def show( self ):
         # audio_avail = 'Audio' if self.current_audio else ''
         # midi_avail =  'Midi'  if self.current_midi else  ''
         audio_avail = '\U0001F50a' if self.current_audio else ''
         midi_avail =  '\U0001f39d '  if self.current_midi else  ''
+        chordpro_avail =  'Cp '  if self.current_chordpro else  ''
+        jjazz_avail =  'Jj '  if self.current_jjazz else  ''
 
         results =  f"Search Results:   "
         results += f"Music Index: {self.pdf_len:>4} of {self.pdf_count:>4}      "
         results += f"Audio Index: {self.audio_len:>4} of {self.audio_count:>4}      "
         results += f"Music Files: {self.music_len:>4} of {self.music_count:>4}      "
         results += f"Midi Files: {self.midi_len:>4} of {self.midi_count:>4}      "
+        results += f"Chordpro Index: {self.chordpro_len:>4} of {self.chordpro_count:>4}      "
+        results += f"JJazz Index: {self.jjazz_len:>4} of {self.jjazz_count:>4}      "
         results += f"YouTube Index: {self.youtube_len:>4} of {self.youtube_count:>4}      "
-        results += f"{audio_avail:>10}    {midi_avail:>10}"
+        results += f"{audio_avail:>10}    {midi_avail:>10}   {chordpro_avail:>10}   {jjazz_avail:>10}"
     
         self.bar.update( results )
 
@@ -178,89 +177,105 @@ class Record():
         return event, values, last_sleep
 
 # ----------------------------------------
+
+class Tabs_Control():
+    def __init__( self ):                                                                                 
+        self.idx_tabs = False
+        self.c2f_tab = True
+        pass
+
+    def initialize( self ):
+        self.idx_tabs = conf.val( 'show_index_mgmt_tabs' )
+        self.c2f_tab = conf.val( 'show_canon2file_tab' )
+        self.update( 'idx' )
+        self.update( 'c2f' )
+
+    def set( self, tab, val ):
+        if tab == 'idx':
+            self.idx_tabs = val
+            self.update( 'idx' )
+        elif tab == 'c2f':
+            self.c2f_tab = val
+            self.update( 'c2f' )
+
+    def show( self, tab ):
+        if tab == 'idx':
+            self.idx_tabs = True
+            self.update( 'idx' )
+        elif tab == 'c2f':
+            self.c2f_tab = True
+            self.update( 'c2f' )
+
+    def hide( self, tab ):
+        if tab == 'idx':
+            self.idx_tabs = False
+            self.update( 'idx' )
+        elif tab == 'c2f':
+            self.c2f_tab = False
+            self.update( 'c2f' )
+
+    def toggle( self, tab ):
+        if tab == 'idx':
+            self.idx_tabs = False if self.idx_tabs else True
+            self.update( 'idx' )
+        elif tab == 'c2f':
+            self.c2f_tab = False if self.c2f_tab else True
+            self.update( 'c2f' )
+
+    def update( self, tab ):
+        if tab == 'idx':
+            window[ 'tab-mgmt-subtabs' ].update( visible = self.idx_tabs )
+            # window[ 'tab-index-mgmt' ].update( visible = self.idx_tabs )
+            # window[ 'tab-index-diff' ].update( visible = self.idx_tabs  )
+            # window[ 'tab-local2canon-mgmt' ].update( visible = self.idx_tabs  )
+        elif tab == 'c2f':
+            window[ 'tab-canon2file-mgmt' ].update( visible = self.c2f_tab )
+
+# ----------------------------------------
+#   This is too small to put in a separate file
+#   The Music_Viewer object represents the 'Music Viewer' tab.
+
+# class Music_Viewer( fb_pdf.PDF ):
+#     def __init__( self ):
+#         super().__init__()
+
+# ----------------------------------------
 #   Extract a few paramaters from configuration and set in globals.
 #   Must appear before call to it below.
-#   /// RESUME - later rmove globals completely and ref conf.v.xxx directly.
-#       NO! Use conf.val( 'option-id' )
+#   WRW Late Mar 2022 - Replaced most globals with conf.val() or class.
+#   Keep Select_Limit as global. Too many places to change.
 
 def set_local_config():
-
-    global Select_Limit, Source_Priority
-    global UseExternalMusicViewer 
-    global ShowIndexMgmgTabs 
-    global ShowCanon2FileTab
-    global DatabaseUser, DatabasePassword
-
-    UseExternalMusicViewer  = conf.val( 'use_external_music_viewer' )
-    Select_Limit            = conf.val( 'select_limit' )
-    Source_Priority         = conf.val( 'source_priority' )
-    ShowIndexMgmgTabs       = conf.val( 'show_index_mgmt_tabs' )
-    ShowCanon2FileTab       = conf.val( 'show_canon2file_tab' )
-
-    #   No longer needed with move to sqlite. /// RESMUME make connitional?
-
-    # DatabaseUser            = conf.val( 'database_user' )
-    # DatabasePassword        = conf.val( 'database_password' )
+    global Select_Limit
+    Select_Limit = conf.val( 'select_limit' )
 
 # --------------------------------------------------------------------------
-#   Initialize classes in external modules.
-#   RESUME - Look into inheritance for this.
+#   Initialize classes in external modules. Note that classs are all global.
+#       Sloppy? Don't know, but certainly convenient.
+#   /// RESUME OK - Look into inheritance for this.
 
-conf =  fb_config.Config()
-fb =    fb_utils.FB()
-pdf =   fb_pdf.PDF()
-meta =  fb_metadata.Meta()
-toc =   fb_metadata.TableOfContents()
-sl =    fb_setlist.Setlist()
-mgmt =  fb_index_mgmt.Mgmt()
-diff =  fb_index_diff.Diff()
-l2c  =  fb_local2canon_mgmt.L2C()
-c2f  =  fb_canon2file_mgmt.C2F()
+conf =      fb_config.Config()
+fb =        fb_utils.FB()
 
-# fb.set_driver( MYSQL, SQLITE )
-# meta.set_driver( MYSQL, SQLITE )
+#   /// RESUME - Cheating here by naming the Music_Viewer() object pdf. Fix it later as this
+#       will be source of great confusion.
+
+pdf =       fb_pdf.PDF()
+# pdf =       Music_Viewer()
+
+meta =      fb_metadata.Meta()
+sl =        fb_setlist.Setlist()
+pagelist =  fb_index_pagelist.PageList()
+diff =      fb_index_diff.Diff()
+l2c  =      fb_local2canon_mgmt.L2C()
+c2f  =      fb_canon2file_mgmt.C2F()
+create =    fb_index_create.Create()
+
+#   And one local class
+
+tabs_control = Tabs_Control()
 
 # =======================================================================================
-#   Replace %s with ? if using SQLITE
-
-def fix_query( query ):
-    if SQLITE:
-        query = query.replace( '%s', '?' )
-    return query
-
-# ---------------------------------------------------------------------------
-
-def set_index_mgmt_visibility( v ):
-    global ShowIndexMgmgTabs 
-    ShowIndexMgmgTabs = v
-
-    window[ 'tab-index-mgmt' ].update( visible = v )
-    window[ 'tab-index-diff' ].update( visible = v )
-    window[ 'tab-local2canon-mgmt' ].update( visible = v )
-
-# -------------------------------------
-
-def set_canon2file_visibility( v ):
-    global ShowCanon2FileTab
-    ShowCanon2FileTab = v
-
-    window[ 'tab-canon2file-mgmt' ].update( visible = v )
-
-# -------------------------------------
-
-def toggle_index_mgmt_visibility():
-    if( ShowIndexMgmgTabs ):
-        set_index_mgmt_visibility( False )
-    else:
-        set_index_mgmt_visibility( True )
-
-def toggle_canon2file_visibility():
-    if( ShowCanon2FileTab ):
-        set_canon2file_visibility( False )
-    else:
-        set_canon2file_visibility( True )
-
-# --------------------------------------------------------------
 #   Call after run conf.do_configure()
 #   Immediately update parameters with changed config.
 #   Do this only when birdland fully launches, not on initial configuration window.
@@ -270,14 +285,16 @@ def do_configure_save_update():
     fb.set_class_config( )
     pdf.set_class_config( )
     sl.set_class_config( )
-    mgmt.set_class_config( )
+    pagelist.set_class_config( )
     l2c.set_class_config( )
     c2f.set_class_config( )
     set_local_config( )
 
-    set_index_mgmt_visibility( ShowIndexMgmgTabs )
-    set_canon2file_visibility( ShowCanon2FileTab )
+    tabs_control.initialize()
+    tabs_control.update( 'idx' )
+    tabs_control.update( 'c2f' )
 
+    # -------------------------------------------------------
     #   Not sure if want to hide entire PDF Viewer tab. Some metadata there might
     #       be useful even with external viewer. Yes, Definitely keep it.
 
@@ -288,9 +305,24 @@ def do_configure_save_update():
         window['display-control-buttons' ].unhide_row()
         window['display-control-buttons' ].update( visible = True )
 
+    # -------------------------------------------------------
     #   This doesn't change theme dynamically. Should it? No. Well documented in discussion that it does not.
     #   sg.theme( conf.val( 'theme' ) )
 
+    # -------------------------------------------------------
+    #   WRW 20 May 2022 - Update the browse trees. Relevant option values may have changed.
+
+    global music_tree, audio_tree
+    global music_tree_aux, audio_tree_aux
+
+    music_tree = sg.TreeData()
+    music_tree_aux = {}     # Metadata for music_tree
+    initialize_browse_tree( 'browse-music-files', music_tree, music_tree_aux, fb.Music_File_Folders, fb.Music_File_Root )
+
+    audio_tree = sg.TreeData()
+    audio_tree_aux = {}     # Metadata for audio_tree
+    initialize_browse_tree( 'browse-audio-files',  audio_tree, audio_tree_aux, fb.Audio_Folders, fb.Audio_File_Root )
+    
 # --------------------------------------------------------------
 #   Find the last key + 1 in aux
 
@@ -316,6 +348,9 @@ def nested_dict(n, type):
 #                    icon = None)
 
 def initialize_browse_tree( tree_key, tree, aux, valid_folders, root_path ):
+
+    if not root_path:
+        return
 
     items = sorted( os.listdir( root_path ) )   # Items are relative to root, i.e. dirname
     for item in items:
@@ -379,72 +414,9 @@ def add_to_browse_tree( tree_key, tree, aux, parent_key, node, root_path, file_i
     tree_element.Widget.see( iid )
 
 # ------------------------------------------------
-#   Select one title of several based on priority of 'src'. Any need to consider composer?
-#   No, but do have to consider canonical.
-#   /// RESUME - better way to do this?
+#   Just for testing but keep.
 
-#   Data: [[ title, composer, cpage, page, src, local, canonical, file ]]
-
-def select_by_src_priority( data ):
-    titles = {}
-    results = []
-
-    for row in data:
-        title = row[0]
-        canonical = row[7]
-
-        #   This took a few minutes, better than doing it explicitly as commented out?
-
-        titles[ title ] = titles.setdefault( title, {} )
-        titles[ title ][ canonical ] = titles[ title ].setdefault( canonical, [] )
-        titles[ title ][ canonical ].append( row )
-
-        # if not title in titles:
-        #     titles[ title ] = {}
-        # if not canonical in titles[ title ]:
-        #     titles[ title ][ canonical ] = []
-        # titles[ title ][ canonical ].append( row )
-
-    for title in titles:
-        for canonical in titles[ title ]:
-            found = False
-            for row in titles[ title ][ canonical ]:
-                for src in Source_Priority:
-                    if row[ 5 ] == src:
-                        found = True
-                        results.append( row )
-                        break
-                if found:
-                    break
-
-    return results
-
-# -----------------------------------------------------------------------
-#   No priority now, just return first from canonical list.
-
-def select_by_canonical_priority( data ):
-    titles = {}
-    results = []
-
-    for row in data:
-        title = row[0]
-        canonical = row[7]
-
-        titles[ title ] = titles.setdefault( title, {} )
-        titles[ title ][ canonical ] = titles[ title ].setdefault( canonical, [] )
-        titles[ title ][ canonical ].append( row )
-
-    for title in titles:
-        for canonical in titles[ title ]:
-            row = titles[ title ][ canonical ][0]
-            results.append( row )
-            break
-
-    return results
-
-# -----------------------------------------------------------------------
-
-def do_profile( dc ):
+def KEEP_do_profile( dc ):
 
     res = []
     window.Element( 'tab-results-table' ).select()
@@ -459,1076 +431,6 @@ def do_profile( dc ):
     window.Element( 'results-table' ).update( values=res )
 
 # -----------------------------------------------------------------------
-
-def do_query_music_file_index_with_join( dc, title, composer, lyricist, album, artist, src, canonical ):
-
-    # window.set_cursor( "clock" )      # looks terrible. With my own FULLTEXT don't need any 'busy' indicator.
-    # window.refresh()
-
-    table = []
-    data = []
-    wheres = []
-    count = 0
-
-    # query = "SET PROFILING = 1"
-    # dc.execute( query )
-
-    if title:
-        if MYSQL:
-            wheres.append( "MATCH( titles_distinct.title ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( title )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""titles_distinct_fts.title MATCH ?""" )
-                data.append( title )
-
-            else:
-                w, d = fb.get_fulltext( "titles_distinct.title", title )
-                wheres.append( w )
-                data.extend( d )
-
-    if composer:
-        if MYSQL:
-            wheres.append( "MATCH( composer ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( composer )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""composer MATCH ?""" )
-                data.append( composer )
-            else:
-                w, d = fb.get_fulltext( "composer", composer )
-                wheres.append( w )
-                data.extend( d )
-
-    if lyricist:
-        if MYSQL:
-            wheres.append( "MATCH( lyricist ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( lyricist )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""lyricist MATCH ?""" )
-                data.append( lyricist )
-            else:
-                w, d = fb.get_fulltext( "lyricist", lyricist )
-                wheres.append( w )
-                data.extend( d )
-
-    if src:
-        if MYSQL:
-            wheres.append( "titles.src = %s" )
-            data.append( src )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""titles.src MATCH ?""" )
-                data.append( src )
-            else:
-                w, d = fb.get_fulltext( "titles.src", src )
-                wheres.append( w )
-                data.extend( d )
-
-    if canonical:
-        if MYSQL:
-            wheres.append( "MATCH( local2canonical.canonical ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( canonical )
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""local2canonical.canonical MATCH ?""" )
-                data.append( canonical )
-            else:
-                w, d = fb.get_fulltext( "local2canonical.canonical", canonical )
-                wheres.append( w )
-                data.extend( d )
-
-    if album:
-        if MYSQL:
-            wheres.append( """titles_distinct.title IN
-                                   ( SELECT title FROM audio_files
-                                     WHERE MATCH( album ) AGAINST( %s IN BOOLEAN MODE ) )
-                           """ )
-            data.append( album )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( """titles_distinct.title IN
-                    ( SELECT title FROM audio_files
-                      WHERE album MATCH ? ) """ )
-                data.append( album )
-            else:
-                w, d = fb.get_fulltext( "album", album )
-                wheres.append( f"""titles_distinct.title IN
-                                   ( SELECT title FROM audio_files WHERE {w} )
-                                """ )
-                data.extend( d )
-
-    if artist:
-        if MYSQL:
-            wheres.append( """titles_distinct.title IN
-                               ( SELECT title FROM audio_files
-                                 WHERE MATCH( artist ) AGAINST( %s IN BOOLEAN MODE ) )
-                           """ )
-            data.append( artist )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( """titles_distinct.title IN
-                    ( SELECT title FROM audio_files
-                      WHERE artist MATCH ? ) """ )
-                data.append( album )
-            else:
-                w, d = fb.get_fulltext( "artist", artist )
-                wheres.append( f"""titles_distinct.title IN
-                                   ( SELECT title FROM audio_files WHERE {w} )
-                                """ )
-                data.extend( d )
-
-
-    # -----------------------------------------------------------------------
-    #   WRW 24 Feb 2022 - I think I screwed up 'include_titles_missing_file' settings considering
-    #       it for local2canonical instead of canonical2file.
-
-    if len( data ):
-        where_clauses = "WHERE " + " AND ".join( wheres )
-
-        if False:
-            canonical2file_join = 'JOIN canonical2file USING( canonical )'
-            if conf.val( 'include_titles_missing_file' ):
-                local2canonical_join = 'LEFT JOIN local2canonical USING( local, src )'
-            else:
-                local2canonical_join = 'JOIN local2canonical USING( local, src )'
-
-        else:
-            local2canonical_join = 'JOIN local2canonical USING( local, src )'
-            if conf.val( 'include_titles_missing_file' ):
-                canonical2file_join = 'LEFT JOIN canonical2file USING( canonical )'
-            else:
-                canonical2file_join = 'JOIN canonical2file USING( canonical )'
-
-        if MYSQL:
-            query = f"""
-                SELECT titles_distinct.title, titles.composer, titles.sheet, titles.src, titles.local,
-                local2canonical.canonical, canonical2file.file
-                FROM titles_distinct
-                JOIN titles USING( title_id )
-                {local2canonical_join}
-                {canonical2file_join}
-                {where_clauses}
-                ORDER BY titles_distinct.title, local2canonical.canonical, titles.src   
-                LIMIT {Select_Limit}
-            """
-
-        # ---------------------------------------------------------------------------
-        #   This was a real pain to get working. Turns out that fullword search in sqlite3 can't
-        #   have an ORDER BY clause for anything bu rank, at least that's what appears to be the
-        #   case from some toy tests.
-
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT titles_distinct_fts.title,
-                    titles.composer, titles.sheet, titles.src, titles.local,
-                    local2canonical.canonical, canonical2file.file
-                    FROM titles_distinct_fts
-                    JOIN titles USING( title_id )
-                    {local2canonical_join}
-                    {canonical2file_join}
-                    {where_clauses}
-                    ORDER BY rank
-                    LIMIT {Select_Limit}
-                """
-
-            else:
-                query = f"""
-                    SELECT titles_distinct.title,
-                    titles.composer, titles.sheet, titles.src, titles.local,
-                    local2canonical.canonical, canonical2file.file
-                    FROM titles_distinct
-                    JOIN titles USING( title_id )
-                    {local2canonical_join}
-                    {canonical2file_join}
-                    {where_clauses}
-                    ORDER BY titles_distinct.title, local2canonical.canonical, titles.src   
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-
-        # if True:
-        if False:
-            print( "Query", query )
-            print( "Data", data )
-
-        dc.execute( query, data )
-        rows = dc.fetchall()
-
-        # headings = [ "Title", "Composer", "Canonical Book Name", "Page", "Sheet", "Source", "Local Book Name", "File" ],
-
-        if rows:
-            for row in rows:
-                title = row[ 'title' ]
-                composer = row[ 'composer' ]
-                canonical = row[ 'canonical' ]
-                sheet = row[ 'sheet' ]
-                src = row[ 'src' ]
-                file = row[ 'file' ]
-                local = row[ 'local' ]
-                # cpage = fb.adjust_page( dc, page, src, local, title, False )
-                page = fb.get_page_from_sheet( sheet, src, local )
-
-                table.append( [ title, composer, canonical, page, sheet, src, local, file ] )
-
-        if MYSQL:
-            query = f"""
-                SELECT count(*) cnt
-                FROM titles_distinct
-                JOIN titles USING( title_id )
-                {local2canonical_join}
-                {where_clauses}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT count(*) cnt
-                    FROM titles_distinct_fts
-                    JOIN titles USING( title_id )
-                    {local2canonical_join}
-                    {where_clauses}
-                """
-            else:
-                query = f"""
-                    SELECT count(*) cnt
-                    FROM titles_distinct
-                    JOIN titles USING( title_id )
-                    {local2canonical_join}
-                    {where_clauses}
-                """
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        count = dc.fetchone()[ 'cnt' ]
-
-    # window.set_cursor( "arrow" )
-    return (table, count)
-
-# --------------------------------------------------------------------------
-
-def do_query_music_file_index( dc, title, composer, lyricist, src, canonical ):
-    return do_query_music_file_index_with_join( dc, title, composer, lyricist, None, None, src, canonical )
-
-# --------------------------------------------------------------------------
-#   WRW 19 Feb 2022 - Toyed around with searching filename in audio_files
-#       but don't think it is a good idea. Nothing in filename not already
-#       in the metadata
-
-#   wheres.append( "MATCH( file ) AGAINST( %s IN BOOLEAN MODE )" )
-#   data.append( title )
-
-#   wheres.append( f"""file MATCH ?""" )
-#   data.append( title )
-
-#   w, d = fb.get_fulltext( "file", title )
-#   wheres.append( w )
-#   data.extend( d )
-
-def do_query_audio_files_index( dc, title, album, artist ):
-    table = []
-    wheres = []
-    data = []
-    count = 0
-
-    if title:
-        if MYSQL:
-            wheres.append( "MATCH( title ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( title )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""title MATCH ?""" )
-                data.append( title )
-
-            else:
-                w, d = fb.get_fulltext( "title", title )
-                wheres.append( w )
-                data.extend( d )
-
-    if album:
-        if MYSQL:
-            wheres.append( "MATCH( album ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( album )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""album MATCH ?""" )
-                data.append( album )
-            else:
-                w, d = fb.get_fulltext( "album", album )
-                wheres.append( w )
-                data.extend( d )
-
-    if artist:
-        if MYSQL:
-            wheres.append( "MATCH( artist ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( artist)
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""artist MATCH ?""" )
-                data.append( artist )
-            else:
-                w, d = fb.get_fulltext( "artist", artist )
-                wheres.append( w )
-                data.extend( d )
-
-    # ---------------------------------------------------
-
-    if len( data ):
-        where = "WHERE " + " AND ".join( wheres )
-
-        if MYSQL:
-            query = f"""
-                SELECT title, artist, album, file
-                FROM audio_files
-                {where}
-                ORDER BY title, artist   
-                LIMIT {Select_Limit}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT title, artist, album, file
-                    FROM audio_files_fts
-                    {where}
-                    ORDER BY title, artist   
-                    LIMIT {Select_Limit}
-                """
-            else:
-                query = f"""
-                    SELECT title, artist, album, file
-                    FROM audio_files
-                    {where}
-                    ORDER BY title, artist   
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        rows = dc.fetchall()
-
-        if rows:
-            for row in rows:
-                title = row[ 'title' ]
-                artist = row[ 'artist' ]
-                album = row[ 'album' ]
-                file = row[ 'file' ]
-                table.append( [ title, artist, album, file ] )
-
-        if MYSQL:
-            query = f"""
-                SELECT COUNT(*) cnt
-                FROM audio_files
-                {where}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM audio_files_fts
-                    {where}
-                """
-            else:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM audio_files    
-                    {where}
-                """
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        count = dc.fetchone()[ 'cnt' ]
-
-    return table, count
-
-# --------------------------------------------------------------------------
-
-def do_query_music_filename( dc, title ):
-
-    table = []
-    wheres = []
-    data = []
-    count = 0
-
-    if title:
-        if MYSQL:
-            wheres.append( "MATCH( rpath ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( title )
-
-            wheres.append( "MATCH( file ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( title )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( f"""rpath MATCH ?""" )
-                data.append( title )
-
-                wheres.append( f"""file MATCH ?""" )
-                data.append( title )
-
-            else:
-                w, d = fb.get_fulltext( "rpath", title )
-                wheres.append( w )
-                data.extend( d )
-
-                w, d = fb.get_fulltext( "file", title )
-                wheres.append( w )
-                data.extend( d )
-
-    if len( data ):
-
-        where = "WHERE " + " OR ".join( wheres )
-
-        if MYSQL:
-            query = f"""
-                SELECT rpath, file
-                FROM music_files
-                {where}
-                ORDER BY rpath, file
-                LIMIT {Select_Limit}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT rpath, file
-                    FROM music_files_fts
-                    {where}
-                    ORDER BY rpath, file   
-                    LIMIT {Select_Limit}
-                """
-            else:
-                query = f"""
-                    SELECT rpath, file
-                    FROM music_files
-                    {where}
-                    ORDER BY rpath, file   
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        rows = dc.fetchall()
-
-        if rows:
-            for row in rows:
-                rpath = row[ 'rpath' ]
-                file = row[ 'file' ]
-                table.append( [ rpath, file ] )
-
-        if MYSQL:
-            query = f"""
-                SELECT COUNT(*) cnt
-                FROM music_files
-                {where}
-                LIMIT {Select_Limit}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM music_files_fts
-                    {where}
-                    LIMIT {Select_Limit}
-                """
-            else:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM music_files
-                    {where}
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        count = dc.fetchone()[ 'cnt' ]
-
-    return table, count
-
-# --------------------------------------------------------------------------
-
-def do_query_midi_filename( dc, title ):
-
-    table = []
-    wheres = []
-    data = []
-    count = 0
-
-    if title:
-        if MYSQL:
-            wheres.append( "MATCH( rpath ) AGAINST( %s IN BOOLEAN MODE )" )
-            data.append( title )
-
-        if SQLITE:
-            if FULLTEXT:
-                wheres.append( "rpath MATCH ?" )
-                data.append( title )
-
-            else:
-                w, d = fb.get_fulltext( "rpath", title )
-                wheres.append( w )
-                data.extend( d )
-
-                w, d = fb.get_fulltext( "file", title )     # /// RESUME - include this in above?
-                wheres.append( w )
-                data.extend( d )
-
-    if len( data ):
-        where = "WHERE " + " OR ".join( wheres )
-        if MYSQL:
-            query = f"""
-                SELECT rpath, file
-                FROM midi_files    
-                {where}
-                ORDER BY rpath, file   
-                LIMIT {Select_Limit}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT rpath, file
-                    FROM midi_files_fts
-                    {where}
-                    ORDER BY rpath, file   
-                    LIMIT {Select_Limit}
-                """
-            else:
-                query = f"""
-                    SELECT rpath, file
-                    FROM midi_files
-                    {where}
-                    ORDER BY rpath, file   
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-
-        dc.execute( query, data )
-        rows = dc.fetchall()
-
-        if rows:
-            table = [ [ row[ 'rpath' ], row[ 'file' ] ] for row in rows ]
-
-        if MYSQL:
-            query = f"""
-                SELECT COUNT(*) cnt
-                FROM midi_files
-                {where}
-                LIMIT {Select_Limit}
-            """
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM midi_files_fts
-                    {where}
-                    LIMIT {Select_Limit}
-                """
-            else:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM midi_files
-                    {where}
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        count = dc.fetchone()[ 'cnt' ]
-
-    return table, count
-
-# --------------------------------------------------------------------------
-
-def do_query_youtube_index( dc, title ):
-
-    table = []
-    data = []
-    count = 0
-
-    if title:
-        if MYSQL:
-            query = f"""
-                SELECT titles_distinct.title,
-                title2youtube.ytitle, title2youtube.duration, title2youtube.yt_id
-                FROM titles_distinct
-                JOIN title2youtube ON title2youtube.title_id = titles_distinct.title_id
-                WHERE MATCH( titles_distinct.title ) AGAINST( %s IN BOOLEAN MODE )
-                ORDER BY titles_distinct.title, title2youtube.ytitle   
-                LIMIT {Select_Limit}
-            """
-            data.append( title )
-
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT title,
-                    title2youtube.ytitle, title2youtube.duration, title2youtube.yt_id
-                    FROM titles_distinct_fts
-                    JOIN title2youtube USING( title_id )
-                    WHERE titles_distinct_fts.title MATCH ?
-                    ORDER BY titles_distinct.title, title2youtube.ytitle   
-                    LIMIT {Select_Limit}
-                """
-                data.append( title )
-
-            else:
-                w, d = fb.get_fulltext( "titles_distinct.title", title )
-                data.extend( d )
-
-                query = f"""
-                    SELECT title,
-                    title2youtube.ytitle, title2youtube.duration, title2youtube.yt_id
-                    FROM titles_distinct
-                    JOIN title2youtube USING( title_id )
-                    WHERE {w}
-                    ORDER BY titles_distinct.title, title2youtube.ytitle   
-                    LIMIT {Select_Limit}
-                """
-
-        query = fix_query( query )
-
-    # --------------------------------------------------------------------
-
-    if len( data ):
-        dc.execute( query, data )
-        rows = dc.fetchall()
-
-        if rows:
-            for row in rows:
-                title = row[ 'title' ]
-                ytitle = row[ 'ytitle' ]
-                duration = row[ 'duration' ]
-                yt_id = row[ 'yt_id' ]
-                table.append( [ title, ytitle, duration, yt_id ] )
-
-        # data = []
-        if MYSQL:
-            query = f"""
-                SELECT COUNT(*) cnt
-                FROM titles_distinct
-                JOIN title2youtube ON title2youtube.title_id = titles_distinct.title_id
-                WHERE MATCH( titles_distinct.title ) AGAINST( %s IN BOOLEAN MODE )
-            """
-            # data.append( title )
-
-        if SQLITE:
-            if FULLTEXT:
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM titles_distinct_fts
-                    JOIN title2youtube USING( title_id )
-                    WHERE titles_distinct_fts.title MATCH ?
-                """
-                # data.append( title )
-
-            else:
-                # w, d = fb.get_fulltext( "titles_distinct.title", title )
-                query = f"""
-                    SELECT COUNT(*) cnt
-                    FROM titles_distinct
-                    JOIN title2youtube USING( title_id )
-                    WHERE {w}
-                """
-                # data.extend( d )
-
-        query = fix_query( query )
-        dc.execute( query, data )
-        count = dc.fetchone()[ 'cnt' ]
-
-    return table, count
-
-# --------------------------------------------------------------------------
-
-def make_boolean( val ):
-    parts = val.split()
-    t = [ '+' + x for x in parts ]
-    val = " ".join( t )
-    return val
-
-# --------------------------------------------------------------------------
-
-#   "canonical2file",
-#   "canonicals",
-#   "local2canonical",
-#   "sheet_offsets",
-#   "title2youtube",
-
-#   database_tables[ label, table, query ]
-
-database_tables = [                                     # for show stats.
-    [ "All Music Files", "music_files", None ],
-    [ "Indexed Music Files", None, 
-        """SELECT COUNT(*) cnt
-           FROM (
-                SELECT COUNT(*) FROM titles
-                JOIN local2canonical USING( local, src )
-                GROUP BY canonical
-           ) AS sub
-        """
-    ],
-    [ "Titles in Indexed Music Files", "titles", None ],
-    [ "Distinct Titles in Indexed Music Files", "titles_distinct", None ],
-    [ "Titles in Indexed Music Files With Composer", None,
-        """SELECT COUNT(*) cnt
-           FROM titles 
-           WHERE composer IS NOT NULL
-        """
-    ],
-    [ "Titles in Indexed Music Files With Lyricist", None,
-        """SELECT COUNT(*) cnt
-           FROM titles 
-           WHERE lyricist IS NOT NULL
-        """
-    ],
-    [ "Titles in Audio Files", "audio_files", None],
-    [ "Titles in Audio Files With Artist", None,
-        """SELECT COUNT(*) cnt
-           FROM audio_files
-           WHERE artist IS NOT NULL
-        """
-    ],
-    [ "Titles in Audio Files With Album", None,
-        """SELECT COUNT(*) cnt
-           FROM audio_files
-           WHERE album IS NOT NULL
-        """
-    ],
-    [ "Titles in Midi Files", None,
-        """SELECT COUNT(*) cnt
-           FROM midi_files
-        """
-    ],
-    [ "Titles in YouTube Files", None,
-        """SELECT COUNT(*) cnt
-           FROM title2youtube
-        """
-    ],
-    [ "Distinct Titles in Indexed Music Files Matching Titles in YouTube Files", None,
-        """SELECT COUNT(*) cnt
-           FROM title2youtube
-           JOIN titles_distinct USING( title_id )
-        """
-    ],
-    [ "Distinct Titles in Indexed Music Files Matching Titles in Audio Files", None,
-        """SELECT COUNT(*) cnt
-           FROM titles_distinct
-           JOIN audio_files USING( title );
-        """
-    ],
-]
-
-# --------------------------------------------------------------------------
-
-def do_menu_canon2file( dc ):
-    window.Element( 'tab-results-table' ).select()
-    window['tab-results-table'].update( visible = True )
-
-    res = []
-
-    query = f'SELECT canonical, file FROM canonical2file ORDER BY canonical'
-
-    dc.execute( query )
-    for row in dc:
-        res.append( [row['canonical'], row['file']] )
-
-    window.Element( 'results-table' ).update( values=res )
-
-# --------------------------------------------------------------------------
-
-def do_menu_stats( dc ):
-
-    window.Element( 'tab-results-table' ).select()
-    window['tab-results-table'].update( visible = True )
-
-    res = []
-
-    # ------------------------
-
-    res.append( ['', ''] )
-  # res.append( [ sg.Text( 'Overall Statistics:', font=("Helvetica", 10, 'bold'), justification='right') , ''] )
-    res.append( ['Overall Statistics:', ''] )
-
-    for label, table, query in database_tables:
-
-        if not query:
-            query = f'SELECT COUNT(*) cnt FROM {table}'
-
-        dc.execute( query )
-        rows = dc.fetchall()
-
-        for row in rows:
-            res.append( [ f"   {label}", row['cnt']] )
-
-    # ------------------------
-
-    res.append( [ '', '' ] )
-    res.append( ['Title Count by Index Source and Canonical Name from Indexed Music Files:', '' ] )
-
-    query = f"""SELECT COUNT(*) cnt, src, canonical
-        FROM titles
-        JOIN local2canonical USING( local, src )
-        GROUP BY canonical, src
-        ORDER BY canonical, src
-    """
-    dc.execute( query )
-    rows = dc.fetchall()
-
-    for row in rows:
-        res.append( [ f"   ({row['src']})   {row['canonical']}", row['cnt'] ] )
-
-    # ------------------------
-
-    res.append( [ '', '' ] )
-    res.append( ['Title Count by Index Source:', ''] )
-
-    query = 'SELECT COUNT(*) cnt, src FROM titles GROUP BY src ORDER BY src'
-
-    dc.execute( query )
-    rows = dc.fetchall()
-
-    for row in rows:
-        res.append( [ f"   {row['src']}", row['cnt']] )
-
-    # ------------------------
-
-    res.append( [ '', '' ] )
-    res.append( ['Coverage of Canonical Book Names by Index Source:\n', ''] )
-
-    query = "SELECT canonical, src FROM local2canonical ORDER BY canonical, src"
-    dc.execute( query )
-
-    results = {}
-    rows = dc.fetchall()
-    for row in rows:
-        canon = row[ 'canonical' ]
-        src = row[ 'src' ]
-
-        if not canon in results:
-            results[ canon ] = []
-
-        results[ canon ].append( src )
-
-    for canon in results:
-        res.append( [ f"   {canon}", ' '.join( results[ canon ] )] )
-
-    # ------------------------
-
-    res.append( '\n' )
-    res.append( ['Canonical Books Missing in Canonical2File Data:', '' ] )
-    query = """SELECT canonical, file FROM canonicals
-            LEFT JOIN canonical2file USING( canonical )
-            WHERE file is Null
-            """
-    dc.execute( query )
-
-    rows = dc.fetchall()
-    for row in rows:
-        res.append( [f"   {row['canonical']}",  '' ] )
-
-    # ------------------------
-
-    res.append( '\n' )
-    res.append( ['Files in Canonical2File Data but not found in Music Library:', '' ] )
-
-    query = """SELECT file FROM canonical2file
-            """
-
-    dc.execute( query )
-    rows = dc.fetchall()
-    found = False
-    for row in rows:
-        file = row['file']
-        path = os.path.join( fb.Music_File_Root, file )
-        if not os.path.isfile( path ) or not os.access( path, os.R_OK):
-            res.append( [f"   {file}",  '' ] )
-            found = True
-
-    if not found:
-        res.append( ['    None found', '' ] )
-
-    # ------------------------
-
-    window.Element( 'results-table' ).update( values=res )
-
-    # ------------------------
-
-# --------------------------------------------------------------------------
-#   Looks like not used. DELETE
-
-def OMIT_do_menu_stats_list( dc ):
-
-    window.Element( 'tab-results-text' ).select()
-    window['tab-results-text'].update( visible = True )
-    window.Element( 'results-text' ).update( value='' )
-
-    res = []
-
-    # ------------------------
-
-    res.append( '\n' )
-    res.append( 'Overall Statistics:\n' )
-
-    for label, table, query in database_tables:
-
-        if not query:
-            query = f'SELECT COUNT(*) cnt FROM {table}'
-
-        dc.execute( query )
-        rows = dc.fetchall()
-
-        for row in rows:
-            res.append( f"   {label}: {row['cnt']}" )
-
-    # ------------------------
-
-    res.append( '\n' )
-    res.append( 'Titles by Indexed Music File:\n' )
-
-    query = f"""SELECT COUNT(*) cnt, canonical
-        FROM titles
-        JOIN local2canonical USING( local, src )
-        GROUP BY canonical
-        ORDER BY canonical
-    """
-    dc.execute( query )
-    rows = dc.fetchall()
-
-    for row in rows:
-        res.append( f"   {row['canonical']}: {row['cnt']}" )
-
-    # ------------------------
-
-    res.append( '\n' )
-    res.append( 'Titles by Index Source:\n' )
-
-    query = 'SELECT COUNT(*) cnt, src FROM titles GROUP BY src ORDER BY src'
-
-    dc.execute( query )
-    rows = dc.fetchall()
-
-    for row in rows:
-        res.append( f"   {row['src']}: {row['cnt']}" )
-
-    # ------------------------
-    res.append( '\n' )
-    res.append( 'Coverage of Canonical Book Names by Index Source:\n' )
-
-    query = "SELECT canonical, src FROM local2canonical ORDER BY canonical"
-    dc.execute( query )
-
-    results = {}
-    rows = dc.fetchall()
-    for row in rows:
-        canon = row[ 'canonical' ]
-        src = row[ 'src' ]
-
-        if not canon in results:
-            results[ canon ] = []
-
-        results[ canon ].append( src )
-
-    for canon in results:
-        res.append( f"{canon}: { ' '.join( results[ canon ] ) }" )
-
-    # ------------------------
-
-    res = '\n'.join( res )
-    window.Element( 'results-text' ).update( res )
-
-    # ------------------------
-
-# --------------------------------------------------------------------------
-#   WRW 20 Mar 2022 - Add conn, c, dc to pass to external command so it
-#       has DB connection and doesn't open and close another, which appeared
-#       to close this one.
-
-# extcmd_popen = None
-window = None
-
-def run_external_command( command ):                                                  
-    global extcmd_popen
-
-    window.Element( 'tab-results-text' ).select()
-    window.Element( 'results-text' ).update( value='' )
-    window['tab-results-text'].update( visible = True )
-
-    # --------------------------------------------------------------------------
-    #   WRW 15 Mar 2022 - Exploring running command as included package.
-    #   /// RESUME make conditional on packaging type conf.Package_Type.
-
-    Command_as_Module = False
-    Command_as_Module = True
-    Debugging = True
-    Debugging = False
-
-    # --------------------------------------------------------------------------
-    #   Run command as loadable module.
-    #   click() in build_tables.py and check_offsets.py is exiting, not 
-    #       returning back to program calling main().
-    #       Work around by surrounding call with try/except SystemExit to catch exit.
-    #   See: https://stackoverflow.com/questions/52740295/how-to-not-exit-a-click-cli
-    #   WRW 22 Mar 2022 - Remove try/excep SystemExit on call build_tables and check_offsets.
-    #       Confirmed click() was exiting.
-    #       Added 'standalone_mode=False' to do_main() call in commands. Confirmed click()
-    #       was not exiting. Problem solved. Now picking up rcode.
-
-    if Command_as_Module:
-
-        if not Debugging:
-            window[ 'results-text' ].reroute_stdout_to_here()
-            window[ 'results-text' ].reroute_stderr_to_here()
-
-        if command[0] == 'bl-build-tables':
-            import build_tables
-            rcode = build_tables.aux_main( command )
-
-        elif command[0] == 'bl-check-offsets':
-            import check_offsets
-            rcode = check_offsets.aux_main( command )
-
-        window[ 'results-text' ].restore_stdout()
-        window[ 'results-text' ].restore_stderr()
-
-        if rcode:
-            window['results-text' ].print( f"\nCommand failed, { ' '.join( command )} returned exit code: {rcode}" )
-        else:
-            window['results-text' ].print( f"\nCommand completed successfully." )
-
-    # --------------------------------------------------------------------------
-    #   Run command as external process.
-
-    else:
-        if extcmd_popen:
-            extcmd_popen.kill()
-            extcmd_popen = None
-
-        extcmd_popen = subprocess.Popen( command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True )
-        for line in extcmd_popen.stdout:
-            window[ 'results-text' ].print( line, end='' )
-
-        extcmd_popen.stdout.close()
-        rcode = extcmd_popen.wait()
-
-        # --------------------------------------------------------------------------
-
-        if rcode:
-            window['results-text' ].print( f"\nCommand failed, { ' '.join( command )} returned exit code: {rcode}" )
-
-        else:
-            window['results-text' ].print( f"\nCommand completed successfully." )
-
-
-# --------------------------------------------------------------------------
 
 def do_show_recent_log():
     res = ''
@@ -1579,6 +481,7 @@ def do_show_recent_event_histo():
 
 def initialize_gui( dc, window ):
     global music_tree, audio_tree
+    global music_tree_aux, audio_tree_aux
 
     # -------------------------------------------------------
     #   Load Help file into PDF viewer for initial display.
@@ -1588,12 +491,11 @@ def initialize_gui( dc, window ):
 
     pdf.show_music_file( file=fb.get_docfile(), page=1, force=True )    # Initial display
     meta.show( id='Initial',
+               mode='Ft',                # Text File
                file=fb.get_docfile(),
                page=1,
                page_count = 1,
                title='Bluebird Music Manager', )
-
-    toc.show()
 
     # size = window.Element( 'display-graph-pdf' ).get_size()
 
@@ -1601,9 +503,11 @@ def initialize_gui( dc, window ):
     #   Load initial data into music and audio browse trees (in left sidebar).
 
     music_tree = sg.TreeData()
+    music_tree_aux = {}     # Metadata for audio_tree
     initialize_browse_tree( 'browse-music-files', music_tree, music_tree_aux, fb.Music_File_Folders, fb.Music_File_Root )
     
     audio_tree = sg.TreeData()
+    audio_tree_aux = {}     # Metadata for audio_tree
     initialize_browse_tree( 'browse-audio-files',  audio_tree, audio_tree_aux, fb.Audio_Folders, fb.Audio_File_Root )
     
     # -------------------------------------------------------
@@ -1639,12 +543,12 @@ def initialize_gui( dc, window ):
     #   Note: Config-Event processed in fb_pdf.py, not here. Appears as 'display-graph-pdf-Config-Event'
     
     # window.bind( '<Configure>', 'Config-Event' )    # size of widget changed
-    window.Element( 'display-graph-pdf' ).bind( '<Configure>', '-Config-Event' )    # size of widget changed
 
     # --------------------------------------------
-    #   Set the visibility of some tabs based on config option.
+    #   Set the visibility of some tabs based on config options.
+    #       Must do after get_config() and window created, can't do it at tabs_control.__init__().
 
-    set_index_mgmt_visibility( ShowIndexMgmgTabs )
+    tabs_control.initialize()   
 
     # --------------------------------------------------------------------------
     #   Drop down to Tkinter to control the tabgroups. Need fill and expand for this not PSG expand_x, expand_y.
@@ -1652,14 +556,16 @@ def initialize_gui( dc, window ):
     #   The expand arg here overrides PySimpleGui expand_x and expand_y.
     #   See dummy exploration program "Play/expand-problem.py" for more details.
     
-    window.Element( 'sidebar-tabgroup' ).Widget.pack( side = tk.LEFT, expand=False, fill=tk.Y )
-    window.Element( 'main-tabgroup' ).Widget.pack( side = tk.LEFT, expand=True, fill=tk.BOTH )
+#/// RESUME   window.Element( 'sidebar-tabgroup' ).Widget.pack( side = tk.LEFT, expand=False, fill=tk.Y )
+#/// RESUME   window.Element( 'main-tabgroup' ).Widget.pack( side = tk.LEFT, expand=True, fill=tk.BOTH )
+    window.Element( 'sidebar-tabgroup' ).Widget.pack( side = 'left', expand=False, fill='y' )
+    window.Element( 'main-tabgroup' ).Widget.pack( side = 'left', expand=True, fill='both')
     window.set_alpha(1)     # Show window. It had been initialized with alpha of 0.
     
 # --------------------------------------------------------------------------
 
 def select_pdf_tab():
-    if not UseExternalMusicViewer:
+    if not conf.val( 'use_external_music_viewer' ):
         window.Element( 'tab-display-pdf' ).select()
         window.Element( 'display-graph-pdf' ).set_focus()
 
@@ -1683,8 +589,19 @@ def get_about_data():
     # ----------------------------------
     if SQLITE:
         database = f"SqLite3, Database File: {Path( conf.home_confdir, conf.sqlite_database)}"
+
+        if fb.get_fullword_available():
+            fullword_notes = "Using fullwordmodule"
+        else:
+            fullword_notes = "Using LIKE"
+
+        mysqldb_module_version = "Not applicable"
+
+
     if MYSQL:
         database = f"MySql, Database: '{conf.mysql_database}'"
+        fullword_notes = ''
+        mysqldb_module_version = '.'.join([str(x) for x in MySQLdb.version_info ])
 
     # ----------------------------------
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
@@ -1718,16 +635,17 @@ def get_about_data():
         TkInter Version: {sg.tclversion_detailed}
         Sqlite Version: {sqlite3.sqlite_version}
         Sqlite Python Module Version: {sqlite3.version}
-        Fitz Module Version: {', '.join( fitz.version )}
+        MuPDF Library Version: {fitz.version[1]}
+        PyMuPDF Module Version: {fitz.version[0]}
         ConfigObj Module Version: {configobj.__version__}
-        MySQLdb Module Version: {'.'.join([str(x) for x in MySQLdb.version_info ])}
+        MySQLdb Module Version: {mysqldb_module_version}
 
     Birdland:
         Version: {version}
         Run Environment: {run_environment}
         Package Type: {conf.Package_Type}
         Executable Timestamp: {timestamp}
-        Database: {database}
+        Database: {database}. {fullword_notes}
 
     Directories:
         Settings Directory: {conf.confdir}
@@ -1740,6 +658,32 @@ def get_about_data():
         __file__: {__file__}
     """
     return version, info_text
+
+# --------------------------------------------------------------------------
+#   WRW 12 May 2022 - Now that I have a contact form on the website let's direct
+#       users there.
+
+def do_contact():
+    txt = """To contact us please go to:
+
+    https://birdland.wrwetzel.com/contact.html
+
+If writing about a problem please first copy the content from the
+
+    Help->About
+
+display and then paste it into the contact form.
+"""
+    conf.do_popup_raw( txt )
+
+# --------------------------------------------------------------------------
+
+def do_website():
+    txt = """Birdland Website:
+
+    https://birdland.wrwetzel.com/            
+"""
+    conf.do_popup_raw( txt )
 
 # --------------------------------------------------------------------------
 
@@ -1851,11 +795,10 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
     def do_error_announce( text, value ):
         fb.log( text, value )
-        # beepy.beep(1)                                     # No longer, served it purpose while debugging.
-        # window[ 'warning-icon' ].update( visible=True )   # Likewise
         do_show_recent_log()
 
     # -----------------------------------------------------------------------
+    #   Set up some global variables defining which database and search type to use.
 
     global MYSQL, SQLITE, FULLTEXT
     if database == 'sqlite':
@@ -1883,9 +826,10 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     fb.set_driver( MYSQL, SQLITE, False )
     conf.set_driver( MYSQL, SQLITE, False )
     meta.set_driver( MYSQL, SQLITE, False )
+    fb_search.set_driver( MYSQL, SQLITE, False )
 
     conf.set_icon( BL_Icon )
-    conf.set_classes( sg )
+    conf.set_classes( sg, fb )
 
     # ---------------------------------------------------------------
     #   Run birdland in the directory where the program lives for access
@@ -1897,7 +841,8 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #   WRW 10 Mar 2022 - A issue when running from PyInstaller packaged location with chdir here.
     #       cwd is fine when main() called from PyInstaller-packaged location.
     #       Change it only if called unbundled.
-    #   /// RESUME - think about this some more. I prefer calling script set this up.
+    #   /// RESUME OK - Think about this some more. 
+    #   Perhaps set this up with script before calling birdland? OK as is.
 
     if conf.Package_Type == 'Development' or conf.Package_Type == 'Setuptools':
         os.chdir( os.path.dirname(os.path.realpath(__file__)))
@@ -1943,7 +888,6 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         announce += 1
 
     # -----------------------------------------------------------------------
-    #   /// RESUME  Do this elsewhere, too, after get_config is called?
 
     conf.set_class_variables()
 
@@ -1953,11 +897,13 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     fb.set_classes( conf )
     pdf.set_classes( conf )
     meta.set_classes( conf, fb, pdf )
-    sl.set_classes( conf, sg, fb, pdf, meta, toc )
-    mgmt.set_classes( conf, fb, pdf, meta, toc )
-    diff.set_classes( conf, sg, fb, pdf, meta, toc )
-    l2c.set_classes( conf, fb, pdf, meta, toc )
-    c2f.set_classes( conf, fb, pdf, meta, toc )
+    sl.set_classes( conf, sg, fb, pdf, meta )
+    pagelist.set_classes( conf, fb, pdf, meta, diff )
+    diff.set_classes( conf, sg, fb, pdf, meta )
+    create.set_classes( conf, sg, fb )                        
+    l2c.set_classes( conf, fb, pdf, meta )
+    c2f.set_classes( conf, fb, pdf, meta )
+    fb_search.set_classes( conf, fb )
 
     # -----------------------------------------------------------------------
     #   Set up class-specific configuration options. Uses self.class.vals... in each class.
@@ -1965,13 +911,13 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     fb.set_class_config()
     pdf.set_class_config( )
     sl.set_class_config( )
-    mgmt.set_class_config( )
+    pagelist.set_class_config( )
     l2c.set_class_config( )
     c2f.set_class_config( )
     set_local_config( )
 
     # -----------------------------------------------------------------------
-
+    
     if announce:
         conf.report_progress()
 
@@ -1987,20 +933,21 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     if not success:
         res = True
         if progress:
-            print( f"ERROR: Error in database configuration:", file=sys.stderr )
+            print( f"ERROR: Error in database configuration (birdland.py):", file=sys.stderr )
             print( '\n'.join( results ))
 
-        conf.initialize_database( database )
-
         if MYSQL:       # If check_database() failed for mysql it is likely because of user credentials.
-            res = conf.get_user_and_password( )
+            res = conf.get_user_and_password( confdir=confdir )
 
             if res:
-                conf.initialize_database( database )        # Try again with updated user/password.
+                conf.initialize_database( database )        # Try after get DB credentials above.
 
             else:
                 print( "ERROR: Can't continue without user credentials for MySql database", file=sys.stderr )
                 exit(1)
+
+        if SQLITE:
+            conf.initialize_database( database )
 
     # -----------------------------------------------------------------------
 
@@ -2014,7 +961,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #   Initialize these early in case joker clicks on blank line in table coming from initial values of "".
     #   Not an issue, now initialized without blank line.
 
-    # indexed_music_file_file_table_data = audio_file_table_data = \
+    # indexed_music_file_table_data = audio_file_table_data = \
     #     midi_file_table_data = youtube_file_table_data = music_file_table_data = []
 
     # -----------------------------------------------------------------------
@@ -2026,6 +973,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     # -----------------------------------------------
     if MYSQL:
         try:
+            import MySQLdb
             conn = MySQLdb.connect( "localhost", conf.val( 'database_user' ), conf.val( 'database_password' ), conf.mysql_database )
             c = conn.cursor()
             dc = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -2101,25 +1049,29 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     row_count = int( .8 * ( screen_y - (260+33) ) / row_height )
     fb_layout.set_row_count( row_count )
 
-    layout = fb_layout.get_layout( sg, fb )     # Not a class yet so pass fb
+    layout = fb_layout.get_layout( sg, fb, conf )     # Not a class yet so pass fb
 
     # ----------------------------------------------------
     #   Create the main window.
+    #   WRW 23 Apr 2022 - set return_keyboard_events=False to suppress event on every keystroke. I don't
+    #       think I was using that at all and annoying when printing events.
+    #       No good, need it to get ScrollWheel events. All others are ignored.
+    #       Looks like I'm back to using several keyboard event as they are non-specific to the element.
 
     window = sg.Window( fb_layout.Bluebird_Program_Title,
-                        layout,     # Layout now all in separate file.
+                        layout,                     # Layout now all in separate file.
                         return_keyboard_events=True,
                         resizable=True,
                         icon=BL_Icon,
                         alpha_channel = 0,          # To keep window invisible until size stable.
-                        use_default_focus = False,  # To keep c2f button from getting focus. Set it explicitly as needed. Not working?
+                     #  use_default_focus = False,  # To keep c2f button from getting focus. Set it explicitly as needed. Not working?
                         finalize=True,
                        )               
 
     # ----------------------------------
     #   Show pdf control buttons only for built-in viewer.
 
-    if UseExternalMusicViewer:
+    if conf.val( 'use_external_music_viewer' ):
         window.Element('display-control-buttons' ).update( visible = False )
         window.Element('display-control-buttons' ).hide_row()
     else:
@@ -2136,21 +1088,26 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #   window.Element( 'display-graph-pdf' ).draw_circle( (200, 200), 75, fill_color = '#ff00ff', line_color = '#ff0000' )
 
     # ----------------------------------
-
     #   Pass some data to the supporting modules.
-    #   /// RESUME - consider inheritance for this.
-
+    #   /// RESUME OK - consider inheritance for this. Definitely. Someday. Not now.
     # ---------------------
+
     fb.set_window( window )
 
     # ---------------------
+
     pdf.set_window( window )
-    pdf.set_graph_element( window.Element( 'display-graph-pdf' ))
+  # pdf.set_graph_element( window['display-graph-pdf'], window[ 'display-graph-slider' ] )
+    pdf.set_graph_element( window['display-graph-pdf'] )
+    pdf.register_page_change( 'pdf-hidden-page-change' )
+    pdf.do_bind()
+    pdf.set_for( "Music Viewer" )           # A little debugging help
 
     # ---------------------
 
     status_bar = Status( window['status-bar'] )
 
+    meta.set_window( window )
     meta.set_elements(      # This allows the module to reference elements in the UI.
         window['display-page-title-exp'],
         window['display-page-local-exp'],
@@ -2160,12 +1117,11 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         window['display-page-sheet'],
         window['current-audio-table'],
         window['current-midi-table'],
+        window['table-of-contents-table'],
     )
     meta.set_dc( dc )
     meta.set_status( status_bar )
-
-    # ---------------------
-    toc.set_elements( fb, window['table-of-contents-table'] )
+    meta.set_hacks( select_pdf_tab )
 
     # ---------------------
     sl.set_elements( 
@@ -2185,18 +1141,20 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
     # --------------------------------------------------------------
 
-    mgmt.set_elements(      # This allows the module to reference elements in the UI.
+    pagelist.set_elements(      # This allows the module to reference elements in the UI.
         dc,
-        window['index-mgmt-table'          ],
-        window['index-mgmt-src-table'      ],
-        window['index-mgmt-local-table'    ],
-        window['index_mgmt_info_src'     ],
-        window['index_mgmt_info_local'     ],
-        window['index_mgmt_info_canonical'     ],
-        window['index_mgmt_info_file'     ],
+        window[ 'index-mgmt-table'          ],
+        window[ 'index-mgmt-src-table'      ],
+        window[ 'index-mgmt-local-table'    ],
+        window[ 'index_mgmt_info_src'     ],
+        window[ 'index_mgmt_info_local'     ],
+        window[ 'index_mgmt_info_canonical'     ],
+        window[ 'index_mgmt_info_file'     ],
         window[ 'tab-display-pdf'       ],
         window[ 'index_mgmt_info_page_count'       ],
     )
+
+    pagelist.do_bind()
 
     # --------------------------------------------------------------
 
@@ -2213,18 +1171,43 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
     # ------------------------------------------------------------------------------------------------------
 
+    create.set_elements(
+        dc,
+     #  window[ 'create-index-canonical' ],
+        window[ 'create-index-title' ],
+        window[ 'create-index-sheet' ],
+        window[ 'create-index-page' ],
+        window[ 'create-index-graph' ],
+        window[ 'create-index-canonical-table' ],
+        window[ 'create-index-main-frame' ],
+        window[ 'create-index-review-table' ],
+        window[ 'create-index-sheet-label' ],
+    )
+    create.set_icon( BL_Icon )
+    create.do_bind()
+    create.set_window( window )                                
+    create.late_init()
+
+    # ------------------------------------------------------------------------------------------------------
+
     l2c.set_elements(      # This allows the module to reference elements in the UI.
        dc,
        window['local2canonical-canonical-mgmt-table'],
        window['local2canonical-local-mgmt-table'],
        window['local2canonical-mgmt-src-combo'],
+       window['canon-find-text-a'],
     )
 
     c2f.set_elements(      # This allows the module to reference elements in the UI.
        dc,
        window['canon2file-canonical-mgmt-table'],
        window['canon2file-link-mgmt-table'],
+       window['canon-find-text-b'],
     )
+
+    # --------------------------------------------------------------
+
+    fb_search.set_elements( dc, Select_Limit, window, status_bar )
 
     # --------------------------------------------------------------
     #   WRW 19 Mar 2022 - Deal with birdland.desktop file.
@@ -2295,8 +1278,8 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         player.load()
 
     # ========================================================================
+    #   *** Main EVENT Loop ***
     #   WRW 7 Mar 2022 - added rudimentary record/play function for testing.
-    #   Main EVENT Loop
 
     while True:
         if playback:
@@ -2304,10 +1287,18 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
             _, _ = window.Read( timeout = last_sleep * 1000 )
 
         else:
-            event, values = window.Read()
+            event, values = window.Read()           # *** Normal case.
 
             if record:
                 recorder.rec( event, values )
+
+        # print( "/// main:", event )
+
+        main_tab = window[ 'main-tabgroup' ].get()
+        sub_tab = window[ 'index-mgmt-tabgroup' ].get()
+        sidebar_tab = window[ 'sidebar-tabgroup' ].get()
+
+        # print( "*** main:", main_tab, "sub:", sub_tab )
 
         # ------------------------------------------------------------------
         #   WRW - 15 Jan 2022 - Try moving this to the top. Working on error messages
@@ -2325,7 +1316,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                 fb.log( event, values[ event ] if event in values else "-")
             fb.log_histo( event, values[ event ] if event in values else "-" )
 
-        # fb.log( 'indexed_music_file_file_table_data',  len( indexed_music_file_file_table_data ) )
+        # fb.log( 'indexed_music_file_table_data',  len( indexed_music_file_table_data ) )
         # fb.log( 'music_file_table_data',               len( music_file_table_data ))
         # fb.log( 'audio_file_table_data',               len( audio_file_table_data ))
         # fb.log( 'youtube_file_table_data',             len( youtube_file_table_data ))
@@ -2353,15 +1344,23 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     do_about()
                     continue
 
+                if menu_event == 'menu-contact':
+                    do_contact()
+                    continue
+
+                if menu_event == 'menu-website':
+                    do_website()
+                    continue
+
                 elif menu_event == 'menu-tutorial':
                     pdf.show_music_file( file=fb.get_docfile(), page=1, force=True )        # Help in menu
                     meta.show( id='Help',
+                               mode='Ft',                # Text File
                                file=fb.get_docfile(),
                                page=1,
                                page_count = 1,
                                title='Bluebird Music Manager', )
 
-                    toc.show()
                     select_pdf_tab()
                     continue
 
@@ -2371,22 +1370,26 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                         do_configure_save_update()
                     continue
 
-                elif menu_event == 'menu-stats':
-                    do_menu_stats( dc )
+                # ------------------------------------------------------------------
+                #   WRW 30 Mar 2022 - A little different.
+
+                # elif menu_event == 'menu-stats':
+
+                elif menu_event.startswith( 'menu-stats' ):
+                    t = menu_event.removeprefix( 'menu-stats-' )
+                    fb_menu_stats.do_menu_stats( t, window, dc, fb )
                     continue
 
-                elif menu_event == 'menu-canon2file':
-                    do_menu_canon2file( dc )
-                    continue
-
-                elif menu_event == 'menu-compare-pages':
-                    run_external_command( [ 'bl-check-offsets', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    # run_external_command( [ 'check_offsets.py', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    continue
+                # ------------------------------------------------------------------
 
                 elif menu_event == 'menu-rebuild-all':
-                    run_external_command( [ 'bl-build-tables', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    # run_external_command( [ 'build_tables.py', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ 'bl-build-tables', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    # fb.run_external_command( [ 'build_tables.py', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    continue
+
+                elif menu_event == 'menu-rebuild-source-priority':
+                    fb.run_external_command( [ 'bl-build-tables', '--src_priority', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    # fb.run_external_command( [ 'build_tables.py', '--src_priority', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-rebuild-audio':
@@ -2395,23 +1398,42 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                           """
                     t = conf.do_popup_ok_cancel( txt )
                     if t == 'OK':
-                        run_external_command( [ 'bl-build-tables', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                        # run_external_command( [ 'build_tables.py', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                        fb.run_external_command( [ 'bl-build-tables', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                        # fb.run_external_command( [ 'build_tables.py', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-rebuild-page-offset':
-                    run_external_command( [ 'bl-build-tables', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    # run_external_command( [ 'build_tables.py', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ 'bl-build-tables', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    # fb.run_external_command( [ 'build_tables.py', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    continue
+
+                elif menu_event == 'menu-rebuild-canon2file':
+                    fb.run_external_command( [ 'bl-build-tables', '--canon2file', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    # fb.run_external_command( [ 'build_tables.py', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-convert-raw-sources':
-                    run_external_command( [ 'bl-build-tables', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    # run_external_command( [ 'build_tables.py', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ 'bl-build-tables', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    # fb.run_external_command( [ 'build_tables.py', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 # elif menu_event == 'menu-test-db-times':
                 #     do_menu_test_db_times()
                 #     continue
+
+                # --------------------------------------------------
+
+                elif menu_event == 'menu-summary':
+                    fb.run_external_command( [ 'bl-diff-index', '--summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    continue
+
+                elif menu_event == 'menu-page-summary':
+                    fb.run_external_command( [ 'bl-diff-index', '--page_summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    continue
+
+                elif menu_event == 'menu-verbose':
+                    fb.run_external_command( [ 'bl-diff-index', '--verbose', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    continue
 
                 # --------------------------------------------------
                 elif menu_event == 'menu-show-recent-log':
@@ -2429,38 +1451,83 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 # --------------------------------------------------
                 elif menu_event == 'menu-index-mgmt-tabs':
-                    toggle_index_mgmt_visibility()
+                    tabs_control.toggle( 'idx' )
 
                 elif menu_event == 'menu-canon2file-tab':
-                    toggle_canon2file_visibility()
+                    tabs_control.toggle( 'c2f' )
 
-                continue
-            continue
+                continue    # Menu item not recognized
+            continue        # len != 2
 
+        # END of if '::' in event:
         # ----------------------------------------------------------------
         #   Process events is the external classes.
         #   process_events() returns True if it procssed one, else False.
         #   This must be below '::' processing above.
+        #   WRW 26 Apr 2022 - Make processing tab-specific.
 
-        elif pdf.process_events( event, values ):
+        #   Summary of tab names. A * indicates tab-specific processing below
+        #       All else is common to all tabs including sub-tabs.
+
+        #       * tab-setlist-table
+        #       * tab-display-pdf
+        #       * tab-canon2file-mgmt
+        #       tab-indexed-music-file-table
+        #       tab-audio-file-table
+        #       tab-music-filename-table
+        #       tab-midi-file-table
+        #       tab-youtube-table
+
+        #       * tab-mgmt-subtabs tab-index-compare
+        #       * tab-mgmt-subtabs tab-index-page-list
+        #       * tab-mgmt-subtabs tab-create-index
+        #       * tab-mgmt-subtabs tab-local2canon-mgmt
+
+        # ----------------------
+
+        elif( main_tab == 'tab-setlist-table' or 'display-button-add-to-setlist' ) and sl.process_events( event, values ):
             continue
 
-        elif sl.process_events( event, values ):
+        # Note processing events for pdf and meta for tab-display-pdf
+
+        elif main_tab == 'tab-display-pdf' and pdf.process_events( event, values ):         
             continue
 
-        elif mgmt.process_events( event, values ):
+        elif main_tab == 'tab-display-pdf' and meta.process_events( event, values ):
             continue
 
-        elif diff.process_events( event, values ):
+        #   WRW 15 May 2022 - Click in TOC. TOC is processed in fb_metadata.py.
+
+        elif sidebar_tab == 'tab-table-of-contents' and meta.process_events( event, values ):
             continue
 
-        elif meta.process_events( event, values ):
+        elif main_tab == 'tab-canon2file-mgmt' and c2f.process_events( event, values ):
             continue
 
-        elif l2c.process_events( event, values ):
+        # ----------------------
+
+        elif main_tab == 'tab-mgmt-subtabs' and sub_tab == 'tab-index-compare' and diff.process_events( event, values ):
             continue
 
-        elif c2f.process_events( event, values ):
+        elif main_tab == 'tab-mgmt-subtabs' and sub_tab == 'tab-index-page-list' and  pagelist.process_events( event, values ):
+            continue
+
+        elif main_tab == 'tab-mgmt-subtabs' and sub_tab == 'tab-create-index' and create.process_events( event, values ):
+            continue
+
+        elif main_tab == 'tab-mgmt-subtabs' and sub_tab =='tab-local2canon-mgmt' and l2c.process_events( event, values ):
+            continue
+
+        # ----------------------
+            
+        elif fb_search.process_events( event, values ):
+            ( indexed_music_file_table_data,
+                audio_file_table_data,
+                music_file_table_data,
+                midi_file_table_data,
+                chordpro_file_table_data,
+                jjazz_file_table_data,
+                youtube_file_table_data ) = fb_search.get_search_results()
             continue
 
         # ------------------------------------------------------------------
@@ -2473,20 +1540,41 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
             if tab == 'tab-canon2file-mgmt':
                 window[ 'c2f-help' ].set_focus()        # This takes focus away from first element, a button.
-                c2f.load_tables()
-                continue
+                c2f.load_tables()                       #    and sets it to a text message where it is benign.
 
-            elif tab == 'tab-local2canon-mgmt':
+            elif tab == 'tab-mgmt-subtabs':
+              # pagelist.load_tables()                      # Load first tab when index management subtabs selected.
+                diff.load_tables()                      # Change this when change order of index-management sub-tabs.
+
+            continue
+
+        # ------------------------------------------
+        #   Index Management sub-tab clicked
+
+        elif event == 'index-mgmt-tabgroup':
+            tab = values[ 'index-mgmt-tabgroup' ]
+
+            if tab == 'tab-local2canon-mgmt':
                 l2c.load_tables()
                 continue
 
-            elif tab == 'tab-index-mgmt':
-                mgmt.load_tables()
+            elif tab == 'tab-index-page-list':
+                pagelist.load_tables()
                 continue
 
             elif tab == 'tab-index-diff':
                 diff.load_tables()
                 continue
+
+            elif tab == 'tab-create-index':
+                create.load_tables()
+                continue
+
+        # ------------------------------------------------------------------
+        #   WRW 29 Apr 2022 - Trigger a metadata update when browse-src-combo changes
+
+        elif event == 'browse-src-combo':
+            pdf.report_page_change()
 
         # ------------------------------------------------------------------
 
@@ -2499,128 +1587,6 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
         elif event == 'close-music':
             pdf.close_ext()
-            continue
-
-        # ----------------------------------------------------------------
-        #   Search button or 'Enter' in search text boxes.
-        elif event == 'search':
-
-            # ---------------------------------------
-            #   Gather search data
-
-            title =                     values[ "song-title" ] if 'song-title' in values else None
-            album =                     values[ "song-album" ] if 'song-album' in values else None
-            artist =                    values[ "song-artist" ] if 'song-artist' in values else None
-            composer =                  values[ "song-composer" ] if 'song-composer' in values else None
-            lyricist =                  values[ "song-lyricist" ] if 'song-lyricist' in values else None
-            src =                       values[ "local-src" ] if 'local-src' in values else None
-            canonical =                 values[ "canonical" ] if 'canonical' in values else None
-            join_flag =                 True if values[ 'search-join-title' ] else False
-            search_multiple_src =       True if values[ 'search-multiple-src' ] else False
-            search_multiple_canonical = True if values[ 'search-multiple-canonical' ] else False
-
-            # ---------------------------------------
-            #   Make MySql boolean search values.
-
-            if MYSQL:
-                if title:
-                    title = make_boolean( title )
-                if album:
-                    album = make_boolean( album )
-                if artist:
-                    artist = make_boolean( artist )
-                if composer:
-                    composer = make_boolean( composer )
-                if lyricist:
-                    lyricist = make_boolean( lyricist )
-
-            if SQLITE:      # /// RESUME - Anything to be done for search terms in Sqlite3?
-                pass
-
-            # ---------------------------------------
-            #   Initialize all tables to no data. Update tables only when matched search selection.
-
-            indexed_music_file_file_table_data = music_file_table_data = audio_file_table_data = \
-                midi_file_table_data = youtube_file_table_data = []
-
-            # ---------------------------------------
-            #   Search music file index in database.
-            #   Update indexed-music-file-table.
-
-            tab_selected = False
-
-            if join_flag:
-                indexed_music_file_file_table_data, pdf_count = do_query_music_file_index_with_join( dc, title, composer, lyricist, album, artist, src, canonical )
-            else:
-                indexed_music_file_file_table_data, pdf_count = do_query_music_file_index( dc, title, composer, lyricist, src, canonical )
-
-            if not search_multiple_src:
-                indexed_music_file_file_table_data = select_by_src_priority( indexed_music_file_file_table_data )
-
-            if not search_multiple_canonical:
-                indexed_musicfile_file_table_data = select_by_canonical_priority( indexed_music_file_file_table_data )
-
-            fb.safe_update( window['indexed-music-file-table'] , indexed_music_file_file_table_data, None )
-
-            if len( indexed_music_file_file_table_data ):
-                window.Element( 'tab-indexed-music-file-table' ).select()
-                window.Element( 'tab-display-pdf' ).set_focus()
-                tab_selected = True
-
-            # ---------------------------------------
-            #   /// RESUME - include additional search terms in do_query*() functions?
-            #   Search music filename, audio file index, youtube index in database.
-            #       Update associated tables.
-
-            #   Select tab if search found any data going from left to right.
-            #       Leave select/focus as is if nothing found.
-
-            music_file_table_data, music_count = do_query_music_filename( dc, title )
-            fb.safe_update( window['music-filename-table'], music_file_table_data, None )
-
-            if len( music_file_table_data  ) and not tab_selected:
-                window.Element( 'tab-music-filename-table' ).select()
-                window.Element( 'tab-music-filename-table' ).set_focus()
-                tab_selected = True
-
-            # -----------------------
-            audio_file_table_data, audio_count = do_query_audio_files_index( dc, title, album, artist )
-            fb.safe_update( window['audio-file-table'], audio_file_table_data, None )
-
-            if len( audio_file_table_data  ) and not tab_selected:
-                window.Element( 'tab-audio-file-table' ).select()
-                window.Element( 'tab-audio-file-table' ).set_focus()
-                tab_selected = True
-
-            # -----------------------
-            #   WRW 8 Feb 2022 - Add support for midi files
-            midi_file_table_data, midi_count = do_query_midi_filename( dc, title )
-            fb.safe_update( window['midi-file-table'], midi_file_table_data, None )
-
-            if len( midi_file_table_data  ) and not tab_selected:
-                window.Element( 'tab-midi-file-table' ).select()
-                window.Element( 'tab-midi-file-table' ).set_focus()
-                tab_selected = True
-
-            # -----------------------
-            youtube_file_table_data, youtube_count = do_query_youtube_index( dc, title )
-            fb.safe_update( window['youtube-file-table'], youtube_file_table_data, None )
-
-            if len( youtube_file_table_data  ) and not tab_selected:
-                window.Element( 'tab-youtube-table' ).select()
-                window.Element( 'tab-youtube-table' ).set_focus()
-                tab_selected = True
-
-            # ------------------------------------------------------------
-            #   Post result counts to status bar
-
-            status_bar.set_music_index( pdf_count, len(indexed_music_file_file_table_data) )
-            status_bar.set_audio_index( audio_count, len(audio_file_table_data) )
-            status_bar.set_music_files( music_count, len(music_file_table_data) )
-            status_bar.set_midi_files( midi_count, len(midi_file_table_data) )
-            status_bar.set_youtube_index( youtube_count, len(youtube_file_table_data) )
-            status_bar.show()
-
             continue
 
         # ======================================================================================
@@ -2636,23 +1602,23 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         # headings = [ "Title", "Composer", "Page", "Sheet", "P=S", "Source", "Local Book Name", "Canonical Book Name", "File" ],
 
         elif event == 'indexed-music-file-table':
-            if indexed_music_file_file_table_data:
+            if indexed_music_file_table_data:
 
                 if "indexed-music-file-table" in values and len( values[ "indexed-music-file-table" ] ):
                     index = values[ "indexed-music-file-table" ][0]
 
-                    title =     indexed_music_file_file_table_data[ index ][0]
-                    canonical = indexed_music_file_file_table_data[ index ][2]
-                    page =      indexed_music_file_file_table_data[ index ][3]
-                    sheet =     indexed_music_file_file_table_data[ index ][4]
-                    src   =     indexed_music_file_file_table_data[ index ][5]
-                    local =     indexed_music_file_file_table_data[ index ][6]
-                    file  =     indexed_music_file_file_table_data[ index ][7]
+                    title =     indexed_music_file_table_data[ index ][0]
+                    canonical = indexed_music_file_table_data[ index ][2]
+                    page =      indexed_music_file_table_data[ index ][3]
+                    sheet =     indexed_music_file_table_data[ index ][4]
+                    src   =     indexed_music_file_table_data[ index ][5]
+                    local =     indexed_music_file_table_data[ index ][6]
+                    file  =     indexed_music_file_table_data[ index ][7]
 
                     if not file:
                         sg.popup( f"\nNo music file available for:\n\n   '{title}'\n\n    Canonical: {canonical}\n",
                             title='Birdland Warning',
-                            icon='BL_Icon',
+                            icon=BL_Icon,
                             line_width = 100,
                             keep_on_top = True,
                         )
@@ -2668,6 +1634,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                         else:
                             pdf.show_music_file( file=path, page=page )      # Click in Indexed Music File Table.
                             meta.show( id='IndexTable',
+                                       mode='Fi',                # Music File with Index data
                                        file=file,
                                        title=title,
                                        canonical=canonical,
@@ -2678,7 +1645,6 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                                        page_count = pdf.get_info()[ 'page_count' ],
                                      )
 
-                            toc.show( src=src, local=local )
                             select_pdf_tab()
 
                 else:
@@ -2705,12 +1671,12 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     relpath = Path( rpath, file )
 
                     pdf.show_music_file( file=fullpath, page=1 )      # Click in Music File Table
-                    meta.show( id='File Table',
+                    meta.show( id='FileTable',
+                               mode='Fp',                # Music File, possible, index data
                                file=relpath.as_posix(),
                                page=1,
                                page_count = pdf.get_info()[ 'page_count' ],   
                              )
-                    toc.show( file=relpath )
                     select_pdf_tab()
 
                 else:
@@ -2760,7 +1726,65 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
             continue
 
         # ----------------------------------------------------------------
-        #   Click in current audio table (in left sidebar)
+        #   WRW 27 Apr 2022
+        #   Handling show_chordpro_file() a little differently than other show_*_file() routines.
+
+        elif event == 'current-chordpro-table':
+            if chordpro_file_table_data:
+                if "current-chordpro-table" in values and len( values[ "current-chordpro-table" ] ):
+
+                    index = values[ "current-chordpro-table" ][0]
+                    title = chordpro_file_table_data[ index ][0]
+                    artist = chordpro_file_table_data[ index ][1]
+                    file = chordpro_file_table_data[ index ][2]
+                    fullpath = Path( conf.val( 'chordpro_file_root' ), file )
+
+                    def show_chordpro_file_callback( tfile ):
+                      # pdf.show_music_file( file=tfile, page=1, force=True )
+                        pdf.show_music_file( file=tfile, page=1 )           # let show_music_file use external if user wants it.
+                        meta.show( id='ChordPro',                           # Clear out any residual data.
+                            mode='Ft',
+                            file=file,
+                            page=1,
+                            page_count = pdf.get_info()[ 'page_count' ],
+                            title=title
+                        )
+
+                        select_pdf_tab()
+
+                    if not fullpath.is_file():
+                        conf.do_nastygram( 'chordpro_file_root', fullpath )
+                        continue
+
+                    fb.show_chordpro_file( fullpath, show_chordpro_file_callback )
+
+                else:
+                    do_error_announce( f"ERROR: Unexpected values content for 'current-chordpro-table' event", values[event] )
+            continue
+
+        # ----------------------------------------------------------------
+        #   WRW 27 Apr 2022
+
+        elif event == 'current-jjazz-table':
+            if jjazz_file_table_data:
+
+                if "current-jjazz-table" in values and len( values[ "current-jjazz-table" ] ):
+                    index = values[ "current-jjazz-table" ][0]
+                    title = jjazz_file_table_data[ index ][0]
+                    file = jjazz_file_table_data[ index ][1]
+                    fullpath = Path( conf.val( 'jjazz_file_root' ), file )
+
+                    if not fullpath.is_file():
+                        conf.do_nastygram( 'jjazz_file_root', fullpath )
+                        continue
+
+                    fb.show_jjazz_file( fullpath )
+
+                else:
+                    do_error_announce( f"ERROR: Unexpected values content for 'current-jjazz-table' event", values[event] )
+            continue
+
+        # ----------------------------------------------------------------
 
         elif event == 'current-audio-table':
             if "current-audio-table" in values and len( values[ "current-audio-table" ] ):
@@ -2799,7 +1823,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
         # ----------------------------------------------------------------
         #   Click in YouTube file table
-        # headings = [ "Title", "YT Title", "Duration", "yt_id" ],
+        #       headings = [ "Title", "YT Title", "Duration", "yt_id" ],
 
         elif event == 'youtube-file-table':
             if youtube_file_table_data:
@@ -2817,44 +1841,6 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
             continue
 
         # ----------------------------------------------------------------
-        #   Click in book titles table (TOC) in left tab group.
-        #   Remember, TOC displayed after PDF so already have music_file name and more.
-        #
-
-        elif event == 'table-of-contents-table':
-            if 'table-of-contents-table' in values and len( values[ "table-of-contents-table" ] ):
-                index = values[ "table-of-contents-table" ][0]
-                sheet = toc.get_sheet( index )
-
-                info = meta.get_info()
-                src = info[ 'src' ]
-                local = info[ 'local' ]
-                page = fb.get_page_from_sheet( sheet, src, local )
-                page_count = pdf.get_info()[ 'page_count' ]
-
-                if int( page ) > page_count:
-                    sg.popup( f"Index / Offset Error\n\n   Selected page exceeds pages in music file.\n",
-                        line_width = 100,
-                        keep_on_top = True,
-                        title='Birdland Warning',
-                        icon='BL_Icon',
-                    )
-                    continue
-
-                file = Path( pdf.get_info()[ 'file' ] ).relative_to( fb.Music_File_Root ).as_posix()
-
-                #   Update page. No toc.show() in this instance, that is already displayed.
-                pdf.show_music_file( page=page )        # Click in TOC in left tab group
-                meta.show( id='TOC',
-                           file=file,
-                           page=page,
-                           page_count = page_count,
-                        )
-                select_pdf_tab()
-
-            continue
-
-        # ------------------------------------------------------------
         #   Click in browse music file tree
 
         #   'browse-music-file' event.
@@ -2873,8 +1859,9 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 # -----------------------------------------------------
                 #   Click on folder that has not been populated yet
+                # Incoming extension converted to lower so don't need to enumerate them all here.
 
-                pdf_extensions = [ '.pdf' ]         # Incoming ext converted to lower so don't need to enumerate them all here.
+                pdf_extensions = [ '.pdf' ]         
 
                 if node['kind'] == 'dir' and node['children'] == None:
                     add_to_browse_tree( 'browse-music-files', music_tree, music_tree_aux, parent_key, node,
@@ -2891,14 +1878,43 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                         print( "Showing music: ", fullpath )
 
                     pdf.show_music_file( file=fullpath, page=1 )              # Click in Browse Music File Tree
-                    meta.show(  id='Browse',
-                                file=partialpath.as_posix(),
-                                page=1,
-                                page_count = pdf.get_info()[ 'page_count' ],   
-                              )
-                    toc.show( file=partialpath )
+                    page_count = pdf.get_info()[ 'page_count' ]
+
                     select_pdf_tab()
 
+                    # --------------------------------------------
+                    #   WRW 28 Apr 2022 - Populate 'browse-src-combo' with srcs for selected book, if any.
+                    #   Add a little info for selected book.
+
+                    canonical = fb.get_canonical_from_file( partialpath.as_posix() )
+                    if canonical:
+                        srcs = fb.get_srcs_by_canonical( canonical )
+                        canon_info = canonical
+                        if srcs:
+                            window[ 'browse-src-combo' ].update( values = srcs, set_to_index = 0 )      # First is highest priority
+                            src_info = f"File indexed by: {', '.join( srcs )}"
+                        else:
+                            window[ 'browse-src-combo' ].update( values = [] )
+                            src_info = f"File not indexed"
+
+                    else:
+                        canon_info = "File not mapped to canonical"
+                        src_info = "File not indexed"
+                        window[ 'browse-src-combo' ].update( values = [] )
+                        srcs = []
+
+                  # info_txt = f"{Path(partialpath).name}\nPages: {page_count}\n{canon_info}\n{src_info}"
+                    info_txt = f"{Path(partialpath).name}\n{canon_info}\n{src_info}"
+                    window[ 'browse-book-info' ].update( info_txt )
+
+                    meta.show(  id='Browse',                # After update 'browse-src-combo', using value below
+                                mode='Fs',                  # Music file, possibly src specified
+                                file=partialpath.as_posix(),
+                                page=1,
+                                page_count = page_count,
+                              # src_from_combo = values[ 'browse-src-combo' ],      # No good, not available yet.
+                                src_from_combo = srcs[0] if srcs else None          # Use first, highest priority src.
+                              )
             continue
 
         # ----------------------------------------------------------------
@@ -2959,9 +1975,9 @@ if __name__ == '__main__':
         import build_tables
         build_tables.main()
 
-    elif t == 'birdland-check-offsets':
-        import check_offsets
-        check_offsets.main()
+    elif t == 'birdland-diff-index':
+        import diff_index
+        diff_index.main()
 
     else:
         do_main()

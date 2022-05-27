@@ -1,0 +1,56 @@
+/*  Modifications specifically for 'logilab' theme */
+
+p.logo {
+    margin-top: 0px;
+}
+
+a {
+    color: #0000a0;
+ /* font-size: 12px; */
+}
+
+h1 {
+    border-bottom: 3px solid #0000a0;
+}
+
+/*  The ::after nonsense is needed to prevent alignment of content with the end of
+    the Table of Contents.
+*/
+
+div.section::after {
+    display: none;
+}
+
+blockquote {
+    font-style: italic;
+    background-color: #f0f0f0;
+    padding-top: .3em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+    clear: none;
+    border: 1px solid #c0c0c0;
+    border-radius: 8px;
+}
+
+blockquote::after {              
+    display: none;   
+}
+
+div.sphinxsidebar h3, div.sphinxsidebar h4 {
+    background-color: #25306d;
+    font-size: 1em;
+}
+
+dt {
+    font-weight: bold;
+}
+
+/*
+    Would like to use code fences in scenarios but numbers don't increment, styling doesn't work, etc.
+    pre {
+        font-family: "Courier New";
+        font-size: .9em;
+        line-height: 130%;
+    }
+*/

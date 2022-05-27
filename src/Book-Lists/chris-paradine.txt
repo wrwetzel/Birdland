@@ -1,0 +1,22 @@
+
+Abbrev	Full Title	Songs
+NewReal1	New Real Book Vol1 - Chuck Sher	439
+NewReal2	New Real Book Vol2 - Chuck Sher	424
+NewReal3	New Real Book Vol3 - Chuck Sher	291
+StandRB	Standards Real Book - Chuck Sher	266
+RealBook1	Old Real Book Vol1 (Fifth Ed.)	236
+RealBook2	Old Real Book Vol2 ("All new")	218
+RealBook3	Old Real Book Vol3 ("All new")	197
+EvansBk	Bill Evans Fake Book - Hal Leonard	60
+Bible50s	Jazz Bible of the 50s - Hal Leonard	200
+Abbrev	Full Title	Songs
+Colorado	Colorado Cook Book	273
+GigBook	The Great Gig Book	767
+JazzFake	Jazz Fake Book	621
+JazzLTD	Jazz Ltd Over 500 Tunes	522
+Library	Library of Musicians' Jazz	325
+Stan557	557 Standards in C	539
+Ultimate	The Ultimate Fake Book - Hal Leonard	1093
+MostReq	Best Chord Changes for Most-Requested Standards	100
+RealJazz	Real Jazz Book - Hal Leonard	529
+

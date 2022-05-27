@@ -1,0 +1,647 @@
+# -----------------------------------------------------------------------
+#   WRW 7 Apr 2022 - Created this by hand editing from other lists in Book-Lists folder to bring to somewhat
+#       consistent format. This is an OCD attempt to identify most of the common music books based
+#       on their appearance in other book list. 
+
+#   This was the original basis for CanonicalNames.txt but not all books here
+#       were included in that and some were added to that as encountered in raw indexes.
+
+#   Names in CanonicalNames.txt are generally the publishers name for the book with some minor
+#       adjustments to resolve ambiguities and distinguish editions and publishers.
+#       Publishers names are separated from the book name with a '-' shown as 'Unknown' where
+#       it is not known.
+
+#   'The' removed from most names in CanonicalNames.txt
+
+# -----------------------------------------------------------------------
+#   7th String
+
+100 Jazz & Blues Greats - Wise Publications
+101 Latin Hits For Buskers - Wise Publications
+Abbey Lincoln Songbook - Hal Leonard
+Aebersold Play-A-Long Series
+A Jazz Chord Book - Lionel Grigson
+All The Right Changes - Dick Hyman
+Bebop Pianists - Gerard and Sarzin
+Belter's Hot Standards - Hal Leonard
+Bill Evans Fake Book - Hal Leonard
+Budget Books - Jazz Standards - Hal Leonard
+Champ Champagne 'Real Chord Changes' series - Hal Leonard
+Charles Mingus - More Than A Fake Book - Hal Leonard
+Charlie Parker Omnibook - Atlantic Music
+Frank Sinatra Anthology - Hal Leonard
+Frank Sinatra Anthology - Volume 2 - Hal Leonard
+Hal Leonard Jazz Play-Along Series
+Horace Silver Complete Volume 1: The 50s
+Horace Silver Complete Volume 2: The 60s
+Irving Berlin Fake Book - Hal Leonard
+Jazz of the '50s - Jazz Bible Series - Hal Leonard
+Jazz of the 60s and Beyond - Hal Leonard
+Jazz Standards Progressions Vol 1 by mdecks
+Jazz Standards Progressions Vol 2 by mdecks
+Jazz Standards Progressions Vol 3 by mdecks
+Just Jazz Real Book - Warner Bros
+Just Standards Real Book - Warner Bros
+Latin Fake Book - Hal Leonard
+Latin Fakebook - Warner Bros
+New Real Book Vol 1 - Chuck Sher
+New Real Book Vol 2 - Chuck Sher
+New Real Book Vol 3 - Chuck Sher
+Norah Jones - Come Away with Me - Hal Leonard
+Pocket Changes Volume 1
+Pocket Changes Volume 2
+Professional Chord Changes And Substitutions - Dick Hyman
+Professional Pianist's Fakebook - Lee Evans
+Ragtime & Early Jazz - 1900-1935 - Jazz Bible Series - Hal Leonard
+R&B Fake Book - 2nd Edition - Hal Leonard
+Readers Digest Songbooks
+Real Book Vol 1         - Hal Leonard
+Real Book Vol 1 - Orig
+Real Book Vol 2         - Hal Leonard
+Real Book Vol 2 - Orig
+Real Book Vol 3         - Hal Leonard
+Real Book Vol 3 - Orig    
+Real Book Vol 4         - Hal Leonard
+Real Book Vol 5         - Hal Leonard
+Real Book Vol 6         - Hal Leonard
+Real Jazz Book - Warner Bros
+Real Vocal Book Vol 1   - Hal Leonard
+Real Vocal Book Vol 2   - Hal Leonard
+Real Vocal Book Vol 3   - Hal Leonard
+Real Vocal Book Vol 4   - Hal Leonard
+Satanic Changes
+Standards Real Book - Chuck Sher
+Straight Ahead Jazz Fakebook - Gerard and Sarzin
+The AB Real Book - Associated Board
+The All Jazz Real Book - Chuck Sher
+The BbEbop Book - Music Sales
+The Best Chord Changes for the Best Known Songs - Frank Mantooth
+The Best Chord Changes for the Best Standards Ever - Frank Mantooth
+The Best Chord Changes for the Most Popular Songs - Frank Mantooth
+The Best Chord Changes For The Most Requested Standards - Frank Mantooth
+The Best Chord Changes For The World's Greatest Standards - Frank Mantooth
+The Best Fake Book Ever 1st edition - Hal Leonard
+The Best Fake Book Ever 2nd edition - Hal Leonard
+The Best Fake Book Ever 3rd edition - Hal Leonard
+The Big Book of Jazz - 2nd Edition - Hal Leonard
+The Big Book Of Torch Songs - Hal Leonard
+The Blues Fake Book - Hal Leonard
+The Definitive Jazz Collection - Hal Leonard
+The European Real Book - Chuck Sher
+The Jazz Sourcebook 2 - Wise Publications
+The Kenny Barron Collection - Hal Leonard
+The Latin Real Book - Chuck Sher
+Thelonious Monk Fake Book - Hal Leonard
+The Music Of John Coltrane - Hal Leonard
+The Pat Metheny Songbook - Hal Leonard
+The Real Book Of Blues - Wise Publications
+The Real Book Of Jazz - Wise Publications
+The Real Dixieland Book - Hal Leonard
+The Real Easy Book Volume 1- Chuck Sher
+The Real Easy Book Volume 2 - Chuck Sher
+The Real Easy Book Volume 3 - Chuck Sher
+The Real Jazz Classics Fake Book - Hal Leonard
+The Real Jazz Fake Book - Hal Leonard
+The Real Jazz Standards Fake Book - Hal Leonard
+The Real Little Ultimate Jazz Fake Book - Hal Leonard
+The Swing Era - 1936-1947 - Jazz Bible Series - Hal Leonard
+The Trane Book - Hal Leonard
+The Ultimate Fake Book - Hal Leonard
+The Ultimate Jazz Fake Book - Hal Leonard - Herb Wong
+The World's Greatest Fake Book - Chuck Sher
+Torch Songs - Hal Leonard
+Torch Songs In Sultry Keys - Hal Leonard
+Vocal Real Book - Orig
+
+# -----------------------------------------------------------------------
+# Chris Paradine
+
+557 Standards in C         
+Best Chord Changes for Most-Requested Standards    
+Bill Evans Fake Book - Hal Leonard        
+Colorado Cook Book         
+Jazz Bible of the 50s - Hal Leonard        
+Jazz Fake Book     
+Jazz Ltd Over 500 Tunes    
+Library of Musicians' Jazz         
+New Real Book Vol1 - Chuck Sher    
+New Real Book Vol2 - Chuck Sher    
+New Real Book Vol3 - Chuck Sher    
+Real Book Vol1 (Fifth Ed.) - Orig
+Real Book Vol2 ("All new") - Orig
+Real Book Vol3 ("All new") - Orig
+Real Jazz Book - Hal Leonard       
+Standards Real Book - Chuck Sher           
+The Great Gig Book         
+The Ultimate Fake Book - Hal Leonard        
+
+
+# -----------------------------------------------------------------------
+#   iGigBook
+
+557 Jazz Standards
+All Jazz Real Book
+Anthologie des Grilles de Jazz
+Bach Cello Suites
+Beatles Fake Book
+Best Fake Book Ever 2nd Edition
+Bill Evans Fake Book
+Brazilian Jazz Real Book
+Charlie Parker Omnibook (Bb, C, Eb, Bass)
+Classical Fake Book
+Classic Real Book 5th Edition (Bb, C, Eb, Bass)
+Classic Real Book Vol II (Bb, C, Eb, Bass)
+Classic Real Book Vol III (Bb, C, Eb, Bass)
+Classic Real Vocal Book
+Classic Rock Fake Book
+Country Fake Book
+Creole Jazz Band Fake Book
+Cuban Fake Book
+Dick Hyman's Professional Chord Changes
+Disney Fake Book 2nd Edition
+Django Fake Book
+Folk Song Fake Book
+Great Gig (Blue) Book
+Jazz Fakebook (Ultimate)
+Jazz LTD
+Jazz of the 50s
+Just Jazzs Real Book
+Just Standards Real Book
+Latin Fake Book - Alfred
+Legit Professional Fake Book
+Library of Musicians' Jazz
+Movie Fake Book 4th Edition.
+Original, Legal, Musician's
+Pat Metheny Song Book
+R&B Fake Book 2nd Edition.
+Real Book 6th Edition (Bb, C, Eb, Bass)
+Real Book 6th Edition (European Pocket Edition)
+Real Book Vol II 2nd Edition (Bb, C, Eb, Bass)
+Real Book Vol III 2nd Edition (Bb, C, Eb, Bass)
+Real Book Vol IV (Bb, C, Eb, Bass)
+Real Book Vol V (Bb, C, Eb, Bass)
+Real Jazz Book
+Real Jazz Standards Fake Book
+Real Rock Book 2 - Warner/Chappell
+Real Rock Book - Warner/Chappell
+Sample Book
+Straight Ahead Jazz Fakebook
+The Beatles 1962-1974
+The Blues Fake Book
+The Book
+The Colorado Cookbook
+The Digital Standards Songbook
+The European Real Book
+The Firehouse Jazz Band Fake Book
+The Handbook of Jazz Standards
+The Latin Real Book
+The New Real Book Bb (Digital Edition)
+The New Real Book (Digital Edition)
+The New Real Book Eb (Digital Edition)
+The New Real Book Vol 1
+The New Real Book Vol 1 Bb
+The New Real Book Vol 1 Eb
+The New Real Book Vol 2
+The New Real Book Vol 2 Bb
+The New Real Book Vol 2 Eb
+The New Real Book Vol 3
+The New Real Book Vol 3 Bb
+The New Real Book Vol 3 Eb
+The Public Domain Christmas Jazz Fakebook
+The Real Book Of Blues
+The Real Christmas Book
+The Real Easy Book
+The Real Vocal Book 2nd Ed Volume I
+The Real Vocal Book Volume II
+The Standards Real Book
+The Standards Real Book Bb
+The Standards Real Book Eb
+The Ultimate Pop/Rock Fake Book
+The Worlds Greatest Fake Book
+This Is The Ultimate Fake Book 2nd Edition
+TV Fake Book
+Ultimate Broadway Fake Book 4th Ed.
+Ultimate Broadway Fake Book 5th Ed.
+Ultimate Christmas Fake Book
+Ultimate Country Fake Book 5th Ed.
+Wedding & Love Fake Book 3rd Edition
+
+
+# -----------------------------------------------------------------------
+#   PSR Tutorial
+
+1001 Jumbo Song Book (-NA-)
+Celtic Fake Book (Hal Leonard)
+Chicago Fake Book (Hal Leonard)
+Classic Rock Fake Book (Hal Leonard)
+Disney Fake Book (Hal Leonard)
+Early Rock 'N' Roll Era Fake Book (Hal Leonard)
+Elvis Fake Book (Hal Leonard)
+Fake Book of the World's Favorite Songs (Hal Leonard)
+Fifty Years of (Country) Hits (-NA-)
+First Time Ever Fake Book (Dover)
+Folksong Fake Book (Hal Leonard)
+Frank Sinatra Fake Book (Hal Leonard)
+Gospel's Greatest (Hal Leonard)
+Hal Leonard Real Jazz Fake Book (Hal Leonard)
+Hal Leonard Real Jazz Standards Fake Book (Hal Leonard)
+Hymn Fakebook (Hal Leonard)
+Irving Berlin Fake Book (Hal Leonard)
+Jazz Bible: Jazz of the 50s (Hal Leonard)
+Jazz Bible: Jazz of the 60s (Hal Leonard)
+Jazz Bible: Ragtime & Early Jazz 1900-1935 (Hal Leonard)
+Jazz Bible: Swing Era 1936-1947 (Hal Leonard)
+Just Gershwin Real Book (Warner)
+Just Jazz Real Book (Warner)
+Just Standards Real Book (Warner)
+Most Fantastic Fakebook In The World (Warner)
+Performer's Complete Fake Book
+Professional Pianist's Christmas Fake Book
+Professional Pianist's Fake Book (Hal Leonard)
+Professional Singer's Country Fake Book (Hal Leonard)
+Professional Singer's PopRock Fake Book - Men (Hal Leonard)
+R&B Fake Book (Hal Leonard)
+Real Chord Changes For 54 Standards (Hal Leonard)
+Richard Wolfe's Legit Professional Fake Book (-NA-)
+Standards Real Book (Sher)
+The Beatles Fake Book (Hal Leonard)
+The Best Fake Book Ever (Hal Leonard)
+The Blues Fake Book (Hal Leonard)
+The Movie Fake Book (Hal Leonard)
+The New Real Book, V1 (Sher)
+The New Real Book, V2 (Sher)
+The New Real Book, V3 (Sher)
+TV Fake Book (Hal Leonard)
+Ultimate Broadway Fake Book (Hal Leonard)
+Ultimate Christmas Fake Book (Hal Leonard)
+Ultimate Country Fake Book (Hal Leonard)
+Ultimate Fake Book (Hal Leonard)
+Ultimate Jazz Fake Book (Hal Leonard)
+Ultimate Pop / Rock Fake Book (Hal Leonard)
+Wedding & Love Fake Book (Hal Leonard)
+World's Greatest Fake Book (Sher)
+
+# -----------------------------------------------------------------------
+#   Traditional
+
+Broadway Songs  - (HL.240157)
+Classical Fake Book - 2nd Ed - (HL.240044)
+Classic Rock Fake Book - 2nd Ed - (HL.240108)
+Columbia's top 200 of 1987-88 fake book for all keyboards 200 great songs - (F2896FBX)
+Early Rock'N'Roll Era Fake Book - (HL.240167)
+Just Classic Rock Real Book - (WB.FBM0005)
+Just Jazz Real Book - (WB.FBM0003BF)
+Just Standards Real Book - (FBM0002)
+Miles Davis Real Book - (HL.240137)
+Motown Hits - (HL.240125)
+Professional singer's pop rock fake book Hal Leonard HL00240091
+Real Jazz Standards Fake Book - (HL.240172)
+Richard Wolfe's legit professional fake book
+The 50s - (HL.240240)
+The 666 fake song book
+The Amazing jazz fake book - (IF0489)
+The Best Fake Book Ever - (HL.240083)
+The Big red fake book-giant hits of the 50's, 60's and 70's - (F1069FBX)
+The Blues Fake Book - (HL.240082)
+The Celtic Fake Book - (HL.240153)
+The Disney Fake Book - (HL.240039)
+The Easy Gospel Fake Book - (HL.240169)
+The Folksong Fake Book - (HL.240151)
+The Greatest Rock Guitar Fake Book - (HL.240148
+The Hal Leonard Real Jazz Fake Book - (HL.240097)
+The Hal Leonard Real Jazz Standards Fake Book - (HL.240173)
+The Hymn Fake Book - (HL.240145)
+The Jewish Fake Book - (HL.330350)
+The Latin Real Book - (HL.240138)
+The most amazing colossal ultimate selection - (HL00240024)
+The most fantastic fakebook in the world - Warner Bros
+The Movie Fake Book - (HL.240033)
+The New Real Book - (SR.NRB1C)
+The new real book. v2 - (Sher Music Co)
+The New real book V3 - (Sher Music Co)
+The Performer's Complete Fake Book - (HL.240058)
+The Professional pianist's fake book - (HL00290084)
+The Real Book - (HL.240224)
+The Real Little Best Fake Book Ever - (HL.240017)
+The Real Little Ultimate Broadway Fake Book-4th Edition - (HL.240111)
+The Real Little Ultimate Fake Book-3rd Edition - (HL.240027)
+The Real Little Ultimate Jazz Fake Book - (HL.240018)
+The Standards Real Book - (SR.SRBC)
+The Ultimate Broadway Fake Book 4th ed Hal Leonard.  - (HL.240046)
+The Ultimate Country Fake Book 4th Ed - Hal Leonard  - (HL.240049)
+The Ultimate Fake Book 3rd - Hal Leonard HL.240024
+The Ultimate Jazz Fake Book - Hal Leonard  - (HL.240079)
+Wedding & Love Fake Book - Hal Leonard HL.240041
+Your First Fake Book - Hal Leonard HL.240112
+
+# -----------------------------------------------------------------------
+#   Fakebook Library
+
+101 Frank Sinatra Hits for Buskers
+101 Hits for buskers - Book 01
+101 Hits for Buskers - Book 02
+101 Hits for Buskers - Book 06
+101 Hits For Buskers - Book 10
+101 Rock n roll Hits for Buskers
+150 American Jazz Standards (Russian)
+1950s Jazz Fake Book
+20s 30s fakebook
+462 Jazz Standards Merged-2018-06-26
+49 Most Popular Jazz Songs
+557 Jazz Standards
+All Hit 1001 Songs
+All Jazz Real Book
+All of the Jazz Standards 1
+All of the Jazz Standards 2
+All Time Best Collection Vol 3
+Alterego Fakebook (chords)
+Anthologie Des Grilles De Jazz (chords only)
+Bossa Nova Fakebook
+Brazil Jazz Real Book
+Burr and Burton Fakebook 07
+Buskers - 21st Century Pop
+Buskers - Play it Again and Again
+Choro Fakebook
+Christmas Jazz Fakebook
+Christmas Real Book
+Collection of Golden Standards
+Colorado Cookbook
+Creole Jazz Band Fakebook
+Cuban Fake Book Vol 1
+Dit songboek zocht ik 11
+Dit songboek zocht ik 12
+Dit songboek zocht ik 14
+Dit songboek zocht ik 15
+Dit songboek zocht ik 16
+Dit songboek zocht ik 17
+Dit songboek zocht ik 2
+Dixieland-Fake-Book-(just chords)
+Dixieland Fake Book Vol 1
+Dixieland Fakebook Vol. 2
+Dixieland Jazz Standards Book 1
+Easy Blues - Complete Player Songbook
+Eddie Harris Fake Book (Alfred, Grove)
+Fakebook of Swing Jazz
+Fakebook - Volume I of Over 1000 Songs
+Firehouse Jazz Band Commercial Dixieland Fake Book
+Great Gig Book (Blue)
+Hal-Leonard-Real-Jazz-Standards-FakeBook-sheetmusic
+Italian Jazz Standards - Antonio Ongarello
+Jazz Club Piano Solos
+Jazz Fake Book
+Jazz Ltd (500 tunes the real book missed)
+Jazz of the '50s (Hal Leonard)
+Jazz standards (Budget books)
+Jobim (guitar)
+Just Standards Real Book
+Latin Bass Book
+Latin Fake Book
+Latin Real Book
+Library of Musicians Jazz
+Monster Jazz Fake Book Vol 1
+Music For The Millenium - The Seventies
+Nestico Fake Book
+New Bob Book
+New Orleans Jam Book
+New Real Book Vol 1
+New Real Book Vol 2
+New Real Book Vol 3
+Official Red Book Jazz Fake Book
+Orginal Musicians' Broadway Fake Book
+R&B Fake Book
+Real Book Argentina
+Real Book Of Blues
+Real Book of Greek Music
+Real Book Vol 1 5th ed
+Real Book Vol 1 6th ed (Hal Leonard)
+Real Book Vol 2
+Real Book Vol 2 2nd ed (Hal Leonard)
+Real Book Vol 3
+Real Book Vol 3 2nd ed (Hal Leonard)
+Real Book Vol 4 (Hal Leonard)
+Real Book Vol 5 (Hal Leonard)
+Real Jazz Book (Hal Leonard)
+Real Little Classical Fake Book (Hal Leonard)
+Real Rock Book
+Real Vocal Book
+Richard Wolfes Legit Professional Fake Book
+Samba Fakebook
+Slickbook 1
+Slickbook 2
+Spaces II - Contemporary Funk Jazz
+Spaces III - Jazz Mixed Bag
+Spaces I - Jazz Classics
+Spaces IV - Compendium of Jazz Tastes
+Spaces V - Bebop Jazz
+Spaces VI - Jazz Solos
+Standards Real Book
+Straigh Ahead Jazz Fakebook (Gerand and Sargin)
+The Book
+The Other Book
+The Other Book All New
+The Ultimate Jazz Fake Book (Hal Leonard)
+The Ultimate Pop Rock Fake Book A-E
+The Ultimate Pop Rock Fake Book F-L
+The Ultimate Pop Rock Fake Book L-O
+The Ultimate Pop Rock Fake Book P-S
+The Ultimate Pop Rock Fake Book T-Z
+The Ultimate Pop Rock Fake Book (Whitburn, Hal Leonard)
+This is the Ultimate Broadway Fakebook (Hal Leonard)
+This Is The Ultimate Fake Book, C Edition, 2nd ed. (Hal Leonard)
+TV Fakebook (Hal Leonard)
+TV Guide 2005 Fake Book
+Ultimate Online Fake Book, B-Flat Ed
+Unknown - 1467 sheets
+Unknown - 200 pgs - Jazz & Standards
+Vanilla Real Book 200
+World Hits of Jazz Standard
+World's Greatest Fake Book
+
+# -----------------------------------------------------------------------
+#   Book names found in the local raw indexes with abbreviated names removed.
+#       Not included in CanonicalNames.txt
+
+1002 Jumbo All-American Jazz Album (vol. 1)
+1002 Jumbo All-American Jazz Album (vol. 2)
+1003 Jumbo Jazz Complete
+1003 Jumbo Jazz Complete (pages w/ Roman Numerals)
+1012 Jumbo Jazz Album
+1012 Jumbo Jazz Part Two
+101 Australian Songs for Buskers
+101 Australian Songs for Buskers, Vol. 2
+101 Real Fake Book
+1976 - 1776 Professional Edition (pages w/ prefix A)
+1976 - 1776 Professional Edition (pages w/ prefix B)
+1976 - 1776 Professional Edition (pages w/ prefix C)
+200 Of The Best Songs from Jazz of the '50s
+250 Jazz & Blues All-Time Hits
+557 Standards
+All-Jazz Real Book
+All New 1974-75 Variety Edition (pages w/ prefix A)
+All New 1974-75 Variety Edition (pages w/ prefix B)
+All New 1974-75 Variety Edition (pages w/ prefix C)
+Amazing Country Fakebook, The
+Amazing Jazz Fake Book, The
+American Popular Song: The Golden Age of American Popular Music
+Beatles Fake Book
+Best Chord Changes for the Best Known Songs, The
+Best Chord Changes for the Best Standards Ever, The
+Best Fake Book Ever
+Best Music 1971 (Bonus Section at Back)
+Best Music 1971 (Section A)
+Best Music 1971 (Section B)
+Best Music 1971 (Section C)
+Best of Sher Music Co.
+Bill Holman Fake Book, Vol. 1
+Blues Fakebook, The
+Blues Fake Book, The
+Brand New Best Music 1971 (Pages w/ prefix A)
+Brand New Best Music 1971 (Pages w/ prefix B)
+Brand New Best Music 1971 (Pages w/ prefix C)
+Charlie Parker Omnibook Eb
+Charlie Parker Omnibook Eb Index            
+Chartbuster Fake Book, Volume 1
+Chartbuster Fake Book, Volume 2
+Classical Fake Book, The
+Classic Rock Fake Book
+Club Date
+Columbia's Colossal Fake Book
+Columbia's International Fakebook
+Columbia's Jazz Fakebook
+Columbia's Wedding Fake Book
+Criterion's Variety Fake Book
+Current Standard Songs From the 50's 60's 70's
+Dick Grove Fake Book, Vol. 1
+Dick Grove Fake Book, Vol. 2
+Digital Standards Songbook
+Eskimo Jazz
+European Real Book
+Fake Book
+Fakebook-Django
+Fake Book of Swing Hits
+Fiddler's Fakebook
+First Time Ever
+Folksong Fakebook
+Giant Combo Fake Book (Includes Lyrics Section)
+Gig Book
+Gig Packs: Contemporary Ballads
+Gigpaks: Standard Ballads
+Gospel's Best - Words and Music
+Greatest Legal Fake Book of All Time
+Great Gig Book
+Great Rock Fake Book
+Guitarist Fake Book
+Hal Leonard Real Jazz Book, The
+Hits Of The '90s Fake Book
+Irving Berlin Fake Book, The
+Jazz Fake
+JazzFake
+Jazz LTD
+Jerry Snyder's 200 Guitar Fake Pocket Book
+Jewish Fake Book, The
+Joanne Grauer Fake Book, Vol. 1
+Just Standards Real Book
+Latin Fake Book, The
+Latin Real Book
+Latin Real Book
+Latin Real Easy Book
+Legal Fake Book
+Lennie Niehaus Fake Book, Vol. 1
+Library
+Melody Book
+Melody BookThe Melody Book
+Modern Jazz
+Monster Bebop
+Monster Vol. 1
+Monster Vol. 2
+Most Amazing Colossal Ultimate Real Legal Fake Book
+Most Fantastic Fake Book In The World, The
+Movie Fake Book, The (4th ed.)
+Mundell Lowe Fake Book, vol. 1
+Musician's Fake Book, The
+Musician's Library (pp. at front with no prefix)
+Musician's Library (pp. with prefix 4)
+Musician's Library (pp. with prefix 6)
+Musician's Library (pp. with prefix C)
+Musician's Library (pp. with prefix F)
+Musician's Library (pp. with prefix L)
+Musician's Library (pp. with prefix M)
+Musician's Library (pp. with prefix R)
+Musician's Library (pp. with prefix S)
+Musicians Songs, 1964 Edition
+New 1001 Jumbo Song Book
+New Real 1
+New Real 2
+New Real 3
+New Real Book, The
+New Real Book: Vol. 1
+New Real Book: Vol. 1 - Digital Edition
+New Real Book: Vol. 2
+New Real Book: Vol. 3
+New Real Book, Volume 2, The
+New Ultimate Country Fakebook
+Original #1 Sounds of the Big Bands, The
+Original, Legal, Musician's Fake Book
+Pat Metheny Song Book
+Performer's Complete Fake Book
+Pop Almanac 1955-1973
+Professional Pianist's Fake Book, The
+Professional Singer's Christmas Fake Book
+Real Book 1
+Real Book 2
+Real Book 2 Eb
+Real Book 3
+Real Book, The
+Real Chord Changes and Substitutions, The, v. 1
+Real Chord Changes and Substitutions, The, v. 2
+Real Chord Changes and Substitutions, The, v. 3
+Real Chord Changes and Substitutions, The, v. 4
+Real Cool Book
+Real Easy Book: Vol. 1
+Real Easy Book: Vol. 2
+Real Easy Book: Vol. 3
+Real Vocal Book, The, v. 1
+Richard Wolfe's Legit Broadway Fake Book
+Richard Wolfe's Legit Country Fake Book
+Richard Wolfe's Legit Pop And Standard Fake Book
+Richard Wolfe's Legit Professional Fake Book
+Rock Fake Book
+Rock 'N' Roll Issue I
+Sammy Nestico Fake Book, Vol. 1
+Sher Standards
+Something Old Something New for All Popular Instruments (Volume 1)
+Something Old Something New for All Popular Instruments (Volume 2)
+Song Dex Treasury of Humorous and Nostalgic Songs (Volume 1)
+Spaces
+Standard Songs Vol. 1 (New Ed.)
+Standards Real Book
+Standards Real Book, The
+Straight Ahead Jazz Fakebook
+The Latin Fake Book
+The New Real Book Eb I
+The Real Book Of Blues
+This Is The Ultimate Fake Book, Vol. 1
+This Is The Ultimate Fake Book, Vol. 2
+Today's Top 50 Fake Book, Vol. 1
+Today's Top 50 Fake Book, Vol. 2
+Today's Top 50 Fake Book, Vol. 3
+Top 200 of 1985-1986 Fake Book
+Top 200 of 1986-87
+TV Fake Book, The
+Ultimate Broadway Fake Book
+Ultimate Broadway Fake Book, The (4th Ed.)
+Ultimate Christmas Fake Book
+Ultimate Christmas Fake Book, The
+Ultimate Jazz Fakebook
+Ultimate Pop/Rock Fake Book
+Ultimate Rock Guitar Fake Book
+Very Rare Oldies But Goodies
+Vocal Real Book
+Vogue's Real Jazz Fake Book
+Volume 2 of Over 1000 Songs
+Volume One of Over 1000 Songs
+Volume One of Over 1000 Songs 2 (200-403)
+Wedding Fake Book, The
+World's Greatest Fakebook
+World's Greatest Fake Book
+World's Greatest Fakebook, The

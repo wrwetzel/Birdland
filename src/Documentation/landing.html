@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- 
+    Landing page for Birdland website.
+    WRW 11 May 2022
+
+    A very simple web page for just links to the documentation and downloads
+
+-->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<title>Birdland Musician's Assistant</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<meta name="author" content="birdland.wrwetel.com">
+<meta name="theme-color" content="#f8f8ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="[Birdland Musician's Assistant]">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Fakebook viewer, fakebook index, music viewer, music manager, fakebook, ChordPro,
+JJazzLab, audio player" >
+
+<!--
+<link rel="canonical" href="[canonical]" id=canonical-link />
+<link rel="manifest" href="[manifest]" id=manifest-link />
+-->
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js'></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous"></script>
+
+
+<link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<style>
+
+body {
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+    font-size: 11pt;
+    letter-spacing: -0.01em;
+    line-height: 150%;
+    background-color: #f0f0ff;
+    color: #000000;
+    padding: 0;
+    min-width: 640px;
+    margin: 0px 30px 30px 30px;
+}
+
+.row {
+    display: flex;
+}
+
+.left-column {
+    flex: 100px;
+    padding: 0 10px 0 0;
+    font-size: 10pt;
+    border-right: 1px solid #808080;
+}
+
+.right-column {
+    padding: 0 0 0 10px;
+    flex: 90%;
+}
+
+#md-display {
+    font-size: 10pt;
+    background-color: #f0f0ff;
+    padding: 10px;
+    margin: 10px 10px 0px 0px;
+    display: none;
+/*
+    border-radius: 8px;
+    border: 2px solid #0000ff;
+*/
+}
+
+table, th, td {
+    font-size: 10pt;
+    border: 1px solid;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 4px 8px;
+}
+
+pre {
+    font-size: 9pt;
+    background-color: #e0e0ff;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #000080;
+}
+
+p#copyright {
+    font-size: 9pt;
+    color: #404040;
+}
+
+</style>
+
+</head>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<script>
+$(document).ready(function() {
+
+});     // END of: $(document).ready(function() {
+
+function show_md( url ) {
+    $.ajax({
+        url: url,
+        dataType: 'text',
+        type: 'GET',
+        success: function( data, status ) {
+            var t = markdownit({html: false}).render( data );
+            $( '#md-display' ).html( t );
+            $( '#md-display' ).show();
+            $( '#md-display')[0].scrollIntoView();
+        }
+    });
+}
+
+</script>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<body>
+
+<h1> <img src=/Images/Saxophone_64.png width=32/> Birdland Musician's Assistant</h1>
+
+<div class=row>
+<div class=left-column>
+    <a href=/_build/html/birdland.html>Documentation</a> <br>
+    <a href=/screenshots.html>Screenshots</a> <br>
+    <a href=/contact.html>Contact</a> <br>
+    <a href=#download>Download</a> <br>
+</div>
+
+
+<div class=right-column>
+    Birdland is a Linux-based multimedia music viewer and library manager for
+    music books in PDF form including fakebooks.  It displays a page of music
+    or a ChordPro song by searching a database of titles and other metadata.
+    Answering the <i>Let's hear how it goes</i> query it also suggests audio files,
+    midi files, JJazzLab songs and YouTube links matching the search.
+    
+    <p>
+    A secondary feature of Birdland is index management.  Birdland contains
+    tools to quickly create indexes using OCR, harmonize indexes from
+    disparate sources, compare them, and integrate them into one database.
+    Birdland ships with index data from 9 sources covering over 100 books and
+    over 20,000 titles.  Users can edit existing indexes and add their own.
+    </p>
+    
+    <img src = /Images/small-full-window.png width=50% />
+
+
+    <a id="download">
+    <h2>Download</h2>
+
+    <p>
+    Birdland is packaged in several forms:
+    </p>
+    
+    <ul>
+
+    <li>As a tarball.
+      This is likely to be familiar to techy users but does nothing automatically. You will
+      have to be sure all required Python modules are installed.
+    </li>
+    <li>
+    For installation from <i>PyPi</i> via <i>pip</i>.
+      This is also likely to be familiar to techy users and automatically installs all require
+      Python modules.
+    </li>
+    <li>
+    As as self-contained file build by <i>PyInstaller</i>.
+    </li>
+    <li>
+    As as self-contained file build by <i>Nuitka</i>.
+    </li>
+    </ul>
+
+    <p>
+    The last two are likely to be the easiest to install as they include the Python
+    interpreter and all required modules but they still require a recent glibc and the
+    download files are quite large.
+    </p>
+
+    <table>
+    <thead>
+    <tr>
+    <th>Package Type</th> <th>Link</th> <th>Installation Notes </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Tar</td>
+        <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
+        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-Tar.md' )" >view</a></td>
+    </tr>
+
+    <tr>
+        <td>PyPi</td>
+        <td><a href=https://test.pypi.org/project/birdland-wrwetzel/>At PyPi</a><br></td>
+        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-PyPi.md' )" >view</a></td>
+    </tr>
+
+    <tr>
+        <td>Self-Contained, Nuitka Package</td>
+        <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
+        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-Nuitka.md' )" >view</a></td>
+    </tr>
+
+    <tr>
+        <td>Self-Contained, PyInstaller Package</td>
+        <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
+        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-PyInstaller.md' )" >view</a></td>
+    </tr>
+
+
+    </tbody>
+    </table>
+    
+    <hr>
+
+    <div id = md-display>
+    </div>
+
+    <p id=copyright>
+    &copy; Bill Wetzel 2022
+    </p>
+
+</div>
+
+</body>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

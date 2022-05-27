@@ -1,0 +1,61 @@
+                                    Exception:  500 Miles High
+                                    Exception:  502 Blues
+                                    Exception:  720 In The Books
+               Trailing sequence number '(2)':  'Fine And Mellow (2)' -> 'Fine And Mellow'
+                                    Exception:  500 Miles High
+                                    Exception:  500 Miles High
+                                    Exception:  728
+                                    Exception:  728
+                                    Exception:  728
+                                    Exception:  26-2
+                                    Exception:  728
+                                    Exception:  9:20 Special
+                                    Exception:  720 In The Books
+                                    Exception:  502 Blues
+                                    Exception:  728
+                                    Exception:  502 Blues
+                                    Exception:  500 Miles High
+                                    Exception:  500 Miles High
+                                    Exception:  502 Blues
+                                    Exception:  720 In The Books
+                                    Exception:  500 Miles High
+                                    Exception:  34 skidoo
+                                    Exception:  500 Miles High
+                                    Exception:  26-2
+                                    Exception:  728
+                                    Exception:  502 Blues
+                                    Exception:  9:20 Special
+                                    Exception:  720 In The Books
+                                    Exception:  26-2
+                                    Exception:  728
+                                    Exception:  9:20 Special
+                                    Exception:  26-2
+                                    Exception:  720 In The Books
+                                    Exception:  502 Blues
+                                    Exception:  500 Miles High
+                                    Exception:  728
+                                    Exception:  500 Miles High
+                                    Exception:  77 Sunset Strip
+                                    Exception:  26-2
+                                    Exception:  500 Miles High
+                                    Exception:  9:20 Special
+                                    Exception:  77 Sunset Strip
+                                    Exception:  77 Sunset Strip
+                                    Exception:  500 Miles High
+                                    Exception:  502 Blues
+                                    Exception:  500 Miles High
+                                    Exception:  502 Blues
+                                    Exception:  500 Miles High
+                                    Exception:  111-44
+                                    Exception:  77 Sunset Strip
+                                    Exception:  9:20 Special
+                                    Exception:  77 Sunset Strip
+                                    Exception:  77 Sunset Strip
+                                    Exception:  52 Points To Remember
+                        Leading digit(s) '03':    '03 28 09 58 07' -> '28 09 58 07'
+                                    Exception:  1919 Rag
+                                    Exception:  1919 Rag
+                                    Exception:  26-2
+                                    Exception:  500 Miles High
+                                    Exception:  111-44
+                                    Exception:  4 A.M.

@@ -10,14 +10,15 @@
 
 #   WRW 5 Jan 2022 - Must de-duplicate Buffalo results
 
-#   WRW 12 Feb 2022 - RESUME Try conversion to sqlite. Move all DROP and index creation into table-specific code.
+#   WRW 12 Feb 2022 - Addition of sqlite. Move all DROP and index creation into table-specific code.
 #       Add options for each table.
 
-# --------------------------------------------------------------------------
 #   Spent a few minutes trying sqlite3, not a trivial drop-in.
 #   Probably best to invest the time into SqlAlchemy and let do the work.
 #   Not so sure after looking at Peewee ORM.
 #   WRW 13 Feb 2022 - Back to looking at sqlite3
+
+# --------------------------------------------------------------------------
 
 import os
 import sys
@@ -25,7 +26,6 @@ import json
 import re
 import click
 import fitz
-import MySQLdb
 from collections import OrderedDict
 from pathlib import Path
 import gzip
@@ -33,10 +33,12 @@ import sqlite3
 import inspect
 import mutagen
 import subprocess
-
+import Levenshtein
 import fb_config
 import fb_utils
 import fb_title_correction
+import fb_pdf
+import fb_metadata
 
 # --------------------------------------------------------------------------
 
@@ -257,13 +259,11 @@ def do_scan_audio_files():
                 ignore_count_by_extension[ext] = ignore_count_by_extension.setdefault( ext, 0 ) + 1
     
     # ------------------------------------------
-    #   /// RESUME - do we want to save to a location specified on command line?
+    #   Do we want to save to a location specified on command line? Have not seen need.
 
     full_contents = {
         'audio_files' : table
     }
-
-    # ofile = Path( conf.confdir, conf.v.audiofile_index )
 
     ofile = conf.val( 'audiofile_index' )
     json_text = json.dumps( full_contents, indent=2 )
@@ -309,6 +309,76 @@ def check_null( s ):
 
     else:
         return s
+
+# -----------------------------------------------------------------------
+#   WRW 30 Apr 2022 - Build a table mapping file name to page count
+
+def build_page_count( dc, c, conn ):
+    txt = 'DROP TABLE IF EXISTS page_count;'
+    execute( c, txt )
+
+    if FULLTEXT and SQLITE:
+        txt = 'DROP TABLE IF EXISTS audio_files_fts;'
+        execute( c, txt )
+
+    if MYSQL:
+        txt = """CREATE TABLE page_count (
+            id INT UNSIGNED AUTO_INCREMENT,
+            file VARCHAR(255),
+            page_count INTEGER,
+            PRIMARY KEY(id) )
+            ENGINE = MYISAM
+            CHARACTER SET 'utf8mb4'
+            """
+        execute( c, txt )
+
+    if SQLITE:
+        txt = """CREATE TABLE page_count (
+            file VARCHAR(255),
+            page_count INTEGER,
+            id INT AUTO_INCREMENT,
+            PRIMARY KEY(id) )
+            """
+        execute( c, txt )
+
+    if FULLTEXT and SQLITE:
+        txt = """CREATE VIRTUAL TABLE audio_files_fts USING fts5(
+            file,
+            page_count UNINDEXED,
+            content='page_count',
+            content_rowid='id'
+            )
+            """
+        execute( c, txt )
+
+    # ----------------------------------------------------------------
+
+    txt = "SELECT file FROM canonical2file ORDER BY file"
+    execute( dc, txt )
+    rows = dc.fetchall()
+    root = conf.val( 'music_file_root' )
+
+    if rows:
+        for row in rows:                    # Build array of all titles
+            row[ 'file' ]
+            path = Path( root, row['file' ] )
+            doc = fitz.open( path )
+
+            txt = "INSERT INTO page_count (file, page_count) VALUES( %s, %s )"
+            data = [ row[ 'file' ], doc.page_count ]
+            txt = fix_query( txt )      # Replaces %s with ? for SQLITE FULLTEXT
+
+            execute( c, txt, data )
+
+    if MYSQL:
+        txt = 'ALTER TABLE page_count ADD FULLTEXT( file )'
+        execute( c, txt )
+
+    if SQLITE:
+        txt = "CREATE INDEX page_count_index ON page_count( file )"
+        execute( c, txt )
+
+    return 0
 
 # -----------------------------------------------------------------------
 #   WRW 19 Feb 2022 - Check and clean up '\x00' in fields before inserting into table.
@@ -441,42 +511,51 @@ def do_extract_audio_data( dc ):
 # ==========================================================================
 
 def build_source_priority( c, conn ):
+    print( "\nBuilding src_priority", file=sys.stderr, flush=True  )
+
     txt = 'DROP TABLE IF EXISTS src_priority;'
     execute( c, txt )
 
     if MYSQL:
         txt = """CREATE TABLE src_priority (
-                priority MEDIUMINT UNSIGNED AUTO_INCREMENT,
                 src VARCHAR(255),
-                PRIMARY KEY(priority) )
+                priority VARCHAR(255),
+                id MEDIUMINT UNSIGNED AUTO_INCREMENT,
+                PRIMARY KEY( id ) )
                 ENGINE = MYISAM
                 CHARACTER SET 'utf8mb4'
               """
     if SQLITE:
         txt = """CREATE TABLE src_priority (
-                priority MEDIUMINT AUTO_INCREMENT,
                 src VARCHAR(255),
-                PRIMARY KEY(priority) )
+                priority VARCHAR(255),
+                id MEDIUMINT AUTO_INCREMENT,
+                PRIMARY KEY( id ) )
               """
     execute( c, txt )
 
+    priority = 1
+
     for src in fb.Source_Priority:
-        data = [ src ]
-        txt = 'INSERT INTO src_priority ( src ) VALUES( %s )'
+        data = [ src, priority ]
+        txt = 'INSERT INTO src_priority ( src, priority ) VALUES( %s, %s )'
         txt = fix_query( txt )
         execute( c, txt, data )
+        priority += 1
 
     if MYSQL:
         txt = "ALTER TABLE src_priority ADD INDEX( src )"
 
     if SQLITE:
         txt = "CREATE INDEX src_priority_index ON src_priority( src )"
+
     execute( c, txt )
     conn.commit()
     return 0
 
 # --------------------------------------------------------------------------
 #   Make table of canonical book names from CanonicalNames.txt file.
+#   WRW 9 Apr 2022 - Add priority and page_of_sheet_1
 
 def build_canonicals( c, conn ):
     print( "\nBuilding canonicals", file=sys.stderr, flush=True  )
@@ -488,6 +567,8 @@ def build_canonicals( c, conn ):
         txt = """CREATE TABLE canonicals (
                 id MEDIUMINT UNSIGNED AUTO_INCREMENT,
                 canonical VARCHAR(255),
+                page_of_sheet_1 VARCHAR(255),
+                priority VARCHAR(255),
                 PRIMARY KEY(id) )
                 ENGINE = MYISAM
                 CHARACTER SET 'utf8mb4'
@@ -496,6 +577,8 @@ def build_canonicals( c, conn ):
         txt = """CREATE TABLE canonicals (
                 id MEDIUMINT AUTO_INCREMENT,
                 canonical VARCHAR(255),
+                page_of_sheet_1 VARCHAR(255),
+                priority VARCHAR(255),
                 PRIMARY KEY(id) )
               """
     execute( c, txt )
@@ -505,9 +588,19 @@ def build_canonicals( c, conn ):
     with open( fb.Canonicals ) as fd:
         for line in fd:
             line = line.strip()
-            if line:
-                data = [ line ]
-                txt = 'INSERT INTO canonicals ( canonical ) VALUES( %s )'
+            if line:                                # Ignore blank lines
+                if line.startswith( '#' ):          # Ignore comments
+                    continue
+
+                priority, page_of_sheet_1, canonical = line.split( '|' )
+                priority = priority.strip()                     # Remove leading/trailing spaces,
+                priority = '999' if priority == '-' else priority
+
+                page_of_sheet_1 = page_of_sheet_1.strip()
+                canonical = canonical.strip()
+
+                data = [ priority, page_of_sheet_1, canonical ]
+                txt = 'INSERT INTO canonicals ( priority, page_of_sheet_1, canonical ) VALUES( %s, %s, %s )'
                 txt = fix_query( txt )
 
                 execute( c, txt, data )
@@ -802,7 +895,8 @@ def proc_one_book( src, data, file, **kwargs ):
     # print()
 
 # ----------------------------------------------------------------------------------
-#   /// RESUME - duplicate data from Buffalo. INSERT IGNORE should resolve that.
+#   Buffalo contains some duplicate data, same title, different call number I think. 
+#       INSERT IGNORE to resolve that.
 
 def proc_one_book_int( c, src, local, title_id, composer, lyricist, sheet ):
 
@@ -830,10 +924,13 @@ def proc_one_book_int( c, src, local, title_id, composer, lyricist, sheet ):
 def build_titles_distinct( c, conn ):
     print( "\nBuilding titles_distinct", file=sys.stderr, flush=True  )
 
-    global titles_distinct      # /// RESUME - cheating for now with a global
     titles_distinct = set()
+    raw_index = []
 
-    fb.traverse_sources( build_titles_distinct_from_one_index_source, c=c )     # Builds titles_distinct set()
+    fb.traverse_sources( build_titles_distinct_from_one_index_source, c=c, titles_distinct = titles_distinct, raw_index = raw_index )     # Builds titles_distinct set()
+
+    txt = 'DROP TABLE IF EXISTS raw_index;'
+    execute( c, txt )
 
     txt = 'DROP TABLE IF EXISTS titles_distinct;'
     execute( c, txt )
@@ -842,11 +939,27 @@ def build_titles_distinct( c, conn ):
         txt = 'DROP TABLE IF EXISTS titles_distinct_fts;'
         execute( c, txt )
 
+        txt = 'DROP TABLE IF EXISTS raw_index_fts;'
+        execute( c, txt )
+
     if MYSQL:
         txt = """CREATE TABLE titles_distinct (
             title VARCHAR(255),
             title_id MEDIUMINT UNSIGNED,
             PRIMARY KEY(title_id) )
+            ENGINE = MYISAM
+            CHARACTER SET 'utf8mb4'
+        """
+        execute( c, txt )
+
+        txt = """CREATE TABLE raw_index(
+            title_id MEDIUMINT UNSIGNED,
+            src VARCHAR(255),
+            local VARCHAR(255),
+            file VARCHAR(255),
+            line VARCHAR(255),
+            id MEDIUMINT AUTO_INCREMENT,
+            PRIMARY KEY(id) )
             ENGINE = MYISAM
             CHARACTER SET 'utf8mb4'
         """
@@ -860,6 +973,18 @@ def build_titles_distinct( c, conn ):
         """
         execute( c, txt )
 
+        txt = """CREATE TABLE raw_index (
+                src VARCHAR(255),
+                local VARCHAR(255),
+                file VARCHAR(255),
+                line VARCHAR(255),
+                title_id INTEGER,
+                id MEDIUMINT AUTO_INCREMENT,
+                PRIMARY KEY(id)
+                )
+        """
+        execute( c, txt )
+
     if FULLTEXT and SQLITE:
         txt = """CREATE VIRTUAL TABLE titles_distinct_fts USING fts5(
             title,
@@ -869,6 +994,18 @@ def build_titles_distinct( c, conn ):
         )
         """
         execute( c, txt )
+
+        txt = """CREATE VIRTUAL TABLE raw_index_fts USING fts5(
+            title_id,
+            local,
+            src,
+            file,
+            content='raw_index',
+            content_rowid='id'
+        )
+        """
+        execute( c, txt )
+
 
     # --------------------------------------------------------------
     #   Build titles_distinct table directly from titles_distinct set instead
@@ -894,17 +1031,42 @@ def build_titles_distinct( c, conn ):
 
     if MYSQL:
         txt = "ALTER TABLE titles_distinct ADD INDEX( title ), ADD INDEX( title_id )"
+        execute( c, txt )
 
     if SQLITE:
         txt = "CREATE INDEX titles_distinct_index ON titles_distinct( title, title_id )"
+        execute( c, txt )
 
-    execute( c, txt )
+    # --------------------------------------------------------------
+    #   WRW 1 Apr 2022 - Build raw_index table after add indexes because of the inner SELECT
+
+    for item in raw_index:
+
+        data = ( item[ 'src' ], item[ 'local' ], item[ 'file' ], item[ 'line' ], item[ 'title' ]  )
+
+        txt = 'INSERT INTO raw_index( src, local, file, line, title_id ) VALUES( %s, %s, %s, %s, (SELECT title_id from titles_distinct WHERE title = %s ) )'
+        txt = fix_query( txt )
+
+        execute( c, txt, data )
+
+    # --------------------------------------------------------------
+
+    if MYSQL:
+        txt = "ALTER TABLE raw_index ADD INDEX( src ), ADD INDEX( title_id ), ADD INDEX( local )"
+        execute( c, txt )
+
+    if SQLITE:
+        txt = "CREATE INDEX raw_index_index ON raw_index( src, local, title_id )"
+        execute( c, txt )
+
+    # --------------------------------------------------------------
+
     conn.commit()
     return 0
 
 # --------------------------------------------------------------------------
 
-def build_titles_distinct_from_one_index_source( src, **kwargs ):
+def build_titles_distinct_from_one_index_source ( src, **kwargs ):
     fb.get_music_index_data_by_src( src, proc_one_book_for_titles_distinct, **kwargs )
 
 # --------------------------------------------------------------------------
@@ -916,10 +1078,12 @@ def build_titles_distinct_from_one_index_source( src, **kwargs ):
 #       Only do corrections in fb_title_corrections() at add time.
 
 def proc_one_book_for_titles_distinct ( src, data, file, **kwargs ):
-    global titles_distinct      # /// RESUME - cheating for now with a global
 
     c = kwargs[ 'c' ]
+    titles_distinct = kwargs[ 'titles_distinct' ]       # WRW 27 Mar 2022 - Now passing titles_distinct through kwargs[]
+    raw_index = kwargs[ 'raw_index' ]                   # WRW 1 Apr 2022 - Add raw_index
     contents = data[ 'contents' ]
+    local = data[ 'local' ]                             # WRW 5 Apr 2022 - Need this, too.
 
     for line, content in enumerate( contents ):
         title = content[ 'title' ]                                               
@@ -927,6 +1091,18 @@ def proc_one_book_for_titles_distinct ( src, data, file, **kwargs ):
             titles_distinct.add( title )
         else:
             print( f"WARNING: falsey title on line {line+1} of {file}", file=sys.stderr, flush=True  )
+
+        if 'file' in content:
+            file = content[ 'file' ]
+        else:
+            print( f"WARNING: 'file' not found on line {line+1} of {file}", file=sys.stderr, flush=True  )
+
+        if 'line' in content:
+            line = content[ 'line' ]
+        else:
+            print( f"WARNING: 'line' not found on line {line+1} of {file}", file=sys.stderr, flush=True  )
+
+        raw_index.append( {'title' : title, 'src' : src, 'local' : local, 'file' : file, 'line' : line } )
 
     titles_distinct.add( "_TitleFirst"  )
     titles_distinct.add( "_TitleLast"  )
@@ -1041,6 +1217,8 @@ def build_title2youtube( dc, c, conn, show_found, show_not_found ):
 
 # --------------------------------------------------------------------------
 #   Format: local book name | (starting page, offset)
+#   WRW 5 Apr 2022 - get_page_from_sheet() was not working using sqlite. Looks
+#       like problem is trying to use primary key 'id'. Add separate counter 'offset_id'.
 
 def build_sheet_offsets( c, conn ):
     print( "\nBuilding sheet_offsets", file=sys.stderr, flush=True  )
@@ -1055,6 +1233,7 @@ def build_sheet_offsets( c, conn ):
                 local VARCHAR(255),
                 sheet_start SMALLINT,
                 sheet_offset SMALLINT,
+                offset_id MEDIUMINT UNSIGNED,
                 PRIMARY KEY(id) )
                 ENGINE = MYISAM
                 CHARACTER SET 'utf8mb4'
@@ -1066,6 +1245,7 @@ def build_sheet_offsets( c, conn ):
                 local VARCHAR(255),
                 sheet_start SMALLINT,
                 sheet_offset SMALLINT,
+                offset_id MEDIUMINT,
                 PRIMARY KEY(id) )
             """
     execute( c, txt )
@@ -1101,6 +1281,7 @@ def int_build_sheet_offsets( src, **kwargs ):
     
     ifile = Path( conf.get_source_path( source ), conf.val( 'sheetoffsets', source ))
     with open( ifile ) as fd: 
+        offset_id = 0
         for line in fb_utils.continuation_lines(fd):
             line = line.strip()
             if line.startswith( '#' ):
@@ -1115,10 +1296,11 @@ def int_build_sheet_offsets( src, **kwargs ):
                 sheet_start = int( mo.group(1).strip() )
                 sheet_offset = int( mo.group(2).strip() )
 
-                data = ( src, local, sheet_start, sheet_offset )
-                txt = 'INSERT INTO sheet_offsets ( src, local, sheet_start, sheet_offset ) VALUES( %s, %s, %s, %s )'
+                data = ( src, local, sheet_start, sheet_offset, offset_id )
+                txt = 'INSERT INTO sheet_offsets ( src, local, sheet_start, sheet_offset, offset_id ) VALUES( %s, %s, %s, %s, %s )'
                 txt = fix_query( txt )
                 execute( c, txt, data )
+                offset_id += 1
 
 # --------------------------------------------------------------------------
 #   os.walk( folder ) returns generator that returns list of folders and list of files
@@ -1205,76 +1387,7 @@ def build_music_files( c, conn ):
             file_count += 1
             file_count_by_ext[ file.suffix ] = file_count_by_ext.setdefault( file.suffix, 0 ) + 1
 
-    if False:
-        for folder in fb.Music_File_Folders:
-            path = os.path.join( fb.Music_File_Root, folder )
-
-            # print( "Processing:", path )
-            # print( f"  Music_File_Root: {fb.Music_File_Root},    path: {path}" )
-
-            for root, file in fb.listfiles( path ):
-                _, ext = os.path.splitext( file )
-
-                # rel_path = os.path.relpath( file, start=fb.Music_File_Root )
-                rpath = root.replace( f"{fb.Music_File_Root}/", '', 1)
-
-                # print( f"    Root: {root}\n    Rel_path: {rel_path}\n    File: {file}" )
-
-                # if ext in fb.Music_File_Extensions:
-                if ext.lower() == '.pdf':               # .Pdf, .PDF, .pdf all OK after convert to lower.
-                    # print( f"    rpath: {rpath}\n    File: {file}" )
-
-                    data = (rpath, file)
-                    txt = 'INSERT INTO music_files ( rpath, file ) VALUES( %s, %s )'
-                    txt = fix_query( txt )
-                    execute( c, txt, data )
-
-                    if FULLTEXT and SQLITE:
-                        txt = 'INSERT INTO music_files_fts ( rpath, file ) VALUES( ?, ? )'
-                        execute( c, txt, data )
-
-                    file_count += 1
-                    file_count_by_ext[ ext ] = file_count_by_ext.setdefault( ext, 0 ) + 1
-
-            # ---------------------------------------------------------
-            #   /// CURRENT - explore table of contents in pdf files.
-            #   Think about extracting page numbers, titles from toc when have it.
-            #   Maybe a separate program to build another source?
-
-            if False and (ext == '.pdf' or ext == '.PDF'):
-                fpath = os.path.join( root, file )
-
-                try:
-                    doc = fitz.open( fpath )
-                except Exception as e:
-                    (extype, value, traceback) = sys.exc_info()
-                    print( f"ERROR on fitz.open(), type: {extype}, value: {value}", file=sys.stderr, flush=True  )
-                    print( f"  {fpath}", file=sys.stderr, flush=True   )
-                    print( "", file=sys.stderr, flush=True  )
-
-                else:
-                    page_count = len( doc )
-
-                    tocs = doc.get_toc( simple=False)
-                    if tocs:
-                        for toc in tocs:
-                            if len( toc ) == 4:
-                                lvl, title, page, dest = toc
-                            elif len( toc ) == 3:
-                                lvl, title, page = toc
-                                dest = None
-
-                            print( "FILE:", fpath, file=sys.stderr, flush=True  )
-                            print( "PAGES:", page_count, file=sys.stderr, flush=True  )
-                            print( f"   lvl: {lvl}, title: {title}, page: {page}", file=sys.stderr, flush=True  )
-                            if dest:
-                                print( f"   DEST: {dest}", file=sys.stderr, flush=True  )
-                                # for key, item in dest:
-                                #     print( f"      {key}: {item}", file=sys.stderr, flush=True  )
-
-                            print( "", file=sys.stderr, flush=True  )
-
-            # ---------------------------------------------------------
+    # ----------------------
 
     if MYSQL:
         txt = "ALTER TABLE music_files ADD FULLTEXT( rpath ), ADD FULLTEXT( file )"
@@ -1372,6 +1485,193 @@ def build_midi_files( c, conn ):
     return 0
 
 # --------------------------------------------------------------------------
+#   WRW 27 Apr 2022 - Dinking around with chordpro and jjazz lab files
+
+def build_chordpro_files( c, conn ):
+    print( "\nBuilding chordpro_files", file=sys.stderr, flush=True  )
+
+    txt = 'DROP TABLE IF EXISTS chordpro_files;'
+    execute( c, txt )
+
+    if FULLTEXT and SQLITE:
+        txt = 'DROP TABLE IF EXISTS chordpro_files_fts;'
+        execute( c, txt )
+
+    if MYSQL:
+        txt = """CREATE TABLE chordpro_files(
+                title VARCHAR(255),
+                artist VARCHAR(255),
+                file VARCHAR(255),
+                id MEDIUMINT UNSIGNED AUTO_INCREMENT,
+                PRIMARY KEY(id) )
+                ENGINE = MYISAM
+                CHARACTER SET 'utf8mb4'
+            """
+
+    if SQLITE:
+        txt = """CREATE TABLE chordpro_files(
+                title VARCHAR(255),
+                artist VARCHAR(255),
+                file VARCHAR(255),
+                id MEDIUMINT AUTO_INCREMENT,
+                PRIMARY KEY(id) )
+            """
+    execute( c, txt )
+
+    if FULLTEXT and SQLITE:
+        txt = """CREATE VIRTUAL TABLE chordpro_files_fts USING fts5(
+            title,
+            artist,
+            file,
+            content='chordpro_files',
+            content_rowid='id'
+        )
+        """
+        execute( c, txt )
+
+    file_count = 0
+
+    for folder in conf.val( 'chordpro_folders' ):
+        path = Path( conf.val( 'chordpro_file_root' ), folder ).as_posix()
+
+        print( f"   {folder}", file=sys.stderr, flush=True  )
+
+        for root, file in fb.listfiles( path ):         # fb.listfiles() is doing os.walk()
+            ext = Path( file ).suffix
+
+            rpath = Path( root ).relative_to( Path( conf.val( 'chordpro_file_root' )) ).as_posix()
+
+            # print( f"    Root: {root}\n    Rel_path: {rpath}\n    File: {file}" )
+
+            if ext == '.chopro' or ext == '.cho' or ext == 'crd':
+                # print( f"    rpath: {rpath}\n    File: {file}" )
+
+                rfile = Path( rpath, file ).as_posix()
+
+                #   /// RESUME - extracting artist from file, OK in the one archive I downloaded.
+
+                artist = Path( root ).name
+                parts = re.findall(r'[A-Z][a-z0-9]+|[A-Z]', artist)         # Splits on case boundaries
+                artist = ' '.join( parts )
+
+                title = Path( file ).stem               # Make title from file name
+                parts = re.findall(r'[A-Z][a-z0-9]+|[A-Z]', title)         # Splits on case boundaries
+                title = ' '.join( parts )
+
+                if title or artist:                           # Some zero len
+                    data = (title, artist, rfile)
+                    txt = 'INSERT INTO chordpro_files ( title, artist, file ) VALUES( %s, %s, %s )'
+                    txt = fix_query( txt )
+                    execute( c, txt, data )
+
+                    if FULLTEXT and SQLITE:
+                        txt = 'INSERT INTO chordpro_files_fts ( title, artist, file ) VALUES( ?, ?, ? )'
+                        execute( c, txt, data )
+
+                    file_count += 1
+
+            # ---------------------------------------------------------
+
+    print( f"   Chordpro files total: {file_count}", file=sys.stderr, flush=True  )
+
+    if MYSQL:
+        txt = "ALTER TABLE chordpro_files ADD FULLTEXT( title ), ADD FULLTEXT( file )"
+        execute( c, txt )
+
+    conn.commit()
+    return 0
+
+# --------------------------------------------------------------------------
+#   WRW 27 Apr 2022 - Dinking around with chordpro and jjazz lab files
+
+def build_jjazz_files( c, conn ):
+    print( "\nBuilding jjazz_files", file=sys.stderr, flush=True  )
+
+    txt = 'DROP TABLE IF EXISTS jjazz_files;'
+    execute( c, txt )
+
+    if FULLTEXT and SQLITE:
+        txt = 'DROP TABLE IF EXISTS jjazz_files_fts;'
+        execute( c, txt )
+
+    if MYSQL:
+        txt = """CREATE TABLE jjazz_files(
+                title VARCHAR(255),
+                file VARCHAR(255),
+                id MEDIUMINT UNSIGNED AUTO_INCREMENT,
+                PRIMARY KEY(id) )
+                ENGINE = MYISAM
+                CHARACTER SET 'utf8mb4'
+            """
+
+    if SQLITE:
+        txt = """CREATE TABLE jjazz_files(
+                title VARCHAR(255),
+                file VARCHAR(255),
+                id MEDIUMINT AUTO_INCREMENT,
+                PRIMARY KEY(id) )
+            """
+    execute( c, txt )
+
+    if FULLTEXT and SQLITE:
+        txt = """CREATE VIRTUAL TABLE jjazz_files_fts USING fts5(
+            title,
+            file,
+            content='jjazz_files',
+            content_rowid='id'
+        )
+        """
+        execute( c, txt )
+
+    file_count = 0
+
+    for folder in conf.val( 'jjazz_folders' ):
+        path = Path( conf.val( 'jjazz_file_root' ), folder ).as_posix()
+
+        print( f"   {folder}", file=sys.stderr, flush=True  )
+
+        for root, file in fb.listfiles( path ):         # fb.listfiles() is doing os.walk()
+            ext = Path( file ).suffix
+
+            rpath = Path( root ).relative_to( Path( conf.val( 'jjazz_file_root' )) ).as_posix()
+
+            # print( f"    Root: {root}\n    Rel_path: {rpath}\n    File: {file}" )
+
+            if ext == '.sng':
+                # print( f"    rpath: {rpath}\n    File: {file}" )
+
+                rfile = Path( rpath, file ).as_posix()
+
+                # Make title from file name
+
+                title = Path( file ).stem
+                parts = re.findall(r'[A-Z][a-z0-9]+|[A-Z]', title)         # Splits on case boundaries
+                title = ' '.join( parts )
+
+                if title:                               # Some zero len
+                    data = (title, rfile)
+                    txt = 'INSERT INTO jjazz_files ( title, file ) VALUES( %s, %s )'
+                    txt = fix_query( txt )
+                    execute( c, txt, data )
+
+                    if FULLTEXT and SQLITE:
+                        txt = 'INSERT INTO jjazz_files_fts ( title, file ) VALUES( ?, ? )'
+                        execute( c, txt, data )
+
+                    file_count += 1
+
+            # ---------------------------------------------------------
+
+    print( f"   JJazzLab files total: {file_count}", file=sys.stderr, flush=True  )
+
+    if MYSQL:
+        txt = "ALTER TABLE jjazz_files ADD FULLTEXT( title ), ADD FULLTEXT( file )"
+        execute( c, txt )
+
+    conn.commit()
+    return 0
+
+# --------------------------------------------------------------------------
 #   WRW - 23 Feb 2022 - Convert the raw index data from multiple sources to
 #       uniform style in json files in Music-Index. Originally done by Makefile.
 #   
@@ -1382,7 +1682,7 @@ def build_midi_files( c, conn ):
 #           conf.set_cwd( f"{os.getcwd()}/../../bin" )
 #       in each of the source-specific do_* files for getting config values
 #       and so that the do* files cwd is the local directory.
-#       /// RESUME - Best way to do it? Yes. See 13 Mar 2022.
+#       Best way to do it? Yes. See 13 Mar 2022.
 #   WRW 5 March 2022 - Change to use source names and 'command' from config file.
 #   WRW 13 March 2022 - Set PYTHONPATH so source-specific do_*.py scripts can find the modules here.
 #   Removed conf.set_cwd( f"{os.getcwd()}/../../bin" ) in do_*.py files.
@@ -1400,6 +1700,8 @@ def convert_raw_source():
     sources = conf.get_sources()
     for source in sources:
         folder = conf.val( 'folder', source )
+        print( folder )
+
         src = conf.val( 'src', source )                                                             
         command = conf.val( 'command', source )
         path = Path( folder )
@@ -1434,6 +1736,112 @@ def convert_raw_source():
     return 0
 
 # --------------------------------------------------------------------------
+#   WRW 2 Apr 2022 - Found a lot of typos in the raw index. Make a table to harmonize them.
+#       I tried comparing all titles to all titles. Not a good idea.
+#       Try a small window around the current since most typos will sort nearby.
+#       Inspect: cut -d' ' -f1 t | sort | uniq -c | sort -k 2 -r -n | more
+#   This is purely experimental at present. Not sure if will use it. Results look
+#       promising but there are several false positives. Minimum length is helping that.
+#   Stopped work while trying to accumulate results. Incomplete.
+
+def build_corrections_file( dc, conn ):
+
+    titles = []
+    window_size = 100       # 100 vs 10 costs little in time but picks up almost twice the typos.
+    levenshtein_limit = 2   # 0 not included.
+    size_minimum = 10       # Don't test words shorter than this
+
+    similars = {}
+
+    txt = """SELECT title FROM titles_distinct
+             ORDER BY TITLE
+          """
+
+    execute( dc, txt )
+    rows = dc.fetchall()
+    if rows:
+        for row in rows:                    # Build array of all titles
+            titles.append( row[ 'title' ] )
+
+        i = 0
+        while i < len(titles)-window_size/2:
+            title1 = titles[ i ]           
+            if len(title1) >= size_minimum:
+                for j in range( -1 * int(window_size/2), int(window_size/2) + 1):
+                    if j == 0:
+                        continue
+                    title2 = titles[ i + j ]           
+                    if len(title2) >= size_minimum:
+                        d = Levenshtein.distance( title1, title2 )
+                        if d <= levenshtein_limit:
+                            # print( f"{d} <{title1}> <{title2}>" )
+                            similars.setdefault( title1, [] ).append( title2 )
+            i += 1
+
+    # ------------------------------------------------
+    #   Build data structures
+
+    primaries = set()               # Primary is first one seen of similars
+    alternates = {}
+
+    for title in similars:
+        if (not title in alternates) and (not title in primaries):
+            primaries.add( title )
+            for alt_title in similars[ title ]:
+                alternates[ alt_title ] = title
+
+        else:
+            for alt_title in similars[ title ]:
+                if not alt_title in alternates:
+                    alternates[ alt_title ] = title
+
+    # ------------------------------------------------
+    #   Test structures against all titles
+
+    for title in titles:
+        # if title in primaries:
+        #     print( f"Pri: <{title}>" )
+
+        if title in alternates:
+            print( f"{title} | {alternates[ title ]}" )
+
+    # ------------------------------------------------
+
+    return 0
+
+# --------------------------------------------------------------------------
+#   WRW 3 Apr 2022 - Testing only for addition of leading 'The'
+#   Problem with 'Beyond The Blue Horizon | The Beyond The Blue Horizon'
+#   Note: This reads from titles_distinct. Must run after titles_distinct
+#       changes and then re-run --convert_raw.
+
+def build_the_corrections_file( dc, conn ):
+
+    titles = []
+    titles_set = set()
+
+    txt = """SELECT title FROM titles_distinct
+             ORDER BY TITLE
+          """
+    execute( dc, txt )
+    rows = dc.fetchall()
+
+    ofile = Path( conf.val( 'corrections' )).with_suffix( '.B.txt' )                        
+    with open( ofile, 'w' ) as ofd:
+
+        if rows:
+            for row in rows:                    # Build array of all titles
+                titles.append( row[ 'title' ] )
+                titles_set.add( row[ 'title' ] )
+
+            for title in titles:
+                ntitle = f"The {title}"
+                if ntitle in titles_set:            # Does a title with 'The' prefix exist?
+                    print( f"{title} | {ntitle}", file=ofd )  # Yes, translate one without to one with.
+
+    return 0
+
+# --------------------------------------------------------------------------
 #   Build audio index json file from MySql audio_files table.
 #   Used only during development to save the time of rescanning the audio files
 #       when developing the Sqlite3 database. Not accessible from Birdland menu.
@@ -1442,6 +1850,7 @@ def do_extract_audio( conn ):
     conn.close()    # Close conn opened in do_main(), could be sqlite or mysql.
     conf.set_driver( True, False, False )           # Always use MYSQL here.
     conf.set_class_variables()                      # WRW 18 Mar 2022 - Have to repeat after set_driver()
+    import MySQLdb
     conn = MySQLdb.connect( "localhost", conf.val( 'database_user' ), conf.val( 'database_password' ), conf.mysql_database )
     dc = conn.cursor(MySQLdb.cursors.DictCursor)
     fb.set_dc( dc )
@@ -1466,27 +1875,32 @@ def do_extract_audio( conn ):
 
 @click.option( "--src_priority", is_flag=True, help="* Build src_priority table" )
 @click.option( "--midi", is_flag=True, help="* Scan midi_files and build midi table" )
+@click.option( "--chordpro", is_flag=True, help="* Scan ChordPro files and build chordpro table" )
+@click.option( "--jjazz", is_flag=True, help="* Scan JJazzLab files and build jjazz table" )
 @click.option( "--music_files", is_flag=True, help="* Build music_files" )
 @click.option( "--offset", is_flag=True, help="* Build sheet offsets table" )
-@click.option( "--canon", is_flag=True, help="* Build canonicals table" )
+@click.option( "--canonical", is_flag=True, help="* Build canonicals table" )
 @click.option( "--canon2file", is_flag=True, help="* Build canonical2file table" )
 @click.option( "--local2canon", is_flag=True, help="* Build local2canonical table" )
 @click.option( "--titles_distinct", is_flag=True, help="* Build titles_distinct" )
 @click.option( "--titles", is_flag=True, help="* Build titles" )
-@click.option( "--title2youtube", is_flag=True, help="* Build title2youtube table from data obtained by get-youtube-links.py" )
+@click.option( "--corrections", is_flag=True, help="* Build title corrections file" )
 @click.option( "--audio_files", is_flag=True, help="* Build audio_files from json table." )
+@click.option( "--the_corrections", is_flag=True, help="Build 'The' title corrections file" )
+@click.option( "--title2youtube", is_flag=True, help="Build title2youtube table from data obtained by get-youtube-links.py" )
 
 @click.option( "--scan_audio", is_flag=True, help="Build json table from audio file scan. *** Avoid, may take a long time." )
-# @click.option( "--scan_music", is_flag=True, help="Build json table from music (pdf) file scan." )
 
-@click.option( "--extract_audio", is_flag=True, help="Build json table from existing MySql Database (transition only)" )
+@click.option( "--page_count", is_flag=True, help="Build page_count table from canonical2file table" )
+# @click.option( "--extract_audio", is_flag=True, help="Build json table from existing MySql Database (transition only)" )
 @click.option( "--fail", is_flag=True, help="Return failure for testing" )
 
-#  scan_music,
+#  extract_audio,
 
-def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2youtube,
+def do_main( all, database, offset, canonical, midi, canon2file, local2canon, title2youtube,
              src_priority, music_files, titles_distinct, titles,
-             extract_audio, scan_audio, audio_files, confdir, convert_raw, fail
+             scan_audio, audio_files, confdir, convert_raw, corrections, the_corrections, fail,
+             jjazz, chordpro, page_count
             ):
 
     global fb, conf
@@ -1569,7 +1983,7 @@ def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2
     if MYSQL:
         results, success = conf.check_database( database )
         if not success:
-            print( f"ERROR: Error in database configuration:", file=sys.stderr )
+            print( f"ERROR: Error in database configuration (build_tables.py):", file=sys.stderr )
             print( '\n'.join( results ))
             return 1
             # sys.exit(1)
@@ -1578,6 +1992,7 @@ def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2
     global Old_Dc
 
     if MYSQL:
+        import MySQLdb
         conn = MySQLdb.connect( "localhost", conf.val( 'database_user' ), conf.val( 'database_password' ), conf.mysql_database )
         c = conn.cursor()
         dc = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -1600,22 +2015,34 @@ def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2
 
     rcode = 0
 
+    # ---------------------------------
+    #   Run all the Index-Source/do_*.py files      # Do before all, titles_distinct and titles so can do in one call.
+
+    if convert_raw:
+        rcode += convert_raw_source()
+
+    # ---------------------------------
+
     if all:
         rcode += build_source_priority( c, conn )
-        rcode += build_midi_files( c, conn )                   # Takes too long, never changes, do it separately
+        rcode += build_midi_files( c, conn )                                                                    
+        rcode += build_chordpro_files( c, conn )
+        rcode += build_jjazz_files( c, conn )
         rcode += build_music_files( c, conn )
         rcode += build_sheet_offsets( c, conn )
+        rcode += build_local2canonical( c, conn )
         rcode += build_canonicals( c, conn )
         rcode += build_canonical2file( c, conn )
-        rcode += build_local2canonical( c, conn )
+        rcode += build_page_count( dc, c, conn )
         rcode += build_titles_distinct( c, conn )
         rcode += build_titles( dc, c, conn )                     # After build_titles_distinct()
         rcode += build_title2youtube( dc, c, conn, False, False )       # dc, Ifile, show_found, show_not_found
         rcode += build_audio_files( c )
 
     # ---------------------------------
-    if scan_audio:                  # This takes a long time. Use sparingly. Keep separate from --all.
-        rcode += do_scan_audio_files()       # Keep above build_audio_files() so can do both in one invocation.
+
+    if scan_audio:                          # This takes a long time. Use sparingly. Keep separate from --all.
+        rcode += do_scan_audio_files()      # Keep above build_audio_files() so can do both in one invocation.
 
     # ---------------------------------
 
@@ -1634,7 +2061,13 @@ def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2
     if midi:
         rcode += build_midi_files( c, conn )         # Does its own create and indexes.
 
-    if canon:
+    if chordpro:
+        rcode += build_chordpro_files( c, conn )      # Does its own create and indexes.
+
+    if jjazz:
+        rcode += build_jjazz_files( c, conn )         # Does its own create and indexes.
+
+    if canonical:
         rcode += build_canonicals( c, conn )
 
     if canon2file:
@@ -1646,29 +2079,27 @@ def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2
     if titles_distinct:
         rcode += build_titles_distinct( c, conn )
 
+    if corrections:
+        rcode += build_corrections_file( dc, conn )
+
+    if the_corrections:
+        rcode += build_the_corrections_file( dc, conn )
+
     if titles:
         rcode += build_titles( dc, c, conn )
+
+    if page_count:
+        rcode += build_page_count( dc, c, conn )
 
     if title2youtube:
         rcode += build_title2youtube( dc, c, conn, False, False )       # dc, Ifile, show_found, show_not_found
 
     # ---------------------------------
-
-    # if scan_music:
-    #     do_scan_music_files()
-
-    # ---------------------------------
-    #   Run all the Index-Source/do_*.py files
-
-    if convert_raw:
-        rcode += convert_raw_source()
-
-    # ---------------------------------
     #   This always reads from MySql DB. Needed during transition from MySql to Sqlite to extract audio_files
     #       from MySql into Sqlite DB to save time of scanning audio files. Always follow with build_audio_files().
 
-    if extract_audio:               # Only used during development, ok to exit to avoid commit() and close() on closed DB.
-        do_extract_audio( conn )    # Calls sys.exit(), never returns.
+    # if extract_audio:               # Only used during development, ok to exit to avoid commit() and close() on closed DB.
+    #     do_extract_audio( conn )    # Calls sys.exit(), never returns.
 
     # ---------------------------------
 
@@ -1692,12 +2123,19 @@ def do_main( all, database, offset, canon, midi, canon2file, local2canon, title2
 #       interferes with error messages. We have control of args when calling from birdland.
 #   WRW 23 Mar 2022 - Save and restore 'dc'. We are setting dc with value created here but
 #       then closing it. fb_utils() then was using closed value.
+#   WRW 17 May 2022 - Perhaps don't even bother with setting fb.set_dc(), let fb_utils.py use
+#       the dc set in birdland.py?
 
 def aux_main( args ):      # Called as module from birdland.                           
+    global Old_Dc
+    save_sys_argv = sys.argv
     sys.argv = [ x for x in args ]
     rcode = do_main( standalone_mode=False )
     if Old_Dc:
         fb.set_dc( Old_Dc )
+        Old_Dc = None
+
+    sys.argv = save_sys_argv
     return rcode
 
 def main():
@@ -1707,3 +2145,4 @@ if __name__ == '__main__':
     do_main()
 
 # --------------------------------------------------------------------------
+

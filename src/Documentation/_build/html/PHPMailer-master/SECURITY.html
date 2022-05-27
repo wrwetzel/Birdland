@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security notices relating to PHPMailer &#8212; Birdland 1.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/lglb-sphinx-doc.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<div class="header">
+ <p class="logo"><a href="https://birdland.wrwetzel.com">
+  <img class="logo" src="../_static/Top-Logo.png" alt="Logo"/>
+ </a></p>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="nav-item nav-item-0"><a href="../index.html">Birdland 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Security notices relating to PHPMailer</a></li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <p class="caption" role="heading"><span class="caption-text">Table of Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../birdland.html"> Birdland Musician’s Assistant</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="security-notices-relating-to-phpmailer">
+<h1>Security notices relating to PHPMailer<a class="headerlink" href="#security-notices-relating-to-phpmailer" title="Permalink to this headline">¶</a></h1>
+<p>Please disclose any vulnerabilities found responsibly - report any security problems found to the maintainers privately.</p>
+<p>PHPMailer versions 6.1.5 and earlier contain an output escaping bug that occurs in <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> and <code class="docutils literal notranslate"><span class="pre">Content-Disposition</span></code> when filenames passed into <code class="docutils literal notranslate"><span class="pre">addAttachment</span></code> and other methods that accept attachment names contain double quote characters, in contravention of RFC822 3.4.1. No specific vulnerability has been found relating to this, but it could allow file attachments to bypass attachment filters that are based on matching filename extensions. Recorded as <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2020-13625">CVE-2020-13625</a>. Reported by Elar Lang of Clarified Security.</p>
+<p>PHPMailer versions prior to 6.0.6 and 5.2.27 are vulnerable to an object injection attack by passing <code class="docutils literal notranslate"><span class="pre">phar://</span></code> paths into <code class="docutils literal notranslate"><span class="pre">addAttachment()</span></code> and other functions that may receive unfiltered local paths, possibly leading to RCE. Recorded as <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2018-19296">CVE-2018-19296</a>. See <a class="reference external" href="https://knasmueller.net/5-answers-about-php-phar-exploitation">this article</a> for more info on this type of vulnerability. Mitigated by blocking the use of paths containing URL-protocol style prefixes such as <code class="docutils literal notranslate"><span class="pre">phar://</span></code>. Reported by Sehun Oh of cyberone.kr.</p>
+<p>PHPMailer versions prior to 5.2.24 (released July 26th 2017) have an XSS vulnerability in one of the code examples, <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2017-11503">CVE-2017-11503</a>. The <code class="docutils literal notranslate"><span class="pre">code_generator.phps</span></code> example did not filter user input prior to output. This file is distributed with a <code class="docutils literal notranslate"><span class="pre">.phps</span></code> extension, so it it not normally executable unless it is explicitly renamed, and the file is not included when PHPMailer is loaded through composer, so it is safe by default. There was also an undisclosed potential XSS vulnerability in the default exception handler (unused by default). Patches for both issues kindly provided by Patrick Monnerat of the Fedora Project.</p>
+<p>PHPMailer versions prior to 5.2.22 (released January 9th 2017) have a local file disclosure vulnerability, <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2017-5223">CVE-2017-5223</a>. If content passed into <code class="docutils literal notranslate"><span class="pre">msgHTML()</span></code> is sourced from unfiltered user input, relative paths can map to absolute local file paths and added as attachments. Also note that <code class="docutils literal notranslate"><span class="pre">addAttachment</span></code> (just like <code class="docutils literal notranslate"><span class="pre">file_get_contents</span></code>, <code class="docutils literal notranslate"><span class="pre">passthru</span></code>, <code class="docutils literal notranslate"><span class="pre">unlink</span></code>, etc) should not be passed user-sourced params either! Reported by Yongxiang Li of Asiasecurity.</p>
+<p>PHPMailer versions prior to 5.2.20 (released December 28th 2016) are vulnerable to <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2016-10045">CVE-2016-10045</a> a remote code execution vulnerability, responsibly reported by <a class="reference external" href="https://legalhackers.com/advisories/PHPMailer-Exploit-Remote-Code-Exec-CVE-2016-10045-Vuln-Patch-Bypass.html">Dawid Golunski</a>, and patched by Paul Buonopane (&#64;Zenexer).</p>
+<p>PHPMailer versions prior to 5.2.18 (released December 2016) are vulnerable to <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2016-10033">CVE-2016-10033</a> a remote code execution vulnerability, responsibly reported by <a class="reference external" href="http://legalhackers.com/advisories/PHPMailer-Exploit-Remote-Code-Exec-CVE-2016-10033-Vuln.html">Dawid Golunski</a>.</p>
+<p>PHPMailer versions prior to 5.2.14 (released November 2015) are vulnerable to <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2015-8476">CVE-2015-8476</a> an SMTP CRLF injection bug permitting arbitrary message sending.</p>
+<p>PHPMailer versions prior to 5.2.10 (released May 2015) are vulnerable to <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2008-5619">CVE-2008-5619</a>, a remote code execution vulnerability in the bundled html2text library. This file was removed in 5.2.10, so if you are using a version prior to that and make use of the html2text function, it’s vitally important that you upgrade and remove this file.</p>
+<p>PHPMailer versions prior to 2.0.7 and 2.2.1 are vulnerable to <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2012-0796">CVE-2012-0796</a>, an email header injection attack.</p>
+<p>Joomla 1.6.0 uses PHPMailer in an unsafe way, allowing it to reveal local file paths, reported in <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2011-3747">CVE-2011-3747</a>.</p>
+<p>PHPMailer didn’t sanitise the <code class="docutils literal notranslate"><span class="pre">$lang_path</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">SetLanguage</span></code>. This wasn’t a problem in itself, but some apps (PHPClassifieds, ATutor) also failed to sanitise user-provided parameters passed to it, permitting semi-arbitrary local file inclusion, reported in <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2010-4914">CVE-2010-4914</a>, <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2007-2021">CVE-2007-2021</a> and <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2006-5734">CVE-2006-5734</a>.</p>
+<p>PHPMailer 1.7.2 and earlier contained a possible DDoS vulnerability reported in <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2005-1807">CVE-2005-1807</a>.</p>
+<p>PHPMailer 1.7 and earlier (June 2003) have a possible vulnerability in the <code class="docutils literal notranslate"><span class="pre">SendmailSend</span></code> method where shell commands may not be sanitised. Reported in <a class="reference external" href="https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2007-3215">CVE-2007-3215</a>.</p>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="nav-item nav-item-0"><a href="../index.html">Birdland 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Security notices relating to PHPMailer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+Book Title--Book Code
+557 Jazz Standards--557standrd
+Anthologie des Grilles de Jazz--gridjazz
+All Jazz Real Book--ajrealbk
+Bach Cello Suites--cellosuite
+Beatles Fake Book--beatlesfb
+Best Fake Book Ever 2nd Edition--bestfbevr2
+Bill Evans Fake Book--befakebk
+Brazilian Jazz Real Book--braziljrbk
+Classical Fake Book--classicfb
+Charlie Parker Omnibook(Bb, C, Eb, Bass)--cpomnibook
+Classic Real Book 5th Edition(Bb, C, Eb, Bass)--crealbk1
+Classic Real Book Vol II(Bb, C, Eb, Bass)--crealbk2
+Classic Real Book Vol III(Bb, C, Eb, Bass)--crealbk3
+Classic Real Vocal Book--crealbkv
+Classic Rock Fake Book--crockfb
+Country Fake Book--countryfb
+Creole Jazz Band Fake Book--creolejbfb
+Cuban Fake Book--cufakebk
+Dick Hyman's Professional Chord Changes--dhpccs100t
+Disney Fake Book 2nd Edition--disneyfake
+Django Fake Book--djangofb
+Folk Song Fake Book--folksngfb
+Great Gig (Blue) Book--greatgigbk
+Jazz Fakebook(Ultimate)--jfakebk
+Jazz LTD--jazzltd
+Jazz of the 50s--bjazz50
+Just Jazzs Real Book--justjazzrb
+Just Standards Real Book--juststanrb
+Latin Fake Book(Alfred Pub.)--ltfakebk
+Legit Professional Fake Book--rwlpfbk
+Library of Musicians' Jazz--lmjazz
+Movie Fake Book 4th Edition.--moviefkbk
+Original, Legal, Musician's--olmfakebk
+Pat Metheny Song Book--patmetheny
+R&B Fake Book 2nd Edition.--rnbfakebk
+Real Book 6th Edition (Bb, C, Eb, Bass)--realbk1h
+Real Book 6th Edition (European Pocket Edition)--realbk1hep
+Real Book Vol II 2nd Edition (Bb, C, Eb, Bass)--realbk2h
+Real Book Vol III 2nd Edition (Bb, C, Eb, Bass)--realbk3h
+Real Book Vol IV (Bb, C, Eb, Bass)--realbk4h
+Real Book Vol V (Bb, C, Eb, Bass)--realbk5h
+Real Jazz Standards Fake Book--rjstandfbk
+Real Rock Book (Warner/Chappell)--realrockb1
+Real Rock Book 2 (Warner/Chappell)--realrockb2
+Real Jazz Book--realjazzbk
+Sample Book--sample
+Straight Ahead Jazz Fakebook--safakebk
+The Beatles 1962-1974--beatle6274
+The Book--thebook
+The Blues Fake Book--bluesfb
+The Colorado Cookbook--colcookbk
+The Digital Standards Songbook--dssongbook
+The European Real Book--eurealbk
+The Firehouse Jazz Band Fake Book--fjfakebk
+The Handbook of Jazz Standards--hjazzstand
+The Latin Real Book--ltrealbk
+The New Real Book (Digital Edition)--nrealbk1d
+The New Real Book Bb (Digital Edition)--nrealbk1db
+The New Real Book Eb (Digital Edition)--nrealbk1de
+The New Real Book Vol 1--nrealbk1
+The New Real Book Vol 1 Bb--nrealbk1bb
+The New Real Book Vol 1 Eb--nrealbk1eb
+The New Real Book Vol 2--nrealbk2
+The New Real Book Vol 2 Bb--nrealbk2bb
+The New Real Book Vol 2 Eb--nrealbk2eb
+The New Real Book Vol 3--nrealbk3
+The New Real Book Vol 3 Bb--nrealbk3bb
+The New Real Book Vol 3 Eb--nrealbk3eb
+The Public Domain Christmas Jazz Fakebook--tpdxmasjfb
+The Real Book Of Blues--rbblues
+The Real Christmas Book--realxmasbk
+The Real Easy Book--reasybk
+The Real Vocal Book 2nd Ed Volume I--realbkvh1
+The Real Vocal Book Volume II--realbkvh2
+The Standards Real Book--strealbk
+The Standards Real Book Bb--strealbkbb
+The Standards Real Book Eb--strealbkeb
+The Ultimate Pop/Rock Fake Book--ulpoprock
+The Worlds Greatest Fake Book--wgfakebk
+This Is The Ultimate Fake Book 2nd Edition--ulfakebk
+TV Fake Book--tvfakebook
+Ultimate Broadway Fake Book 4th Ed.--ulbdwyfkbk
+Ultimate Broadway Fake Book 5th Ed.--ulbdwyfb5e
+Ultimate Christmas Fake Book--ulxmasfkbk
+Ultimate Country Fake Book 5th Ed.--ulcntryfb5
+Wedding & Love Fake Book 3rd Edition--wedlovefb
+
+
+

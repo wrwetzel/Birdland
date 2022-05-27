@@ -1,8 +1,12 @@
 #!/usr/bin/python
 # --------------------------------------------------------------------------
-#   inspect-titles.py - Have a look at titles for certain patterns causing
+#   fb_title_correction.py - Have a look at titles for certain patterns causing
 #       mismatches. Formulate a strategy to correct them in the local-specific processing
 #       or possibly as a post step in database.
+
+#   This is called from fb_utils.add() when adding a title from the local-specific
+#       processing do_*.py routines. It corrects the titles before they get into
+#       the json files in Music_Index or the titles_distinct table in the database.
 
 #   WRW 3 Feb 2022
 
@@ -10,7 +14,6 @@
 
 import os
 import sys
-import MySQLdb
 import math
 import json
 import re
@@ -176,6 +179,7 @@ def do_correction( log, ntitle ):
 
         # -----------------------------------------
         #   Trailing sequence number, possibly in parens
+        #   WRW 2 Apr 2022 - Replace '\s+' with '\s*'? No, not a problem as is.
 
         otitle = ntitle
 
@@ -204,10 +208,13 @@ def do_correction( log, ntitle ):
 
         # -----------------------------------------
         #   Trailing (key) signature with asterisk.
+        #   WRW 13 Apr 2022 - Make asterisk optional.
+        #   Note that this is ambiguous with article '(A)' instead of key '(A)'. Not many songs in A (3 sharps)
+        #       so this loses, trailing article wins.
 
         otitle = ntitle
 
-        m = re.match( '(.*)\s+((\(Gm\)|\(A\)|\(Bm\)|\(Fm\)|\(D\)|\(Em\)|\(Cm\)|\(Am\)|\(Dm\)|\(G\)|\(C\)|\(F\)|\(Bb\)|\(Db\)|\(Eb\)|\(Bass\)|\(Ab\))\*)$', otitle )
+        m = re.match( '(.*)\s+((\(C#\)|\(E\)|\(Ab\)|\(Gb\)|\(B\)|\(Bbm\)|\(Gm\)|\(Bm\)|\(Fm\)|\(D\)|\(Em\)|\(Cm\)|\(Am\)|\(Dm\)|\(G\)|\(C\)|\(F\)|\(Bb\)|\(Db\)|\(Eb\)|\(Bass\)|\(Ab\))\*?)$', otitle )
         if m:
             ntitle = f"{m[1]}"
             my_print( f"Trailing (key) '{m[2]}': '{otitle}' -> '{ntitle}'" )
@@ -217,11 +224,28 @@ def do_correction( log, ntitle ):
             ntitle = otitle
 
         # -----------------------------------------
-        #   Trailing A, a, An, an possibly in parens. Move it to front.
+        #   Trailing A, a, An, definitely in parens. Move it to front.
+        #   WRW 2 Apr 2022 - was not working, moved parens to correct.
+        #   Split into two tests. One with parens and optional leading space.
 
         otitle = ntitle
 
-        m = re.match( '(.*?),?\s+(\(?A|a|An|an\)?)$', otitle )
+        m = re.match( '(.*?),?\s*\((A|a|An|an)\)$', otitle )
+        if m:
+            ntitle = f"{m[2]} {m[1]}"
+            my_print( f"Trailing '({m[2]})': '{otitle}' -> '{ntitle}'"  )
+            Fixes[ 'Trailing \'(A)\'' ] += 1
+        else:
+            ntitle = otitle
+
+        # -----------------------------------------
+        #   Trailing A, a, An, an not in parens. Move it to front.
+        #   WRW 2 Apr 2022 - was not working, moved parens to correct.
+        #   Split into two tests. One without parens and required leading space.
+
+        otitle = ntitle
+
+        m = re.match( '(.*?),?\s+(A|a|An|an)$', otitle )
         if m:
             ntitle = f"{m[2]} {m[1]}"
             my_print( f"Trailing '{m[2]}': '{otitle}' -> '{ntitle}'"  )
@@ -230,11 +254,24 @@ def do_correction( log, ntitle ):
             ntitle = otitle
 
         # -----------------------------------------
-        #   Trailing 'The' possibly in parens, possibly with comma
+        #   Trailing 'The', definitely in parens, possibly with comma
 
         otitle = ntitle
 
-        m = re.match( '(.*?)\s?,?\s+(\(?[Tt]he\)?)$', otitle )
+        m = re.match( '(.*?)\s?,?\s+(\([Tt]he\))$', otitle )
+        if m:
+            ntitle = f"The {m[1]}"
+            my_print( f"Trailing '{m[2]}': '{otitle}' -> '{ntitle}'" )
+            Fixes[ 'Trailing \'The\'' ] += 1
+        else:
+            ntitle = otitle
+
+        # -----------------------------------------
+        #   Trailing 'The', no parens, possibly with comma
+
+        otitle = ntitle
+
+        m = re.match( '(.*?)\s?,?\s+([Tt]he)$', otitle )
         if m:
             ntitle = f"The {m[1]}"
             my_print( f"Trailing '{m[2]}': '{otitle}' -> '{ntitle}'" )
@@ -320,8 +357,8 @@ def get_titles( src, **kwargs ):
 # --------------------------------------------------------------------------
 #   WRW 25 Feb 2022 - Changed to run from Music-Index, not database. Still
 #       too late as most corrections already applied during building from
-#       raw data. /// RESUME - why not ALL corrections applied, i.e., why do
-#       we find any at all here.
+#       raw data. Why not ALL corrections applied, i.e., why do
+#       we find any at all here? All explained, all OK.
 
 def do_main( ):
 
@@ -341,11 +378,13 @@ def do_main( ):
     fb.set_driver( True, False, False )     # Just test with MySql
 
     conf.get_config( )      # Non-operational
-
+    conf.set_class_variables()      # WRW 6 Mar 2022 - Now have to do this explicitly
     fb.set_classes( conf )
     fb.set_class_config()
 
-    From_Index = True
+    From_Index = False          # True to read json, False to read from MySql DB.
+    From_DB = False             # True to read json, False to read from MySql DB.
+    From_List = True            # True to test from list here.
 
     # ----------------------------------------------------------------
     #   Reads from ../Music-Index/*.json.gz
@@ -360,7 +399,8 @@ def do_main( ):
 
     # ----------------------------------------------------------------
 
-    else:
+    if From_DB:
+        import MySQLdb
         conn = MySQLdb.connect( "localhost", conf.val( 'database_user' ), conf.val( 'database_password' ), conf.mysql_database )
         c = conn.cursor()
         dc = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -375,6 +415,41 @@ def do_main( ):
     
         conn.commit()
         conn.close
+
+    # ----------------------------------------------------------------
+
+    test_titles = [
+        "Certain Smile",
+        "Certain Smile(A)",
+        "Certain Smile (A)",
+        "Certain Smile (a)",
+        "Certain Smile (A)",
+        "Certain Smile (an)",
+
+        "Certain SmileA",
+        "Certain Smile A",
+        "Certain Smile an",
+
+        "Certain Smile(1)",
+        "Certain Smile(12)",
+        "Certain Smile (1)",
+        "Certain Smile (12)",
+        "Street Where You Live (On The)",
+        "Beyond The Blue Horizon",
+        "Little Tear(A)",
+        "Little Tear (A)",
+        "Little Tear,(A)",
+        "Little Tear, (A)",
+        "Little Tear, A",
+    ]
+
+    log = sys.stdout
+
+    if From_List:
+        for title in test_titles:
+            ntitle = do_correction( log, title )
+            print( f"{title} -> {ntitle}" )
+
 
 # --------------------------------------------------------------------------
 

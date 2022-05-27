@@ -1,0 +1,1025 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<link href='https://fonts.loli.net/css?family=PT+Serif:400,400italic,700,700italic&subset=latin,cyrillic-ext,cyrillic,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --mermaid-theme: default; --mermaid-sequence-numbers: off; --mermaid-flowchart-curve: linear; --mermaid--gantt-left-padding: 75; --sequence-theme: simple; }
+
+
+:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+
+
+.CodeMirror { height: auto; }
+.CodeMirror.cm-s-inner { background: inherit; }
+.CodeMirror-scroll { overflow: auto hidden; z-index: 3; }
+.CodeMirror-gutter-filler, .CodeMirror-scrollbar-filler { background-color: rgb(255, 255, 255); }
+.CodeMirror-gutters { border-right: 1px solid rgb(221, 221, 221); background: inherit; white-space: nowrap; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: rgb(153, 153, 153); }
+.cm-s-inner .cm-keyword { color: rgb(119, 0, 136); }
+.cm-s-inner .cm-atom, .cm-s-inner.cm-atom { color: rgb(34, 17, 153); }
+.cm-s-inner .cm-number { color: rgb(17, 102, 68); }
+.cm-s-inner .cm-def { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-variable { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-variable-2 { color: rgb(0, 85, 170); }
+.cm-s-inner .cm-variable-3 { color: rgb(0, 136, 85); }
+.cm-s-inner .cm-string { color: rgb(170, 17, 17); }
+.cm-s-inner .cm-property { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-operator { color: rgb(152, 26, 26); }
+.cm-s-inner .cm-comment, .cm-s-inner.cm-comment { color: rgb(170, 85, 0); }
+.cm-s-inner .cm-string-2 { color: rgb(255, 85, 0); }
+.cm-s-inner .cm-meta { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-qualifier { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-builtin { color: rgb(51, 0, 170); }
+.cm-s-inner .cm-bracket { color: rgb(153, 153, 119); }
+.cm-s-inner .cm-tag { color: rgb(17, 119, 0); }
+.cm-s-inner .cm-attribute { color: rgb(0, 0, 204); }
+.cm-s-inner .cm-header, .cm-s-inner.cm-header { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-quote, .cm-s-inner.cm-quote { color: rgb(0, 153, 0); }
+.cm-s-inner .cm-hr, .cm-s-inner.cm-hr { color: rgb(153, 153, 153); }
+.cm-s-inner .cm-link, .cm-s-inner.cm-link { color: rgb(0, 0, 204); }
+.cm-negative { color: rgb(221, 68, 68); }
+.cm-positive { color: rgb(34, 153, 34); }
+.cm-header, .cm-strong { font-weight: 700; }
+.cm-del { text-decoration: line-through; }
+.cm-em { font-style: italic; }
+.cm-link { text-decoration: underline; }
+.cm-error { color: red; }
+.cm-invalidchar { color: red; }
+.cm-constant { color: rgb(38, 139, 210); }
+.cm-defined { color: rgb(181, 137, 0); }
+div.CodeMirror span.CodeMirror-matchingbracket { color: rgb(0, 255, 0); }
+div.CodeMirror span.CodeMirror-nonmatchingbracket { color: rgb(255, 34, 34); }
+.cm-s-inner .CodeMirror-activeline-background { background: inherit; }
+.CodeMirror { position: relative; overflow: hidden; }
+.CodeMirror-scroll { height: 100%; outline: 0px; position: relative; box-sizing: content-box; background: inherit; }
+.CodeMirror-sizer { position: relative; }
+.CodeMirror-gutter-filler, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-vscrollbar { position: absolute; z-index: 6; display: none; outline: 0px; }
+.CodeMirror-vscrollbar { right: 0px; top: 0px; overflow: hidden; }
+.CodeMirror-hscrollbar { bottom: 0px; left: 0px; overflow: auto hidden; }
+.CodeMirror-scrollbar-filler { right: 0px; bottom: 0px; }
+.CodeMirror-gutter-filler { left: 0px; bottom: 0px; }
+.CodeMirror-gutters { position: absolute; left: 0px; top: 0px; padding-bottom: 10px; z-index: 3; overflow-y: hidden; }
+.CodeMirror-gutter { white-space: normal; height: 100%; box-sizing: content-box; padding-bottom: 30px; margin-bottom: -32px; display: inline-block; }
+.CodeMirror-gutter-wrapper { position: absolute; z-index: 4; background: 0px 0px !important; border: none !important; }
+.CodeMirror-gutter-background { position: absolute; top: 0px; bottom: 0px; z-index: 4; }
+.CodeMirror-gutter-elt { position: absolute; cursor: default; z-index: 4; }
+.CodeMirror-lines { cursor: text; }
+.CodeMirror pre { border-radius: 0px; border-width: 0px; background: 0px 0px; font-family: inherit; font-size: inherit; margin: 0px; white-space: pre; overflow-wrap: normal; color: inherit; z-index: 2; position: relative; overflow: visible; }
+.CodeMirror-wrap pre { overflow-wrap: break-word; white-space: pre-wrap; word-break: normal; }
+.CodeMirror-code pre { border-right: 30px solid transparent; width: fit-content; }
+.CodeMirror-wrap .CodeMirror-code pre { border-right: none; width: auto; }
+.CodeMirror-linebackground { position: absolute; inset: 0px; z-index: 0; }
+.CodeMirror-linewidget { position: relative; z-index: 2; overflow: auto; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: hidden; }
+.CodeMirror-measure { position: absolute; width: 100%; height: 0px; overflow: hidden; visibility: hidden; }
+.CodeMirror-measure pre { position: static; }
+.CodeMirror div.CodeMirror-cursor { position: absolute; visibility: hidden; border-right: none; width: 0px; }
+.CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+.CodeMirror-focused div.CodeMirror-cursor { visibility: inherit; }
+.cm-searching { background: rgba(255, 255, 0, 0.4); }
+span.cm-underlined { text-decoration: underline; }
+span.cm-strikethrough { text-decoration: line-through; }
+.cm-tw-syntaxerror { color: rgb(255, 255, 255); background-color: rgb(153, 0, 0); }
+.cm-tw-deleted { text-decoration: line-through; }
+.cm-tw-header5 { font-weight: 700; }
+.cm-tw-listitem:first-child { padding-left: 10px; }
+.cm-tw-box { border-style: solid; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-color: inherit; border-top-width: 0px !important; }
+.cm-tw-underline { text-decoration: underline; }
+@media print {
+  .CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+}
+
+
+/* meyer reset -- http://meyerweb.com/eric/tools/css/reset/ , v2.0 | 20110126 | License: none (public domain) */
+
+@include-when-export url(https://fonts.loli.net/css?family=PT+Serif:400,400italic,700,700italic&subset=latin,cyrillic-ext,cyrillic,latin-ext);
+
+/* =========== */
+
+/* pt-serif-regular - latin */
+/* pt-serif-italic - latin */
+/* pt-serif-700 - latin */
+/* pt-serif-700italic - latin */
+:root {
+	--active-file-bg-color: #dadada;
+	--active-file-bg-color: rgba(32, 43, 51, 0.63);
+	--active-file-text-color: white;
+	--bg-color: #f3f2ee;
+	--text-color: #1f0909;
+	--control-text-color: #444;
+	--rawblock-edit-panel-bd: #e5e5e5;
+
+	--select-text-bg-color: rgba(32, 43, 51, 0.63);
+  --select-text-font-color: white;
+}
+
+pre {
+	--select-text-bg-color: #36284e;
+	--select-text-font-color: #fff;
+}
+
+html {
+	font-size: 16px;
+	-webkit-font-smoothing: antialiased;
+}
+
+html, body {
+	background-color: #f3f2ee;
+	font-family: "PT Serif", 'Times New Roman', Times, serif;
+	color: #1f0909;
+        line-height: 1.5em;
+}
+
+/* WRW */
+html, body {
+        line-height: 1.25em;
+        margin-top: .25in;
+        margin-left: .25in;
+        margin-right: .25in;
+        margin-bottom: .25in;
+}
+
+/*#write {
+	overflow-x: auto;
+    max-width: initial;
+	padding-left: calc(50% - 17em);
+    padding-right: calc(50% - 17em);
+}
+
+@media (max-width: 36em) {
+ 	#write {
+ 		padding-left: 1em;
+    	padding-right: 1em;
+ 	}
+}*/
+
+/* WRW change to 60em */
+#write {
+        max-width: 40em;
+        max-width: 60em;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+			max-width: 914px;
+	}
+}
+
+ol li {
+	list-style-type: decimal;
+	list-style-position: outside;
+}
+ul li {
+	list-style-type: disc;
+	list-style-position: outside;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* styles */
+
+/* ====== */
+
+/* headings */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: bold;
+}
+h1 {
+	font-size: 1.875em;
+	/*30 / 16*/
+	line-height: 1.6em;
+	/* 48 / 30*/
+	margin-top: 2em;
+}
+h2,
+h3 {
+	font-size: 1.3125em;
+	/*21 / 16*/
+	line-height: 1.15;
+	/*24 / 21*/
+	margin-top: 2.285714em;
+	/*48 / 21*/
+	margin-bottom: 1.15em;
+	/*24 / 21*/
+}
+h3 {
+	font-weight: normal;
+}
+h4 {
+	font-size: 1.125em;
+	/*18 / 16*/
+	margin-top: 2.67em;
+	/*48 / 18*/
+}
+h5,
+h6 {
+	font-size: 1em;
+	/*16*/
+}
+h1 {
+	border-bottom: 1px solid;
+	margin-bottom: 1.875em;
+	padding-bottom: 0.8125em;
+}
+/* links */
+
+a {
+	text-decoration: none;
+	color: #065588;
+}
+a:hover,
+a:active {
+	text-decoration: underline;
+}
+/* block spacing */
+
+p,
+blockquote,
+.md-fences {
+        margin-bottom: 1.5em;
+}
+
+/* WRW */
+p {
+   margin-bottom: 1.0em;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-bottom: 1.5em;
+}
+
+/* WRW */
+
+h4,
+h5,
+h6 {
+        margin-bottom: 1em;
+}
+/* blockquote */
+
+blockquote {
+	font-style: italic;
+	border-left: 5px solid;
+	margin-left: 2em;
+	padding-left: 1em;
+}
+/* lists */
+
+ul,
+ol {
+	margin: 0 0 1.5em 1.5em;
+}
+/* tables */
+.md-meta,.md-before, .md-after {
+	color:#999;
+}
+
+table {
+	margin-bottom: 1.5em;
+	/*24 / 16*/
+	font-size: 1em;
+	/* width: 100%; */
+}
+thead th,
+tfoot th {
+	padding: .25em .25em .25em .4em;
+	text-transform: uppercase;
+}
+th {
+	text-align: left;
+}
+td {
+	vertical-align: top;
+	padding: .25em .25em .25em .4em;
+}
+
+code,
+.md-fences {
+	background-color: #dadada;
+}
+
+code {
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.md-fences {
+	margin-left: 2em;
+	margin-bottom: 3em;
+	padding-left: 1ch;
+	padding-right: 1ch;
+}
+
+pre,
+code,
+tt {
+	font-size: .875em;
+	line-height: 1.714285em;
+}
+/* some fixes */
+
+h1 {
+	line-height: 1.3em;
+	font-weight: normal;
+	margin-bottom: 0.5em;
+}
+
+p + ul,
+p + ol{
+	margin-top: .5em;
+}
+
+h3 + ul,
+h4 + ul,
+h5 + ul,
+h6 + ul,
+h3 + ol,
+h4 + ol,
+h5 + ol,
+h6 + ol {
+	margin-top: .5em;
+}
+
+li > ul,
+li > ol {
+	margin-top: inherit;
+	margin-bottom: 0;
+}
+
+li ol>li {
+	list-style-type: lower-alpha;
+}
+
+li li ol>li{
+	list-style-type: lower-roman;
+}
+
+h2,
+h3 {
+	margin-bottom: .75em;
+}
+hr {
+	border-top: none;
+	border-right: none;
+	border-bottom: 1px solid;
+	border-left: none;
+}
+h1 {
+	border-color: #c5c5c5;
+}
+blockquote {
+	border-color: #bababa;
+	color: #656565;
+}
+
+blockquote ul,
+blockquote ol {
+	margin-left:0;
+}
+
+.ty-table-edit {
+	background-color: transparent;
+}
+thead {
+	background-color: #dadada;
+}
+tr:nth-child(even) {
+	background: #e8e7e7;
+}
+hr {
+	border-color: #c5c5c5;
+}
+.task-list{
+	padding-left: 1rem;
+}
+
+.md-task-list-item {
+	padding-left: 1.5rem;
+	list-style-type: none;
+}
+
+.md-task-list-item > input:before {
+	content: '\221A';
+	display: inline-block;
+	width: 1.25rem;
+  	height: 1.6rem;
+	vertical-align: middle;
+	text-align: center;
+	color: #ddd;
+	background-color: #F3F2EE;
+}
+
+.md-task-list-item > input:checked:before,
+.md-task-list-item > input[checked]:before{
+	color: inherit;
+}
+
+#write pre.md-meta-block {
+	min-height: 1.875rem;
+	color: #555;
+	border: 0px;
+	background: transparent;
+	margin-top: -4px;
+	margin-left: 1em;
+	margin-top: 1em;
+}
+
+.md-image>.md-meta {
+	color: #9B5146;
+}
+
+.md-image>.md-meta{
+	font-family: Menlo, 'Ubuntu Mono', Consolas, 'Courier New', 'Microsoft Yahei', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', serif;
+}
+
+
+#write>h3.md-focus:before{
+	left: -1.5rem;
+	color:#999;
+	border-color:#999;
+}
+#write>h4.md-focus:before{
+	left: -1.5rem;
+	top: .25rem;
+	color:#999;
+	border-color:#999;
+}
+#write>h5.md-focus:before{
+	left: -1.5rem;
+	top: .0.3125rem;
+	color:#999;
+	border-color:#999;
+}
+#write>h6.md-focus:before{
+	left: -1.5rem;
+	top: 0.3125rem;
+	color:#999;
+	border-color:#999;
+}
+
+.md-toc:focus .md-toc-content{
+	margin-top: 19px;
+}
+
+.md-toc-content:empty:before{
+	color: #065588;
+}
+.md-toc-item {
+	color: #065588;
+}
+#write div.md-toc-tooltip {
+	background-color: #f3f2ee;
+}
+
+#typora-sidebar {
+	background-color: #f3f2ee;
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.375);
+  	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.375);
+}
+
+.pin-outline #typora-sidebar {
+	background: inherit;
+	box-shadow: none;
+	border-right: 1px dashed;
+}
+
+.pin-outline #typora-sidebar:hover .outline-title-wrapper {
+	border-left:1px dashed;
+}
+
+.outline-item:hover {
+  background-color: #dadada;
+  border-left: 28px solid #dadada;
+  border-right: 18px solid #dadada;
+}
+
+.typora-node .outline-item:hover {
+  	border-right: 28px solid #dadada;
+}
+
+.outline-expander:before {
+  content: "\f0da";
+  font-family: FontAwesome;
+  font-size:14px;
+  top: 1px;
+}
+
+.outline-expander:hover:before,
+.outline-item-open>.outline-item>.outline-expander:before {
+  content: "\f0d7";
+}
+
+.modal-content {
+	background-color: #f3f2ee;
+}
+
+.auto-suggest-container ul li {
+	list-style-type: none;
+}
+
+/** UI for electron */
+
+.megamenu-menu,
+#top-titlebar, #top-titlebar *,
+.megamenu-content {
+	background: #f3f2ee;
+	color: #1f0909;
+}
+
+.megamenu-menu-header {
+	border-bottom: 1px dashed #202B33;
+}
+
+.megamenu-menu {
+	box-shadow: none;
+	border-right: 1px dashed;
+}
+
+header, .context-menu, .megamenu-content, footer {
+	font-family: "PT Serif", 'Times New Roman', Times, serif;
+    color: #1f0909;
+}
+
+#megamenu-back-btn {
+	color: #1f0909;
+	border-color: #1f0909;
+}
+
+.megamenu-menu-header #megamenu-menu-header-title:before {
+	color: #1f0909;
+}
+
+.megamenu-menu-list li a:hover, .megamenu-menu-list li a.active {
+	color: inherit;
+	background-color: #e8e7df;
+}
+
+.long-btn:hover {
+	background-color: #e8e7df;
+}
+
+#recent-file-panel tbody tr:nth-child(2n-1) {
+    background-color: transparent !important;
+}
+
+.megamenu-menu-panel tbody tr:hover td:nth-child(2) {
+    color: inherit;
+}
+
+.megamenu-menu-panel .btn {
+	background-color: #D2D1D1;
+}
+
+.btn-default {
+	background-color: transparent;
+}
+
+.typora-sourceview-on #toggle-sourceview-btn,
+.ty-show-word-count #footer-word-count {
+	background: #c7c5c5;
+}
+
+#typora-quick-open {
+    background-color: inherit;
+}
+
+.md-diagram-panel {
+	margin-top: 8px;
+}
+
+.file-list-item-file-name {
+	font-weight: initial;
+}
+
+.file-list-item-summary {
+	opacity: 1;
+}
+
+.file-list-item {
+	color: #777;
+}
+
+.file-list-item.active {
+	background-color: inherit;
+	color: black;
+}
+
+.ty-side-sort-btn.active {
+	background-color: inherit;
+}
+
+.file-list-item.active .file-list-item-file-name  {
+	font-weight: bold;
+}
+
+.file-list-item{
+    opacity:1 !important;
+}
+
+.file-library-node.active>.file-node-background{
+	background-color: rgba(32, 43, 51, 0.63);
+	background-color: var(--active-file-bg-color);
+}
+
+.file-tree-node.active>.file-node-content{
+	color: white;
+	color: var(--active-file-text-color);
+}
+
+.md-task-list-item>input {
+	margin-left: -1.7em;
+	margin-top: calc(1rem - 12px);
+}
+
+input {
+	border: 1px solid #aaa;
+}
+
+.megamenu-menu-header #megamenu-menu-header-title,
+.megamenu-menu-header:hover, 
+.megamenu-menu-header:focus {
+	color: inherit;
+}
+
+.dropdown-menu .divider {
+	border-color: #e5e5e5;
+	opacity: 1;
+}
+
+/* https://github.com/typora/typora-issues/issues/2046 */
+.os-windows-7 strong,
+.os-windows-7 strong  {
+	font-weight: 760;
+}
+
+.ty-preferences .btn-default {
+	background: transparent;
+}
+
+.ty-preferences .window-header {
+	border-bottom: 1px dashed #202B33;
+	box-shadow: none;
+}
+
+#sidebar-loading-template, #sidebar-loading-template.file-list-item {
+	color: #777;
+}
+
+.searchpanel-search-option-btn.active {
+	background: #777;
+	color: white;
+}
+
+
+ .typora-export li, .typora-export p, .typora-export,  .footnote-line {white-space: normal;} 
+</style><title>birdland</title>
+</head>
+<body class='typora-export'><div class='typora-export-content'>
+<div id='write'  class=''><h1 id='birdland-musicians-assistant'><span>Birdland Musician&#39;s Assistant</span></h1><p><span>Birdland is a music reader and library manager for music books including fakebooks.</span>
+<span>It locates and displays a page of music by searching a database of titles and</span>
+<span>other metadata.  Answering the </span><em><span>Let&#39;s hear how it goes</span></em><span> query it also suggests audio</span>
+<span>files, midi files, and YouTube links matching the search. </span></p><p><span>A secondary feature of Birdland is index management. Birdland contains tools to harmonize</span>
+<span>indexes from disparate sources, compare them, and integrate them into one database.</span>
+<span>Birdland ships with index data from eight sources covering over 100 books and over 20,000 titles.</span>
+<span>Users can edit existing indexes and add their own.</span></p><h2 id='foundational-concepts-and-terminology'><span>Foundational Concepts and Terminology</span></h2><h3 id='no-copyrighted-media'><span>No Copyrighted Media</span></h3><p><span>Birdland ships with no copyrighted media - music, audio or midi. You must supply your</span>
+<span>own media, which is available from many online sources, or from your own scans.</span>
+<span>It does include music indexes for many popular books. Indexes are lists of facts and, as such, not subject to</span>
+<span>copyright.</span></p><h3 id='music-vs-audio'><span>Music vs Audio</span></h3><p><span>The common (and ambiguous) terms - </span><em><span>music</span></em><span> and </span><em><span>audio</span></em><span> - are used formally</span>
+<span>here.  You look at </span><em><span>Music</span></em><span> ; you listen to </span><em><span>Audio</span></em><span>.  That is, </span><em><span>Music</span></em><span> is</span>
+<span>derrived from the printed page, </span><em><span>Audio</span></em><span> from performance.  The term </span><em><span>Book</span></em>
+<span>is used informally to refer to a </span><em><span>Music</span></em><span> book.</span></p><h3 id='title-indexes'><span>Title Indexes</span></h3><p><span>A key feature of Birdland is the ability to locate title in a book by</span>
+<span>searching a database.  This requires an index that maps song titles to</span>
+<span>pages in books.  Birdland ships with indexes compiled from several online</span>
+<span>sources and one which was extracted from the table of contents in books in</span>
+<span>the author&#39;s music library, of those having a table of contents.  Each source has a</span>
+<span>short, three character name, which is identified as </span><em><span>Src</span></em><span>.  Each source</span>
+<span>also has a longer, descriptive name identified as </span><em><span>Source</span></em><span>.  You may add</span>
+<span>indexes from other sources or ones you create for books not covered here.</span></p><h3 id='music-identifiers'><span>Music Identifiers</span></h3><p><span>Every music book has three identifiers.  The </span><em><span>Local Name</span></em><span> is specific (or</span>
+<span>local) to each index source and invented by the person compiling the</span>
+<span>index. </span><em><span>Local</span></em><span> names are often cryptic and non-unique across different</span>
+<span>index sources.</span></p><p><span>The </span><em><span>Canonical Name</span></em><span> is descriptive, is unique over all music books, and</span>
+<span>was selected by author of Birdland.  It is typically the same or similar</span>
+<span>to the name of the book, possibly noralized and disambiguated,</span>
+<span>particularly for for </span><em><span>Real Books</span></em><span> from Sher, Hal Leonard and the originals</span>
+<span>from Berkeley Music College.</span></p><p><span>The </span><em><span>File Name</span></em><span> is the name of the music file, i.e. the PDF file</span>
+<span>containing music, in </span><em><span>your</span></em><span> music library.  A file in the configuraiton</span>
+<span>directory maps between canonical name and file name.  You can manage that</span>
+<span>file with a text editor or using a tool in Birdland.  That file must exist</span>
+<span>before Birdland can find your music files.</span></p><h3 id='page-vs-sheet'><span>Page vs. Sheet </span></h3><p><span>Two other common (and also ambiguous) terms, </span><em><span>Page</span></em><span> and </span><em><span>Sheet</span></em><span>, are also</span>
+<span>used formally here.  The </span><em><span>Page</span></em><span> number of a title is a PDF concept and</span>
+<span>what is shown by PDF readers.  The </span><em><span>Sheet</span></em><span> number of a title is what is</span>
+<span>shown on the visual page.  In the general case</span>
+<em><span>Page</span></em><span> and </span><em><span>Sheet</span></em><span> numbers are not the same and vary by index source.</span>
+<em><span>Page</span></em><span> and </span><em><span>Sheet</span></em><span> numbers are mapped for each index source by a table</span>
+<span>known as the </span><em><span>Sheet Offset Table</span></em><span>.  It contains one or more pairs of</span>
+<span>numbers.  Starting at the sheet represented by the first number the </span><em><span>Page</span></em>
+<span>number is obtained by adding the second number to the sheet number.  For</span>
+<span>some index sources the </span><em><span>Page</span></em><span> number and </span><em><span>Sheet</span></em><span> number are the same.</span></p><h3 id='primary-input-files-are-all-text-based'><span>Primary Input Files are all Text-based</span></h3><p><span>The primary input files - raw indexes, local to canonical maps, canonical</span>
+<span>to file map, title corrections, etc., are all text-based.</span>
+<span>Built-in tools are available for editing most or you may</span>
+<span>use your favorite text editor.</span></p><p><span>A corollary of this is that no user input is stored only in the Birdland database.</span>
+<span>The database may be rebuilt freely without the loss of user data.</span></p><h3 id='programming-is-more-fun-than-bookeeping'><span>Programming is More Fun Than Bookeeping</span></h3><p><span>Index management involves a lot of bookkeeping, e.g. identifying page</span>
+<span>mismatches between index sources, aligning page numbers, editing mapping</span>
+<span>files, etc.  The time to develop the Birdland tools to minimize the</span>
+<span>bookkeeping effort likely exceeded manyfold the time to just do the</span>
+<span>bookkeeping manually.  But it was more fun.</span></p><p>&nbsp;</p><h2 id='features'><span>Features</span></h2><ul><li><span>Locate music by searching for the song title, composer or lyricist from data in the index</span>
+<span>and the the title in the music filename. /// CHECK.</span></li><li><span>Locate audio by searching for the song title, artist, and album in data</span>
+<span>extracted from metadata in the audio files.  Audio file names are not</span>
+<span>searched because they normally overlap the metadata.  The titles obtained</span>
+<span>from searching the audio index may optional be included in a search of the</span>
+<span>music index.  This provides a means of identifying titles by artist and</span>
+<span>album metadata, which is in the audio files index but not in the music file index.</span></li><li><span>Locate midi by searching for the song title in the midi filename.  Midi</span>
+<span>files contain no reliable and uniform metadata so only the filename is</span>
+<span>searched.</span></li><li><span>Locate YouTube pages by searching a table created by looking up all</span>
+<span>titles in the authors library.</span></li><li><span>Birdland uses Sqlite3 database by default but can use MySql under command-line</span>
+<span>option. To use MySql you must first create a MySql database called </span><em><span>Birdland</span></em><span>.</span></li><li><span>Support for use on multiple hosts with a shared configuration with host-specific</span>
+<span>sections for settings likely to vary by host.</span></li></ul><h2 id='test'><span>Test</span></h2><div class="md-diagram-panel md-fences-adv-panel"><svg id="mermaidChart0" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="499.90545654296875" style="max-width: 648.9906005859375px;" viewBox="0 0.000003814697265625 648.9906005859375 499.90545654296875"><style>#mermaidChart0 {font-family:sans-serif;font-size:16px;fill:#333;}#mermaidChart0 .error-icon{fill:#552222;}#mermaidChart0 .error-text{fill:#552222;stroke:#552222;}#mermaidChart0 .edge-thickness-normal{stroke-width:2px;}#mermaidChart0 .edge-thickness-thick{stroke-width:3.5px;}#mermaidChart0 .edge-pattern-solid{stroke-dasharray:0;}#mermaidChart0 .edge-pattern-dashed{stroke-dasharray:3;}#mermaidChart0 .edge-pattern-dotted{stroke-dasharray:2;}#mermaidChart0 .marker{fill:#333333;stroke:#333333;}#mermaidChart0 .marker.cross{stroke:#333333;}#mermaidChart0 svg{font-family:sans-serif;font-size:16px;}#mermaidChart0 .label{font-family:sans-serif;color:#333;}#mermaidChart0 .cluster-label text{fill:#333;}#mermaidChart0 .cluster-label span{color:#333;}#mermaidChart0 .label text,#mermaidChart0 span{fill:#333;color:#333;}#mermaidChart0 .node rect,#mermaidChart0 .node circle,#mermaidChart0 .node ellipse,#mermaidChart0 .node polygon,#mermaidChart0 .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaidChart0 .node .label{text-align:center;}#mermaidChart0 .node.clickable{cursor:pointer;}#mermaidChart0 .arrowheadPath{fill:#333333;}#mermaidChart0 .edgePath .path{stroke:#333333;stroke-width:2.0px;}#mermaidChart0 .flowchart-link{stroke:#333333;fill:none;}#mermaidChart0 .edgeLabel{background-color:#e8e8e8;text-align:center;}#mermaidChart0 .edgeLabel rect{opacity:0.5;background-color:#e8e8e8;fill:#e8e8e8;}#mermaidChart0 .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaidChart0 .cluster text{fill:#333;}#mermaidChart0 .cluster span{color:#333;}#mermaidChart0 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaidChart0 :root{--mermaid-font-family:sans-serif;}#mermaidChart0 :root{--mermaid-alt-font-family:sans-serif;}</style><g><g class="output"><g class="clusters"></g><g class="edgePaths"><g class="edgePath LS-A LE-B" id="L-A-B" style="opacity: 1;"><path class="path" d="M53.68011265074768,248.99537872309764L131.703125,64.71406173706055L193.625,64.71406173706055" marker-end="url(#arrowhead36)" style="fill:none"></path><defs><marker id="arrowhead36" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-B LE-C" id="L-B-C" style="opacity: 1;"><path class="path" d="M300.8125,64.71406173706055L325.8125,64.71406173706055L351.31250076293946,65.21406173706055" marker-end="url(#arrowhead37)" style="fill:none"></path><defs><marker id="arrowhead37" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-C LE-D" id="L-C-D" style="opacity: 1;"><path class="path" d="M464.7406242370605,65.21406173706055L504.3656234741211,64.71406173706055L581.1751953735101,213.05390548706055" marker-end="url(#arrowhead38)" style="fill:none"></path><defs><marker id="arrowhead38" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-C LE-E" id="L-C-E" style="opacity: 1;"><path class="path" d="M419.69888205684475,110.25580544315535L504.3656234741211,438.40156173706055L545.3890609741211,452.8696490696498" marker-end="url(#arrowhead39)" style="fill:none"></path><defs><marker id="arrowhead39" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-A LE-x" id="L-A-x" style="opacity: 1;"><path class="path" d="M65.0320690309067,251.84963848291238L131.703125,159.38593673706055L213.65625,159.38593673706055" marker-end="url(#arrowhead40)" style="fill:none"></path><defs><marker id="arrowhead40" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-A LE-E" id="L-A-E" style="opacity: 1;"><path class="path" d="M54.77286885283868,316.2888379652622L131.703125,485.73749923706055L247.21875,485.73749923706055L325.8125,485.73749923706055L407.52656173706055,485.73749923706055L504.3656234741211,485.73749923706055L545.3890609741211,478.2323715932973" marker-end="url(#arrowhead41)" style="fill:none"></path><defs><marker id="arrowhead41" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-A LE-D" id="L-A-D" style="opacity: 1;"><path class="path" d="M65.0320690309067,313.6019224912087L131.703125,406.06562423706055L247.21875,406.06562423706055L325.8125,406.06562423706055L407.52656173706055,406.06562423706055L504.3656234741211,406.06562423706055L581.1751953735101,257.72578048706055" marker-end="url(#arrowhead42)" style="fill:none"></path><defs><marker id="arrowhead42" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-M LE-O" id="L-M-O" style="opacity: 1;"><path class="path" d="M55.5546875,135.0669589432803L131.703125,222.88984298706055L230.9921875,249.6796248647658" marker-end="url(#arrowhead43)" style="fill:none"></path><defs><marker id="arrowhead43" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-M LE-P" id="L-M-P" style="opacity: 1;"><path class="path" d="M49.492007410335034,138.18403816223145L131.703125,311.39374923706055L231.8828125,343.7729408076341" marker-end="url(#arrowhead44)" style="fill:none"></path><defs><marker id="arrowhead44" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-N LE-O" id="L-N-O" style="opacity: 1;"><path class="path" d="M50.610895196170596,445.93549156188965L131.703125,291.39374923706055L230.9921875,259.3024175931068" marker-end="url(#arrowhead45)" style="fill:none"></path><defs><marker id="arrowhead45" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g><g class="edgePath LS-N LE-P" id="L-N-P" style="opacity: 1;"><path class="path" d="M54.671875,451.119491130816L131.703125,367.39765548706055L231.8828125,351.2080597017738" marker-end="url(#arrowhead46)" style="fill:none"></path><defs><marker id="arrowhead46" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker></defs></g></g><g class="edgeLabels"><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-A-B" class="edgeLabel L-LS-A' L-LE-B"></span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-B-C" class="edgeLabel L-LS-B' L-LE-C"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(504.3656234741211,64.71406173706055)" style="opacity: 1;"><g transform="translate(-15.125,-12.3359375)" class="label"><rect rx="0" ry="0" width="30.25" height="24.671875"></rect><foreignObject width="30.25" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-C-D" class="edgeLabel L-LS-C' L-LE-D">One</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(504.3656234741211,438.40156173706055)" style="opacity: 1;"><g transform="translate(-14.671875,-12.3359375)" class="label"><rect rx="0" ry="0" width="29.34375" height="24.671875"></rect><foreignObject width="29.34375" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-C-E" class="edgeLabel L-LS-C' L-LE-E">Two</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(131.703125,159.38593673706055)" style="opacity: 1;"><g transform="translate(-36.921875,-12.3359375)" class="label"><rect rx="0" ry="0" width="73.84375" height="24.671875"></rect><foreignObject width="73.84375" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-A-x" class="edgeLabel L-LS-A' L-LE-x">edge lable</span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-A-E" class="edgeLabel L-LS-A' L-LE-E"></span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-A-D" class="edgeLabel L-LS-A' L-LE-D"></span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-M-O" class="edgeLabel L-LS-M' L-LE-O"></span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-M-P" class="edgeLabel L-LS-M' L-LE-P"></span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-N-O" class="edgeLabel L-LS-N' L-LE-O"></span></div></foreignObject></g></g><g class="edgeLabel" transform="" style="opacity: 1;"><g transform="translate(0,0)" class="label"><rect rx="0" ry="0" width="0" height="0"></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-N-P" class="edgeLabel L-LS-N' L-LE-P"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="flowchart-A-18" label-offset-y="8.269198594612682" transform="translate(38.890625,282.72578048706055)" style="opacity: 1;"><path d="M 0,8.269198594612682 a 30.890625,8.269198594612682 0,0,0 61.78125 0 a 30.890625,8.269198594612682 0,0,0 -61.78125 0 l 0,52.94107359461268 a 30.890625,8.269198594612682 0,0,0 61.78125 0 l 0,-52.94107359461268" transform="translate(-30.890625,-34.73973539191903)" class="label-container"></path><g class="label" transform="translate(0,0)"><g transform="translate(-20.890625,-12.3359375)"><foreignObject width="41.78125" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">music</div></foreignObject></g></g></g><g class="node default" id="flowchart-B-19" transform="translate(247.21875,64.71406173706055)" style="opacity: 1;"><rect rx="5" ry="5" x="-53.59375" y="-22.3359375" width="107.1875" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-43.59375,-12.3359375)"><foreignObject width="87.1875" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Round edge</div></foreignObject></g></g></g><g class="node default" id="flowchart-x-20" transform="translate(247.21875,159.38593673706055)" style="opacity: 1;"><rect rx="5" ry="5" x="-33.5625" y="-22.3359375" width="67.125" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-23.5625,-12.3359375)"><foreignObject width="47.125" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">mytest</div></foreignObject></g></g></g><g class="node default" id="flowchart-C-22" transform="translate(407.52656173706055,64.71406173706055)" style="opacity: 1;"><polygon points="56.714062500000004,0 113.42812500000001,-56.714062500000004 56.714062500000004,-113.42812500000001 0,-56.714062500000004" transform="translate(-56.714062500000004,56.714062500000004)" class="label-container"></polygon><g class="label" transform="translate(0,0)"><g transform="translate(-30.6796875,-12.3359375)"><foreignObject width="61.359375" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Decision</div></foreignObject></g></g></g><g class="node default" id="flowchart-D-24" transform="translate(592.7406234741211,235.38984298706055)" style="opacity: 1;"><rect rx="0" ry="0" x="-48.25" y="-22.3359375" width="96.5" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-38.25,-12.3359375)"><foreignObject width="76.5" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Result one</div></foreignObject></g></g></g><g class="node default" id="flowchart-E-26" transform="translate(592.7406234741211,469.56953048706055)" style="opacity: 1;"><rect rx="0" ry="0" x="-47.3515625" y="-22.3359375" width="94.703125" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-37.3515625,-12.3359375)"><foreignObject width="74.703125" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Result two</div></foreignObject></g></g></g><g class="node default" id="flowchart-M-32" transform="translate(38.890625,115.84810066223145)" style="opacity: 1;"><rect rx="0" ry="0" x="-16.6640625" y="-22.3359375" width="33.328125" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-6.6640625,-12.3359375)"><foreignObject width="13.328125" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">M</div></foreignObject></g></g></g><g class="node default" id="flowchart-N-33" transform="translate(38.890625,468.27142906188965)" style="opacity: 1;"><rect rx="0" ry="0" x="-15.78125" y="-22.3359375" width="31.5625" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-5.78125,-12.3359375)"><foreignObject width="11.5625" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">N</div></foreignObject></g></g></g><g class="node default" id="flowchart-O-34" transform="translate(247.21875,254.05781173706055)" style="opacity: 1;"><rect rx="0" ry="0" x="-16.2265625" y="-22.3359375" width="32.453125" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-6.2265625,-12.3359375)"><foreignObject width="12.453125" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">O</div></foreignObject></g></g></g><g class="node default" id="flowchart-P-35" transform="translate(247.21875,348.72968673706055)" style="opacity: 1;"><rect rx="0" ry="0" x="-15.3359375" y="-22.3359375" width="30.671875" height="44.671875" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-5.3359375,-12.3359375)"><foreignObject width="10.671875" height="24.671875"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">P</div></foreignObject></g></g></g></g></g></g></svg></div><h2 id='installation'><span>Installation</span></h2><h3 id='system-requirements'><span>System Requirements</span></h3><p><span>Birdland requires the Python 3 interpreter. This is likely installed on most modern Linux</span>
+<span>distributions, in included in the self-contained package, but will have to be installed</span>
+<span>for the tarball and PyPi installation if not already present.</span></p><p><span>Birdland requires the following Python modules. These are installed automatically if installing</span>
+<span>Birdland from PyPi, are included in the self-contained package, but have to be installed manually</span>
+<span>when installing Birdland from the tarball.</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="" style="break-inside: unset;"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 10.3359px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><span><span>​</span>x</span></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">pandas</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">PySimpleGUI</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">mysqlclient</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">PyMuPDF</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">tk</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">mutagen</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">click</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">configobj</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">unidecode</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Levenshtein</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">pytesseract (only if using Create Index feature)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">pillow (only if using Create Index feature)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">/// One other</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 345px;"></div><div class="CodeMirror-gutters" style="display: none; height: 345px;"></div></div></div></pre><p><span>Birdland also needs an audio file player if you want to play audio files matching a music</span>
+<span>title, a PDF viewer if you prefer to use an external one in lieu of the one build in, a</span>
+<span>midi player if you want to play midi files, and a web browser for viewing YouTube links.</span>
+<span>We have used the </span><em><span>vlc</span></em><span> audio player, tested with the </span><em><span>okular</span></em><span> PDF viewer though we</span>
+<span>generally use the build-in one, the </span><em><span>timidity</span></em><span> music player with the </span><em><span>FluidR3_GM.sf2</span></em>
+<span>soundfount, and the </span><em><span>qutebrowser</span></em><span> browser for its simple, non-distracting user interface.</span>
+<span>We have found that the </span><em><span>FluidR3_GM.sf2</span></em><span> soundfont has good coverage of General Midi</span>
+<span>instruments and remarkably good samples.</span></p><h3 id='tarball-gzip-compressed-tar-file'><span>Tarball (gzip compressed tar file)</span></h3><h3 id='from-pypi'><span>From PyPi</span></h3><h3 id='bundled-package'><span>Bundled package.</span></h3><p><span>Unzip the download into a folder of your choice. Launch the </span><em><span>birdland</span></em><span> executable in that folder.</span></p><h2 id='status'><span>Status</span></h2><p><span>A wise sage posited that </span><em><span>Perfect is the Enemy of Good</span></em><span>. With that in mind I decided to release</span>
+<span>Birdland with a few known issues to expose it to a wider user base.</span></p><p><span>The Birdland application has been reasonably well tested during development but has not yet been </span><br/><span>exposed to many users. Corner cases or un-anticipated inputs and sequence of inputs will</span>
+<span>inevitably emerge.</span></p><p><span>Development and testing was done on an up-to-date Arch Linux system. Incompatibilities with</span>
+<span>other Linux distributions or older versions of Python, Python modules, and other system software are</span>
+<span>possible.</span></p><p><span>The consolidation of the multiple index sources is not complete. The correct page is found for most titles</span>
+<span>in popular fakebooks but some page errors and alternate spellings of titles remain.</span></p><p><span>Birdland has a </span><em><span>theme</span></em><span> option but light themes are discouraged.  Most of the testing was</span>
+<span>done with the </span><em><span>Dark</span></em><span> theme - I recommend that for early users.  Birdland specified a few</span>
+<span>user-interface colors that work better with dark themes No work has been done yet to adapt</span>
+<span>the specified colors to light themes.  Most embarrassing, the </span><em><span>Birdland</span></em><span> title just about</span>
+<span>disappears with light themes.  While color is used sparingly in most of the user interface</span>
+<span>(just the title, input boxex, and tabs) it is used in the </span><em><span>Create Index</span></em><span> feature.</span></p><h2 id='quick-start'><span>Quick Start</span></h2><h3 id='settings'><span>Settings</span></h3><p><span>When Birdland starts for the first time it creates a folder, </span><em><span>.birdland</span></em><span>, in your home</span>
+<span>directory (and also as specified by the -c confdir option) and copies a default configuration file, </span><em><span>birdland.conf</span></em><span>, a</span>
+<span>empty setlist file, </span><em><span>setlist.json</span></em><span>, an empty canonical to file map file, </span><em><span>Canonical2File.txt</span></em><span>, a sample</span>
+<span>canonical to file map file, </span><em><span>Example-Canonical2File.txt</span></em><span>, and an empty audio index, </span><em><span>hostname-Audio-Index.json.gz</span></em><span>,</span>
+<span>where </span><em><span>hostname</span></em><span> is the name of your host. The hostname is included in the audio index filename so</span>
+<span>you can run Birdland on multiple hosts, each with a different audio library. The canonical-to-file map file</span>
+<span>may be similarly named but is not done so by default. /// check</span></p><p><span>Birdland then prompts you set up your configuration in the settings menu:</span>
+<em><span>File-&gt;Settings</span></em><span>.  The </span><em><span>birdland.conf</span></em><span> file is an ordinary text file, which</span>
+<span>you can edit it directly with a text editor if you prefer.</span></p><p><span>There you can tell Birdland the location of your music, audio, and midi libraries.  Each of these is</span>
+<span>specified by a root directory and a list of one or more directories under the root.</span></p><p><span>Birdland needs to know the mapping between the canonical music file names used in the</span>
+<span>index and the names of the music files on your system.  You can populate the</span>
+<span>canonical-to-file map file using the build-in tool in the </span><em><span>Edit Canonical-&gt;File</span></em><span> tab or</span>
+<span>with a text editor.  The file consists of one line per music file containing the canonical</span>
+<span>name and the music file name separated by a vertical bar.  A reasonably-complete example</span>
+<span>is in </span><em><span>Example-Canonical2File.txt</span></em><span> to use as a starting point.  You may find that the file</span>
+<span>names in that are quite close to your music file names and only minor edits are needed.</span>
+<span>Or you might prefer to change the names of your music files to match that file.</span></p><p><span>Next click </span><em><span>Tools-&gt;Scan Audio Library</span></em><span> if you intend to include your audio library in the</span>
+<span>Birdland database.  This can take some time if you have a large audio library, perhaps</span>
+<span>around a half-hour for a half-terabyte of audio files. You can defer this until later if</span>
+<span>you are anxious to get started. Birdland gives you a second chance if you accidentally click</span>
+<span>this item.</span></p><p><span>Finally click </span><em><span>Tools-&gt;Rebuild Database</span></em><span> to build the database from the</span>
+<span>index data shipped with Birdland and the additional data you entered</span>
+<span>above.  This typically takes thirty seconds or so.</span></p><p><span>There are several more options that are not needed to get started.  We&#39;ll</span>
+<span>get to those later.</span></p><h3 id='operation'><span>Operation</span></h3><p><span>Enter a title in the green text box labled </span><em><span>Title</span></em><span> and hit </span><em><span>Enter</span></em><span> or click </span><em><span>Search</span></em><span>.</span></p><p><span>Birdland searches for </span><em><span>all</span></em><span> the words entered in the order they appear.</span>
+<span>This is similar, but not identical, to </span><em><span>Fullword Search</span></em><span> supported by</span>
+<span>MySql and Sqlite databases.</span></p><p><span>Birdland searches for the title in the music index, the audio index, in the music filenames,</span>
+<span>the midi filenames and the YouTube index and activates the tab for the first match found</span>
+<span>in the above order.</span></p><p><span>Click on a row in the </span><em><span>Music Index</span></em><span> tab to view a title found in the index,</span>
+<span>the </span><em><span>Audio Index</span></em><span> to listen to the title found in the index, the </span><em><span>Music Files</span></em><span> tab to view a title</span>
+<span>found in the music filename, the </span><em><span>Midi Files</span></em><span> tab to listen to a title found in the midi filename,</span>
+<span>and the </span><em><span>YouTube Index</span></em><span> to see the YouTube video for the title found in the YouTube index.</span></p><h1 id='-in-progress'><span>/// In Progress...</span></h1><h1 id='history'><span>History</span></h1><h2 id='fakebook-index-work---dec-2021'><span>Fakebook Index Work - Dec 2021</span></h2><p><span>This paper describes work started around Sept 2020 and resumed in Dec 2021.</span>
+<span>It is separate from the Birdland project from 2011 or so and Bluebird from the fall of 2019.</span></p><h2 id='index-management'><span>Index Management</span></h2><p><span>The material in this section is applicable only if you are working at the index source</span>
+<span>level. This includes adding a new index source or correcting errors in the indexes shipped with Birdland.</span></p><h4 id='adding-a-new-music-book'><span>Adding A New Music Book</span></h4><ul><li><span>Add book to one of the folders in </span><em><span>music_file_folders</span></em><span> item in the [[hostname]] section in birdland.conf.</span></li><li><span>Add/verify canonical book name in </span><em><span>Canonicals/CanonicalNames.txt</span></em></li><li><span>Add/verify the canonical to file mapping in </span><em><span>Hostname-Canonical2file.txt</span></em><span> in your Birdland config directory.</span></li><li><span>Verify that the canonical names in </span><em><span>Canonicals/CanonicalNames.txt</span></em><span> and </span><em><span>Hostname-Canonical2file.txt</span></em><span> match.</span></li><li><span>Rebuild the </span><em><span>canonical2file</span></em><span> table.</span></li></ul><h4 id='adding-an-index-source'><span>Adding An Index Source</span></h4><ul><li><span>Create new folder in </span><em><span>Index-Sources</span></em><span>.</span></li><li><span>Add new </span><em><span>Src</span></em><span> to the </span><em><span>source_priority</span></em><span> item in birdland.conf.</span></li><li><span>Add a new section named for the new </span><em><span>Source</span></em><span> in the [</span><em><span>System</span></em><span>] section of birdland.conf</span></li></ul><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang=""><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 10.3359px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">[[User]]</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">src = Usr</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">folder = User</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">command = do-user.py</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 99px;"></div><div class="CodeMirror-gutters" style="display: none; height: 99px;"></div></div></div></pre><ul><li><span>Build and run the do_source.py script.</span></li><li><span>/// Minimum necessary?</span></li></ul><h2 id='road-map'><span>Road Map</span></h2><ul><li><span>Port to Window</span></li><li><span>Add support for ChordPro files (.cho)</span></li><li><span>Integration with JJazzLab</span></li></ul><h2 id='input-data'><span>Input Data</span></h2><h3 id='index-files'><span>Index Files</span></h3><p><span>The raw source file is the origin of the index data, that is, a mapping between a song</span>
+<span>title, fakebook, and page number.  Presently, we are working with seven sources of index</span>
+<span>data.</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang=""><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 10.3359px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* AdamSpiers</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* Buffalo</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* ExtractedIndex</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* JasonDonenfeld</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* MikelNelson</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* Sher</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* Skrivarna</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* StompBox</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 197px;"></div><div class="CodeMirror-gutters" style="display: none; height: 197px;"></div></div></div></pre><h3 id='fakebook-files'><span>Fakebook Files</span></h3><p><span>This project does not concern itself with the acquisition of fakebooks. We assume that the</span>
+<span>user has acquired them, that they live under a common root, and that they have unique names </span>
+<span>but not necessarily the book names that appear in any index nor the canonical book names </span>
+<span>though they could be and sometime are. A few examples:</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang=""><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 10.3359px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* Library of Musicians Jazz.pdf</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">* Firehouse Jazz Band Commercial Dixxieland Fake Book.pdf</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 49px;"></div><div class="CodeMirror-gutters" style="display: none; height: 49px;"></div></div></div></pre><h2 id='processing'><span>Processing</span></h2><h3 id='source-specific-processing'><span>Source-Specific Processing</span></h3><p><span>For each source there is a python script, do-</span><source name><span>.py, in a source-specific</span>
+<span>directory.  That script reads the raw data in a source-specific form and writes a</span>
+<em><span>json</span></em><span> file in a common form in the data directory </span><em><span>Music-Index</span></em><span>. The</span>
+<span>json file is named with the </span><em><span>src</span></em><span> and </span><em><span>local</span></em><span> name. It contains the:</span></p><ul><li><span>Local book name</span></li><li><span>Source name</span></li><li><span>Title and page number for each song in the book.</span></li></ul><p><span>A few lines from the file:</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="" style="break-inside: unset;"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 10.3359px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  "book": "ColoBk",</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  "source": "AdamSpiers",</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  "contents": [</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  {</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;  "title": "Afternoon In Paris",</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;  "page": "17"</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  },</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  {</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;  "title": "Algo Bueno",</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;  "page": "274"</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  },</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  {</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;  "title": "All Blues",</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;  "page": "18"</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  },</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 395px;"></div><div class="CodeMirror-gutters" style="display: none; height: 395px;"></div></div></div></pre><h2 id='comments'><span>Comments</span></h2><h3 id='on-symmetry'><span>On Symmetry</span></h3><p><span>Thought on lack of symmetry in sidebar - youtube missing, chordpro, jjazzlab</span></p><h3 id='on-book-errors'><span>On Book Errors</span></h3><p><span>Use PdfArranger to rearrange out-of-order pages to agree with indexes.</span></p></div></div>
+</body>
+</html>

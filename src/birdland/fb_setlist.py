@@ -4,14 +4,6 @@
 
 #   WRW 23 Jan 2022 - Setlist routines, pulled out of fb_utils.
 #   Need to think about inheritance instead of passing pdf, fb, etc. into here
-#   /// RESUME WRW 25 Jan 2022 - Getting more than one 'setlist-table' event after
-#       select setlist from the Combo menu and setlist_show(). All else looks OK.
-#       WRW 26 Jan 2022 - With approach from Jason it looks like problem is resolved.
-#       See fb.safe_update().
-#   /// RESUME Think I found where extra event came from. Go back to earlier Suppress logic to test.
-#           At end of add.
-#   /// RESUME Some crashes on some paths through the code. Better have a close look at it,
-#       e.g., adding, deleting, moving, selecting. Think about corner cases.             
 
 #   Save but not useful so far:
 #       print( "/// qsize after update", self.window.thread_queue.qsize() )           
@@ -22,16 +14,12 @@ from pathlib import Path
 import json
 import sys
 
-Test_Select_Suppress = True  # - to use select suppression, one still leaking through
-Test_Select_Suppress = False # - to use Jason's approach to suppress prior to updating
-
 class Setlist():
 
     # ---------------------------------
     def __init__( self ):
         self.setlist = None
         self.current_setlist_name = None
-        self.suppress_setlist_table_event = False
 
     # ---------------------------------
     def set_class_config( self ):
@@ -44,23 +32,19 @@ class Setlist():
         self.dc = dc
 
     # ---------------------------------
-
     def set_icon( self, t ):
         global BL_Icon
         BL_Icon = t
 
     # ---------------------------------
-
-    def set_classes( self, conf, sg, fb, pdf, meta, toc ):
+    def set_classes( self, conf, sg, fb, pdf, meta ):
         self.conf = conf
         self.sg = sg
         self.fb = fb
         self.pdf = pdf
         self.meta = meta
-        self.toc = toc
 
     # ---------------------------------------------------
-
     def set_elements( self, window, ele_setlist_table, ele_tab_display_pdf, ele_setlist_move_up,
                             ele_setlist_move_down, ele_setlist_delete,
                             ele_setlist_save_menu, ele_setlist_controls_menu,
@@ -80,7 +64,7 @@ class Setlist():
     # ---------------------------------------------------
     #   Must maintain setlist data structure separate from setlist table.
 
-    def setlist_save_to_table( self, id, title, canonical, src, local, sheet, page, file ):
+    def setlist_save_to_table( self, id, title, canonical, src, local, sheet, page, file, mode ):
         if not self.setlist:
             self.setlist = {}
         if id not in self.setlist:
@@ -98,6 +82,7 @@ class Setlist():
                                      'local' : local,
                                      'sheet' : sheet,
                                      'page' : page,
+                                     'mode' : mode,
                                      'file' : file } )
     
     # ---------------------------------------------------
@@ -130,12 +115,22 @@ class Setlist():
             return 'Default'
 
     # ---------------------------------------------------
-    def setlist_save( self ):
+    #   WRW 30 Mar 2022 - Add titles to function for more sensible message.
+
+    def setlist_save( self, titles ):
         setlist_path = Path( self.SetListFile )
         t = { 'current' : self.current_setlist_name, 'setlist' : self.setlist }
         setlist_path.write_text( json.dumps( t, indent=2 ) )
 
-        self.conf.do_popup( f"\nSetlist '{self.current_setlist_name}' saved to:\n{setlist_path}\n" )
+        t = [ f"'{x}'" for x in titles ]
+        txt = f"""
+        Saved title(s): {', '.join( t )}\n
+        To setlist: '{self.current_setlist_name}'\n
+        In file: '{setlist_path}'
+        """
+        self.conf.do_popup( txt )
+
+        # self.conf.do_popup( f"\nSetlist '{self.current_setlist_name}' saved to:\n{setlist_path}\n" )
 
         # self.sg.popup_auto_close( f"\n  Setlist {self.current_setlist_name} saved to:\n  {setlist_path}  \n",
         #     auto_close_duration = .7,
@@ -147,11 +142,6 @@ class Setlist():
     #   Show current setlist in setlist tab.
     #   Start with none selected. Otherwise selected row was displayed.
     #   Called from bluebird.py initialize_gui(), which is after wait for graph in timeout loop.
-    #   /// RESUME - this part of larger problem here when set select_rows
-    #   update.table( select_rows = [0] ) causes two 'setlist-table' events.
-    #   Looks like I had not commented out the update() without the select_rows so that
-    #   I was getting the event for the select_rows but the selection was empty because
-    #   of the second update(). Don't know why two events.
 
     def setlist_show( self, id ):
         self.current_setlist_name = id
@@ -159,18 +149,7 @@ class Setlist():
 
         if sl:
             values = [ [ x[ 'title' ], x[ 'canonical' ], x[ 'file' ], x[ 'page' ] ] for x in sl ]
-            if Test_Select_Suppress:
-                print( "/// setlist_show() updating table with suppress set" )
-                print( "/// setting suppress" )
-                self.fb.log( "/// setting suppress", "setlist_show()" )
-
-                self.suppress_setlist_table_event = True
-                self.ele_setlist_table.update( values=values, select_rows = [0] )        # /// RESUME - prob if set. Now suppressed.
-
-            else:
-                self.fb.safe_update( self.ele_setlist_table, values, [0] )
-
-          # self.ele_setlist_table.update( values=values )
+            self.fb.safe_update( self.ele_setlist_table, values, [0] )
 
     # ---------------------------------------------------
     def setlist_get_names( self ):
@@ -194,10 +173,6 @@ class Setlist():
 
     def process_events( self, event, values ):
 
-        # print( f"sl.process_events() Event: {event}\n  Suppress: {self.suppress_setlist_table_event}\n  Values: {values}\n\n" );
-
-        # print( f"SETLIST process_events() Event: {event}, Suppress: {self.suppress_setlist_table_event}" );
-
         # ------------------------------------------------------------------
         #   User selected setlist from Combo dropdown menu
 
@@ -215,16 +190,6 @@ class Setlist():
         #       WRW 2 Feb 2022 - Include all metadata in setlist
 
         elif event == 'setlist-table':
-
-            #   /// RESUME 25 Jan 2022 - This terrible hack is needed until PySimpleGui provides a way to suppress
-            #       the event on Table.update( select_rows = [...] )
-            #   Actually, appears to work pretty well... at least after a brief test.
-
-            if self.suppress_setlist_table_event:
-                self.suppress_setlist_table_event = False
-                print( "--- Suppressing" )
-                return True
-
             if not values[ 'setlist-edit' ]:
                 if 'setlist-table' in values and len( values[ "setlist-table" ] ):
                     index = values[ "setlist-table" ][0]
@@ -237,37 +202,25 @@ class Setlist():
                     page        = item[ 'page' ]
                     sheet       = item[ 'sheet' ]
                     rel_path    = item[ 'file' ]
+                    mode        = item[ 'mode' ]
 
                     # rel_path = self.fb.get_file_by_canonical( canonical )
                     if rel_path:
                         full_path = Path( self.MusicFileRoot, rel_path ).as_posix()
 
-                        #   /// RESUME - cleanup metadata for setlist item with partial data
-                        #   /// WRW 2 Feb 2022 - Try using meta.show()
-                        self.pdf.show_music_file( file=full_path, page=page )       # Click in setlist
-                        if False:
-                            self.meta.show_from_setlist( rel_path,
-                                            page,
-                                            self.pdf.get_info()[ 'page_count' ],
-                                            title,
-                                            src,
-                                            local,
-                                            canonical )
-                        else:
-                            self.meta.show( 
-                                       id='SetList',
-                                       file=rel_path,
-                                       title=title,
-                                       canonical=canonical,
-                                       src=src,
-                                       local=local,
-                                       sheet=sheet,
-                                       page=page,
-                                       page_count = self.pdf.get_info()[ 'page_count' ],
-                                       )
-
-                        self.toc.show( canonical=canonical )
-                        # self.toc.show( file = rel_path )
+                        self.pdf.show_music_file( file=full_path, page=page )       # WRW 26 Apr 2022 - Somehow this line got dropped, likely with some cleanup.
+                        self.meta.show(
+                                   id='SetList',
+                                   mode = mode,         # Info already passed through fb_metadata.py
+                                   file=rel_path,
+                                   title=title,
+                                   canonical=canonical,
+                                   src=src,
+                                   local=local,
+                                   sheet=sheet,
+                                   page=page,
+                                   page_count = self.pdf.get_info()[ 'page_count' ],
+                                   )
 
                         if not self.UseExternalMusicViewer:
                             self.ele_tab_display_pdf.select()
@@ -305,6 +258,7 @@ class Setlist():
 
         elif event == 'display-button-add-to-setlist':
             setlist_id = values[ 'setlist-save-menu' ]
+            self.current_setlist_name = setlist_id          # WRW 30 Mar 2022 - To correct funny.
 
             metadata = self.meta.get_info()
             # print( f"/// At add, titles: {metadata[ 'titles' ]}, canonical: {metadata[ 'canonical']}, page: {metadata['page']}" )
@@ -332,13 +286,14 @@ class Setlist():
                 src = metadata[ 'src' ] if 'src' in metadata else None
                 local = metadata[ 'local' ] if 'local' in metadata else None
                 sheet = metadata[ 'sheet' ] if 'sheet' in metadata else None
+                mode = metadata[ 'mode' ] if 'mode' in metadata else None
 
                 #   May have multiple titles on one page, add them all.
                 if titles:
                     for title in metadata[ 'titles' ]:
-                        self.setlist_save_to_table( setlist_id, title, canonical, src, local, sheet, page, file )
+                        self.setlist_save_to_table( setlist_id, title, canonical, src, local, sheet, page, file, mode )
                 else:
-                    self.setlist_save_to_table( setlist_id, None, canonical, src, local, sheet, page, file )
+                    self.setlist_save_to_table( setlist_id, None, canonical, src, local, sheet, page, file, mode )
 
                 # -------------------------------------------------------
                 #   Update setlist table and select last item added.
@@ -347,16 +302,9 @@ class Setlist():
                 sl_list = self.setlist_get( setlist_id )
                 if sl_list:
                     values = [ [ x[ 'title' ], x[ 'canonical' ], x[ 'file' ], x[ 'page' ] ] for x in sl_list ]
+                    self.fb.safe_update( self.ele_setlist_table, values, [len(sl_list) -1] )
 
-                    if Test_Select_Suppress:
-                        print( "/// setting suppress" )
-                        self.fb.log( "/// setting suppress", "add to setlist" )
-                        self.suppress_setlist_table_event = True
-                        self.ele_setlist_table.update( values=values, select_rows = [len(sl_list) -1] )   # select last added item after add.
-                    else:
-                        self.fb.safe_update( self.ele_setlist_table, values, [len(sl_list) -1] )
-
-                self.setlist_save()
+                self.setlist_save( [ title for title in metadata[ 'titles' ]] )
 
                 # -------------------------------------------------------
                 #   After addition make the added-to list current and selected in the Combo menus.
@@ -366,12 +314,9 @@ class Setlist():
                 self.ele_setlist_controls_menu.update( value=setlist_id)
                 self.ele_tab_setlist_table.select()
 
-                # self.setlist_show( setlist_id )   # This may have been causing the extra event
-
             return True
 
         # ----------------------------------------------------------------
-
         elif event == 'setlist-edit':
             if values[ 'setlist-edit' ]:
                 self.ele_setlist_move_up.update( disabled = False )
@@ -379,15 +324,7 @@ class Setlist():
                 self.ele_setlist_delete.update( disabled = False )
 
                 if not 'setlist-table' in values or len( values[ 'setlist-table'] ) == 0:
-
-                    if Test_Select_Suppress:
-                        print( "/// setting suppress" )
-                        self.suppress_setlist_table_event = True
-                        self.ele_setlist_table.update( select_rows = [0] )      # start with row 0 selected if none selected.
-
-                    else:
-                        self.fb.safe_update( self.ele_setlist_table, None, [0] )
-
+                    self.fb.safe_update( self.ele_setlist_table, None, [0] )
 
             else:
                 self.ele_setlist_move_up.update( disabled = True)
@@ -397,7 +334,6 @@ class Setlist():
             return True
 
         # ----------------------------------------------------------------
-
         elif event == 'setlist-move-up':
             items = self.setlist_get_current()
             if 'setlist-table' in values and len( values[ "setlist-table" ]):
@@ -412,13 +348,7 @@ class Setlist():
                 item = items.pop( index )
                 items.insert( nindex, item )
                 values = [ [ x[ 'title' ], x[ 'canonical' ], x[ 'page' ] ] for x in items ]
-
-                if Test_Select_Suppress:
-                    print( "/// setting suppress" )
-                    self.suppress_setlist_table_event = True
-                    self.ele_setlist_table.update( values=values, select_rows = [nindex] )
-                else:
-                    self.fb.safe_update( self.ele_setlist_table, values, [nindex] )
+                self.fb.safe_update( self.ele_setlist_table, values, [nindex] )
 
             return True
 
@@ -435,13 +365,7 @@ class Setlist():
                 item = items.pop( index )
                 items.insert( nindex, item )
                 values = [ [ x[ 'title' ], x[ 'canonical' ], x[ 'page' ] ] for x in items ]
-
-                if Test_Select_Suppress:
-                    print( "/// setting suppress" )
-                    self.suppress_setlist_table_event = True
-                    self.ele_setlist_table.update( values=values, select_rows = [nindex] )
-                else:
-                    self.fb.safe_update( self.ele_setlist_table, values, [nindex] )
+                self.fb.safe_update( self.ele_setlist_table, values, [nindex] )
 
             return True
 
@@ -462,29 +386,20 @@ class Setlist():
                     index = 0
                 values = [ [ x[ 'title' ], x[ 'canonical' ], x[ 'page' ] ] for x in items ]
                 if values:
-                    if Test_Select_Suppress:
-                        print( "/// setting suppress" )
-                        self.suppress_setlist_table_event = True
-                        self.ele_setlist_table.update( values=values, select_rows = [index] )
-                    else:
-                        self.fb.safe_update( self.ele_setlist_table, values, [index] )
+                    self.fb.safe_update( self.ele_setlist_table, values, [index] )
                 else:
-                    if Test_Select_Suppress:
-                        print( "/// setting suppress" )
-                        self.suppress_setlist_table_event = True
-                        self.ele_setlist_table.update( values=values, select_rows = None )
-                    else:
-                        self.fb.safe_update( self.ele_setlist_table, values, None )
+                    self.fb.safe_update( self.ele_setlist_table, values, None )
 
             return True
 
         # ----------------------------------------------------------------
+
         elif event == 'setlist-save':
-            self.setlist_save()
+            self.setlist_save( [] )
+            return True
 
         # ----------------------------------------------------------------------------
         else:
-            # print( "--- Ignored" )
             return False
 
     # ----------------------------------------------------------------------------
