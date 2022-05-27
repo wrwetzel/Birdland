@@ -40,7 +40,7 @@ The ***Canonical Name*** is descriptive, is unique over all music books, and was
 author of Birdland.  It is typically the same or similar to the name of the book, possibly
 normalized and disambiguated, particularly for for *Real Books* from Sher, Hal Leonard and
 the originals from Berkeley Music College. 
-The local name is mapped to the canonical name by a file in each of the raw-index source directories.
+The local name is mapped to the canonical name by a file, *Local2Canon.txt*, in each of the raw-index source directories.
 
 The ***File Name*** is the name of the music file, i.e. the PDF file containing music, in
 *your* music library.  
@@ -211,7 +211,7 @@ pages. Automatic sheet number increment.
 
 ### Other Features
 
-* Birdland uses the Sqlite3 database by default but will use MySql  via a command-line
+* Birdland uses the Sqlite3 database by default but will use MySql via a command-line
 option. To use MySql you must first manually create a MySql database called *Birdland* with appropriate permissions.
 Thereafter, Birdland will create and populate the tables just as it does with Sqlite3.
 
@@ -223,11 +223,20 @@ sections for settings likely to vary by host.
 
 ### Download
 
+> For early releases Birdland is only package as a tar file or for access from GitHub.  Disregard
+all else below.  The *PyPi*, *PyInstaller*, and *Nuitka* packages were built successfully earlier in
+the development cycle.  The software used to build *PyPi* package and the Birdland folder structure
+both changed incompatibly since then.  In the interest of a timely release *PyPi* installation is not presently
+supported. The *PyInstaller* and *Nuitak* packages are huge, around a gigabyte.  That size is not
+justified by the benefits of a self-contained package so self-contained packages are also not presently supported.
+
+
 Birdland is packaged in several forms:
 
-* As a tarball.
+* As a tar file.
   This is likely to be familiar to techy users but does nothing automatically. You will
-  have to be sure all required Python modules are installed.
+  have to be sure Python and all required Python modules are installed.
+* At GitHub. This is essentially the same as the tar file above.
 * For installation via *PyPi*.
   This is also likely to be familiar to techy users and automatically installs all require
   Python modules.
@@ -237,11 +246,12 @@ Birdland is packaged in several forms:
     interpreter and all required modules but they still require a recent glibc and the
     download files are quite large.
 
-See the Birdland web site for download links and package-specific instructions.
-The package-specific instructions
-(one of ReadMe-Tar.md, ReadMe-Pypi.md, ReadMe-Nuitak.md, and ReadMe-PyInstaller.md) are also included
-in the installation package
-for reference during installation.
+See the 
+[Birdland web site](https://birdland.wrwetzel.com)
+for download links and package-specific instructions.  The
+package-specific instructions (one of ReadMe-Tar.md, ReadMe-Pypi.md, ReadMe-Nuitak.md, and
+ReadMe-PyInstaller.md) are also included in the installation package for reference during
+installation.
 
 ### System Requirements
 
@@ -268,10 +278,14 @@ PySimpleGUI
 pytesseract (only if using Create Index feature)
 tk
 unidecode
-youtubesearchpython (only to run get-youtube-links.py)
+youtube-search-python (only to run get-youtube-links.py)
 ```
 
-Birdland includes the source and binary for one module, *fullword* (a misnomer of fulltext), written in C but falls back to an alternate match strategy if that is not available. There are presently no build instructions in the installation process to recompile that if the existing binary is incompatible with your system. Execute *run.sh* in the *Fullword-Match* directory under the birdland source directory if you have a C-development environment on your system.
+Birdland includes the source and binary for one module, *fullword* (a misnomer of fulltext), written
+in C but falls back to an alternate match strategy if that is not available.  There are presently no
+build instructions in the installation process to recompile that if the existing binary is
+incompatible with your system.  Execute *run.sh* in the *Fullword-Match* directory under the
+birdland source directory if you have a C-development environment on your system.
 
 Birdland optionally need one or more of the following if you want to view or hear the
 related files from your libraries.

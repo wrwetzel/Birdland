@@ -93,7 +93,8 @@ ToDo - Done:
     Make html index from YouTube table.
         Have it but see little use for it.
 
-    Don't change name to Birdland. Keep that separate to avoid confusion with earlier work. No, changed it.
+    Don't change name to Birdland. Keep that separate to avoid confusion with earlier work. 
+        No, changed it. I like Birdland better than Bluebird.
 
 # --------------------------------------------------------------------------
 #   Moved from top of birdland.py
@@ -750,6 +751,7 @@ Birdland can be installed in several different ways and launched in different
 # ------------------------------------------------------------------------------------------
 
     Setup ssh authentication at github using id_rsa.pub for Gershwin.
+        Goto my icon in top right -> 'Your profile' -> SSH and GPG keys.
 
     Enable ssh authentication:
         git remote set-url origin git@github.com:wrwetzel/Birdland.git

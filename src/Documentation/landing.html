@@ -173,10 +173,15 @@ function show_md( url ) {
     
     <ul>
 
-    <li>As a tarball.
+    <li>As a tar file.
       This is likely to be familiar to techy users but does nothing automatically. You will
       have to be sure all required Python modules are installed.
     </li>
+    <li>
+    For access via GitHub. Similar to above.
+    </li>
+
+    <!--
     <li>
     For installation from <i>PyPi</i> via <i>pip</i>.
       This is also likely to be familiar to techy users and automatically installs all require
@@ -188,13 +193,16 @@ function show_md( url ) {
     <li>
     As as self-contained file build by <i>Nuitka</i>.
     </li>
+    -->
     </ul>
 
+    <!--
     <p>
     The last two are likely to be the easiest to install as they include the Python
     interpreter and all required modules but they still require a recent glibc and the
     download files are quite large.
     </p>
+    -->
 
     <table>
     <thead>
@@ -210,23 +218,30 @@ function show_md( url ) {
     </tr>
 
     <tr>
-        <td>PyPi</td>
-        <td><a href=https://test.pypi.org/project/birdland-wrwetzel/>At PyPi</a><br></td>
-        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-PyPi.md' )" >view</a></td>
+        <td>GitHub</td>
+        <td><a href=https://github.com/wrwetzel/Birdland>At GitHub</a><br></td>
+        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-GitHub.md' )" >view</a></td>
     </tr>
 
-    <tr>
-        <td>Self-Contained, Nuitka Package</td>
-        <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
-        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-Nuitka.md' )" >view</a></td>
-    </tr>
+    <!--
+        <tr>
+            <td>PyPi</td>
+            <td><a href=https://test.pypi.org/project/birdland-wrwetzel/>At PyPi</a><br></td>
+            <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-PyPi.md' )" >view</a></td>
+        </tr>
 
-    <tr>
-        <td>Self-Contained, PyInstaller Package</td>
-        <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
-        <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-PyInstaller.md' )" >view</a></td>
-    </tr>
+        <tr>
+            <td>Self-Contained, Nuitka Package</td>
+            <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
+            <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-Nuitka.md' )" >view</a></td>
+        </tr>
 
+        <tr>
+            <td>Self-Contained, PyInstaller Package</td>
+            <td><a href=/Downloads/birdland-user.tar.gz>download</a><br></td>
+            <td><a href="javascript:void(0);" onclick="show_md( '/Downloads/ReadMe-PyInstaller.md' )" >view</a></td>
+        </tr>
+    -->
 
     </tbody>
     </table>

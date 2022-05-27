@@ -201,7 +201,7 @@ cryptic and non-unique across different index sources.</p>
 author of Birdland.  It is typically the same or similar to the name of the book, possibly
 normalized and disambiguated, particularly for for <em>Real Books</em> from Sher, Hal Leonard and
 the originals from Berkeley Music College.
-The local name is mapped to the canonical name by a file in each of the raw-index source directories.</p>
+The local name is mapped to the canonical name by a file, <em>Local2Canon.txt</em>, in each of the raw-index source directories.</p>
 <p>The <em><strong>File Name</strong></em> is the name of the music file, i.e. the PDF file containing music, in
 <em>your</em> music library.<br />The canonical name is mapped to the file name by a file, <em>Canonical2ile.txt</em> in the configuration directory.
 Birdland includes a tool for managing that file or you can use your favorite text editor.</p>
@@ -363,7 +363,7 @@ possible to index a book quickly with user input only to enter the first sheet n
 <div class="section" id="other-features">
 <h3>Other Features<a class="headerlink" href="#other-features" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Birdland uses the Sqlite3 database by default but will use MySql  via a command-line
+<li><p>Birdland uses the Sqlite3 database by default but will use MySql via a command-line
 option. To use MySql you must first manually create a MySql database called <em>Birdland</em> with appropriate permissions.
 Thereafter, Birdland will create and populate the tables just as it does with Sqlite3.</p></li>
 <li><p>Support for use on multiple hosts using a shared configuration file with host-specific
@@ -375,11 +375,20 @@ sections for settings likely to vary by host.</p></li>
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="download">
 <h3>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>For early releases Birdland is only package as a tar file or for access from GitHub.  Disregard
+all else below.  The <em>PyPi</em>, <em>PyInstaller</em>, and <em>Nuitka</em> packages were built successfully earlier in
+the development cycle.  The software used to build <em>PyPi</em> package and the Birdland folder structure
+both changed incompatibly since then.  In the interest of a timely release <em>PyPi</em> installation is not presently
+supported. The <em>PyInstaller</em> and <em>Nuitak</em> packages are huge, around a gigabyte.  That size is not
+justified by the benefits of a self-contained package so self-contained packages are also not presently supported.</p>
+</div></blockquote>
 <p>Birdland is packaged in several forms:</p>
 <ul class="simple">
-<li><p>As a tarball.
+<li><p>As a tar file.
 This is likely to be familiar to techy users but does nothing automatically. You will
-have to be sure all required Python modules are installed.</p></li>
+have to be sure Python and all required Python modules are installed.</p></li>
+<li><p>At GitHub. This is essentially the same as the tar file above.</p></li>
 <li><p>For installation via <em>PyPi</em>.
 This is also likely to be familiar to techy users and automatically installs all require
 Python modules.</p></li>
@@ -389,11 +398,12 @@ These are likely to be the easiest to install as they include the Python
 interpreter and all required modules but they still require a recent glibc and the
 download files are quite large.</p></li>
 </ul>
-<p>See the Birdland web site for download links and package-specific instructions.
-The package-specific instructions
-(one of ReadMe-Tar.md, ReadMe-Pypi.md, ReadMe-Nuitak.md, and ReadMe-PyInstaller.md) are also included
-in the installation package
-for reference during installation.</p>
+<p>See the
+<a class="reference external" href="https://birdland.wrwetzel.com">Birdland web site</a>
+for download links and package-specific instructions.  The
+package-specific instructions (one of ReadMe-Tar.md, ReadMe-Pypi.md, ReadMe-Nuitak.md, and
+ReadMe-PyInstaller.md) are also included in the installation package for reference during
+installation.</p>
 </div>
 <div class="section" id="system-requirements">
 <h3>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h3>
@@ -416,10 +426,14 @@ when installing Birdland from the tarball.</p>
 <span class="n">pytesseract</span> <span class="p">(</span><span class="n">only</span> <span class="k">if</span> <span class="n">using</span> <span class="n">Create</span> <span class="n">Index</span> <span class="n">feature</span><span class="p">)</span>
 <span class="n">tk</span>
 <span class="n">unidecode</span>
-<span class="n">youtubesearchpython</span> <span class="p">(</span><span class="n">only</span> <span class="n">to</span> <span class="n">run</span> <span class="n">get</span><span class="o">-</span><span class="n">youtube</span><span class="o">-</span><span class="n">links</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+<span class="n">youtube</span><span class="o">-</span><span class="n">search</span><span class="o">-</span><span class="n">python</span> <span class="p">(</span><span class="n">only</span> <span class="n">to</span> <span class="n">run</span> <span class="n">get</span><span class="o">-</span><span class="n">youtube</span><span class="o">-</span><span class="n">links</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Birdland includes the source and binary for one module, <em>fullword</em> (a misnomer of fulltext), written in C but falls back to an alternate match strategy if that is not available. There are presently no build instructions in the installation process to recompile that if the existing binary is incompatible with your system. Execute <em>run.sh</em> in the <em>Fullword-Match</em> directory under the birdland source directory if you have a C-development environment on your system.</p>
+<p>Birdland includes the source and binary for one module, <em>fullword</em> (a misnomer of fulltext), written
+in C but falls back to an alternate match strategy if that is not available.  There are presently no
+build instructions in the installation process to recompile that if the existing binary is
+incompatible with your system.  Execute <em>run.sh</em> in the <em>Fullword-Match</em> directory under the
+birdland source directory if you have a C-development environment on your system.</p>
 <p>Birdland optionally need one or more of the following if you want to view or hear the
 related files from your libraries.</p>
 <ul class="simple">

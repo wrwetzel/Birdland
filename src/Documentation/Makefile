@@ -22,7 +22,7 @@ PHPMailer-master/src/Exception.php
 LANDING = landing.html screenshots.html contact.php contact.html Images $(PHPMailer) \
     download.html
 
-READMES = ../../ReadMe-Tar.md ../../ReadMe-PyPi.md ../ReadMe-Nuitka.md ../ReadMe-PyInstaller.md
+READMES = ../../ReadMe-Tar.md ../../ReadMe-GitHub.md ../../ReadMe-PyPi.md ../ReadMe-Nuitka.md ../ReadMe-PyInstaller.md
 PACKAGES = ~/Uploads/tar/birdland-user.tar.gz
 
 MDFILES=\
