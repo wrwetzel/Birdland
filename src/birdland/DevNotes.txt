@@ -767,6 +767,9 @@ Birdland can be installed in several different ways and launched in different
     git remote set-url origin git@github.com:wrwetzel/Birdland.git
     git push -u origin main
 
+    git commit -m "Add symlink for images in README.md"
+    git push -u origin main
+
 # ------------------------------------------------------------------------------------------
 #   Random Hold
 # ------------------------------------------------------------------------------------------

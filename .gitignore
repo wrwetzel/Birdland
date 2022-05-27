@@ -4,9 +4,9 @@
 ,*
 
 #   Ignore other rand editor files
-.es1
-.ek1
-.ec1
+.es*
+.ek*
+.ec*
 
 __pycache__/
 Junk/
