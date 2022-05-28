@@ -23,16 +23,19 @@ documentation as it contains much not covered here.
         unidecode
         youtubesearchpython     (only to run get-youtube-links.py)
 ```
-Install them system wide. Requires root access:
-```
-pip install click configobj Levenshtein mutagen mysqlclient pandas pillow 
-pip install PyMuPDF PySimpleGUI pytesseract tk unidecode youtubesearchpython
-```
 
-Or install them under your home directory. Does not require root access.
+## Install Required Modules
+
+Install them under your home directory. Does not require root access.
 ```
 pip install click configobj Levenshtein mutagen mysqlclient pandas pillow --user
 pip install PyMuPDF PySimpleGUI pytesseract tk unidecode youtubesearchpython --user
+```
+
+Or install them system wide. Requires root access.
+```
+pip install click configobj Levenshtein mutagen mysqlclient pandas pillow 
+pip install PyMuPDF PySimpleGUI pytesseract tk unidecode youtubesearchpython
 ```
 
 The PySimpleGUI Python module requires both tk and tkinter.
