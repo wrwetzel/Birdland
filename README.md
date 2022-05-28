@@ -14,6 +14,6 @@ and over 20,000 titles.  Users can edit existing indexes and add their own.
 
 ## Links
 
-* [Project Web Site](https://birdland.wrwetzel.com)
-* [Download and Installation Notes](https://birdland.wrwetzel.com/#download)
-* [Documentation](https://birdland.wrwetzel.com/_build/html/birdland.html)
+* [Project Site](https://birdland.wrwetzel.com)
+* [Download and Installation Notes at project site](https://birdland.wrwetzel.com/#download)
+* [Documentation at project site](https://birdland.wrwetzel.com/_build/html/birdland.html)
