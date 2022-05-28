@@ -66,26 +66,26 @@ def make_desktop( package_type, verbose ):
 
     #   Tar mimics Setuptools installation.
 
-    elif package_type == 'Tar' or package_type == 'Setuptools':
+    elif package_type == 'Tar' or package_type == 'Setuptools' or package_type == 'GitHub':
         program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
         program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
         Exec = f"/bin/sh -c {program}"
         Icon = f"{program_dir}/Icons/Bluebird-64.png"
         PPath = program_dir
 
-    elif package_type  ==  'PyInstaller':
-        executable = Path( sys.executable ).resolve().as_posix()
-        executable_parent = Path( sys.executable ).parent.resolve().as_posix()
-        Exec = f"/bin/sh -c {executable}"
-        Icon = f"{executable_parent}/src/Icons/Bluebird-64.png"
-        PPath = executable_parent
+    # elif package_type  ==  'PyInstaller':
+    #     executable = Path( sys.executable ).resolve().as_posix()
+    #     executable_parent = Path( sys.executable ).parent.resolve().as_posix()
+    #     Exec = f"/bin/sh -c {executable}"
+    #     Icon = f"{executable_parent}/src/Icons/Bluebird-64.png"
+    #     PPath = executable_parent
 
-    elif package_type  ==  'Nuitka':
-        executable = Path( sys.executable ).resolve().as_posix()
-        executable_parent = Path( sys.executable ).parent.resolve().as_posix()
-        Exec = f"/bin/sh -c {executable_parent}/birdland"
-        Icon = f"{executable_parent}/Icons/Bluebird-64.png"
-        PPath = executable_parent
+    # elif package_type  ==  'Nuitka':
+    #     executable = Path( sys.executable ).resolve().as_posix()
+    #     executable_parent = Path( sys.executable ).parent.resolve().as_posix()
+    #     Exec = f"/bin/sh -c {executable_parent}/birdland"
+    #     Icon = f"{executable_parent}/Icons/Bluebird-64.png"
+    #     PPath = executable_parent
 
     # -------------------------------------------------------
     #   Do tilda expansion

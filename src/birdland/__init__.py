@@ -21,20 +21,23 @@ program_directory = Path( __file__ ).parent.resolve().as_posix()
 # print( "/// __init__.py at top, sys.path", sys.path )
 # print( "/// __init__.py at top, cwd", os.getcwd() )
 
-if Path( program_directory, 'Package_Type_Development.txt' ).is_file():
-    Package_Type = 'Development'
-
-elif Path( program_directory, 'Package_Type_Setuptools.txt' ).is_file():
-    Package_Type = 'Setuptools'
-
-elif Path( program_directory, 'Package_Type_PyInstaller.txt' ).is_file():
-    Package_Type = 'PyInstaller'
-
-elif Path( program_directory, 'Package_Type_Nuitka.txt' ).is_file():
-    Package_Type = 'Nuitka'
+if Path( program_directory, 'Package_Type_GitHub.txt' ).is_file():
+    Package_Type = 'GitHub'
 
 elif Path( program_directory, 'Package_Type_Tar.txt' ).is_file():
     Package_Type = 'Tar'
+
+elif Path( program_directory, 'Package_Type_Development.txt' ).is_file():
+    Package_Type = 'Development'
+
+# elif Path( program_directory, 'Package_Type_Setuptools.txt' ).is_file():
+#     Package_Type = 'Setuptools'
+
+# elif Path( program_directory, 'Package_Type_PyInstaller.txt' ).is_file():
+#     Package_Type = 'PyInstaller'
+
+# elif Path( program_directory, 'Package_Type_Nuitka.txt' ).is_file():
+#     Package_Type = 'Nuitka'
 
 else:
     print( f"ERROR-DEV: 'Package_Type_*.txt' file not found at '__init__.py' in {program_directory}", file=sys.stderr )
