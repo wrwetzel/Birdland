@@ -420,9 +420,9 @@ get to those later.
 
   ![lets-hear](Images/lets-hear.png)
 
-  * And now, the multimedia feature manifests.  If a speaker icon appears in the *Status Bar* then
-  the title of an audio file matches the title shown in the music viewer.  Click on the *Audio of
-  Title* tab in the left sidebar and then a line in the *Title/Artist* table to play the audio.
+* And now, the multimedia feature manifests.  If a speaker icon appears in the *Status Bar* then
+the title of an audio file matches the title shown in the music viewer.  Click on the *Audio of
+Title* tab in the left sidebar and then a line in the *Title/Artist* table to play the audio.
   
 * If a music notes icon appears in the *Status Bar* then the above applies but for midi files
   

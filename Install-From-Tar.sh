@@ -1,4 +1,4 @@
-#!/bin/bash
+a#!/bin/bash
 # --------------------------------------------------------------------------------------
 #   Install-From-Tar.sh - Install Birdland from tarfile distribution
 #   WRW 18 March 2022
@@ -48,8 +48,8 @@ ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/bl-
 # cp src/birdland/birdland-tar.desktop                          ~/.local/share/applications/birdland.desktop
 # sed "s,~,$HOME,g" src/birdland/birdland-tar.desktop >         ~/.local/share/applications/birdland.desktop
 
-mv Package_Type_Tar.txt                                          ~/.local/share/birdland/birdland
-mv Start-From-Tar.sh                                             ~/.local/share/birdland/birdland
+cp Package_Type_Tar.txt                                          ~/.local/share/birdland/birdland
+cp Start-From-Tar.sh                                             ~/.local/share/birdland/birdland
 
 echo "Copied Birdland data folders to: '~/.local/share/birdland'"
 echo "Linked executables in '~/.local/share/birdland/birdland' to '~/.local/bin'"
@@ -57,4 +57,4 @@ echo "Be sure '~/.local/bin' is in your PATH"
 echo "Birdland executable is: 'birdland'"
 echo "For more information see: './ReadMe-Tar.md'"
 echo "Remove Birdland with: '~/.local/share/birdland/birdland/Remove-Birdland.sh'"
-echo "Installation complete. You may now delete '../Birdland'."
+echo "Installation complete. '../Birdland' or '../Birdland-main' are not needed for running Birdland and may be removed."

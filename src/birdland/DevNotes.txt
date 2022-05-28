@@ -770,6 +770,23 @@ Birdland can be installed in several different ways and launched in different
     git commit -m "Add symlink for images in README.md"
     git push -u origin main
 
+    To get to images:
+        https://raw.githubusercontent.com/wrwetzel/Birdland/main/src/Documentation/Images/small-full-window.png
+
+        Fails on the front page. Looks like not following Images symlink: 'src/Documentation/Images'
+
+        <a href="/wrwetzel/Birdland/blob/main/Images/Saxophone_64.png">
+            <img src="/wrwetzel/Birdland/raw/main/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
+        </a>
+
+        Works on the Documentation page:
+
+        <a href="/wrwetzel/Birdland/blob/main/src/Documentation/Images/Saxophone_64.png">
+            <img src="/wrwetzel/Birdland/raw/main/src/Documentation/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
+        </a>                                   
+
+
+
 # ------------------------------------------------------------------------------------------
 #   Random Hold
 # ------------------------------------------------------------------------------------------

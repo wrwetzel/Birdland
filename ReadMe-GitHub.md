@@ -45,24 +45,47 @@ sudo apt-get install python3-tk
 
 ## Install Birdland
 
-Unpack the birdland tar file *birdland-user.tar.gz* in a temporary directory. For example, if you
-have *tmp* in you home directory and have downloaded the tar file into *~/Downloads*:
+You may obtain Birdland from GitHub in two ways, by cloning the Birdland remote repository or by downloading
+a .zip file.
+
+### Install from Clone
+Create or go to a directory where you will download Birdland, clone it, and install it.
+```
+    git clone https://github.com/wrwetzel/Birdland.git
+    cd Birdland
+    ./Install-From-GitHub.sh
+```
+This copies data folders to ~/.local/share/birdland and links executables to ~/.local/bin.
+
+### Install from ZIP File
+
+Go to: 
+```
+    https://github.com/wrwetzel/Birdland.git
+```
+Click on the green *Code* button and then *Download ZIP* to download *Birdland-main.zip*. For example,
+here we assume it is in the *Downloads* directory in your home directory.
+
+Create or go to a directory where you will unpack Birdland and install. For example here we assume that is
+*tmp* in your home directory.
+
+Unpack *Birdland-main.zip* in a the directory and install it.
 ```
 cd ~/tmp
-tar -xzvf ~/Downloads/birdland-user.tar.gz
+tar -xzvf ~/Downloads/Birdland-main.zip
 ```
-This creates a new directory, *Birdland*, containing the package files. Go to that directory and
+This creates a new directory, *Birdland-main*, containing the package files. Go to that directory and
 run the installation script:
 
 ```
-cd Birdland
-Install-From-Tar.sh
+cd Birdland-main
+./Install-From-GitHub.sh
 ```
 This copies data folders to ~/.local/share/birdland and links executables to ~/.local/bin.
 
 You may now remove the package folder in the temporary directory.
 ```
-rm -rf ~/tmp/Birdland
+rm -rf ~/tmp/Birdland-main
 ```
 
 Be sure that ~/.local/bin is in your PATH environment variable. If your shell is bash then
@@ -78,7 +101,7 @@ The name of the executable is *birdland*. Run it from the command line:
 ```
 birdland
 ```
-After you run it for the first time from the commad line you can then run it
+After you run it for the first time from the command line you can then run it
 from the system menu. (Birdland creates a file birdland.desktop in
 ~/.local/share/applications to add itself to the system menu.)
 

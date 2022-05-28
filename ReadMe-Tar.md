@@ -78,7 +78,7 @@ The name of the executable is *birdland*. Run it from the command line:
 ```
 birdland
 ```
-After you run it for the first time from the commad line you can then run it
+After you run it for the first time from the command line you can then run it
 from the system menu. (Birdland creates a file birdland.desktop in
 ~/.local/share/applications to add itself to the system menu.)
 

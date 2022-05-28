@@ -148,26 +148,38 @@ class Config():
         # ------------------------------------------------------------
         #   WRW 16 Mar 2022 - Another approach. No guessing. Packaging places
         #       a file, 'Package_Type_*.txt', identifying the packaging type.
+
+        #   WRW 27 May 2022 - Backing off from all but GitHub. Each has own problems, not worth
+        #       the effort to manage multiple package type. GitHub is just about the same as tar
+        #       but in a .zip file or as cloned.
+
+        if Path( self.program_directory, 'Package_Type_GitHub.txt' ).is_file():
+            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()                                                            
+            self.Package_Type = 'GitHub'
         
-        if Path( self.program_directory, 'Package_Type_Development.txt' ).is_file():
+        elif Path( self.program_directory, 'Package_Type_Tar.txt' ).is_file():
+            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
+            self.Package_Type = 'Tar'
+
+        elif Path( self.program_directory, 'Package_Type_Development.txt' ).is_file():
             self.data_directory = self.program_directory.parent.as_posix()
             self.Package_Type = 'Development'
-        
-        elif Path( self.program_directory, 'Package_Type_Setuptools.txt' ).is_file():
-            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()                                                            
-            self.Package_Type = 'Setuptools'
 
-        elif Path( self.program_directory, 'src', 'Package_Type_PyInstaller.txt' ).is_file():
-            self.data_directory = self.program_directory.as_posix()
-            self.Package_Type = 'PyInstaller'
+        # elif Path( self.program_directory, 'Package_Type_Setuptools.txt' ).is_file():
+        #     self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
+        #     self.Package_Type = 'Setuptools'
 
-        elif Path( self.program_directory, 'Package_Type_Nuitka.txt' ).is_file():
-            self.data_directory = self.program_directory.as_posix()
-            self.Package_Type = 'Nuitka'
+        # elif Path( self.program_directory, 'src', 'Package_Type_PyInstaller.txt' ).is_file():
+        #     self.data_directory = self.program_directory.as_posix()
+        #     self.Package_Type = 'PyInstaller'
 
-        elif Path( self.program_directory, 'Package_Type_Tar.txt' ).is_file():
-            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()                                                            
-            self.Package_Type = 'Tar'
+        # elif Path( self.program_directory, 'Package_Type_Nuitka.txt' ).is_file():
+        #     self.data_directory = self.program_directory.as_posix()
+        #     self.Package_Type = 'Nuitka'
+
+        # elif Path( self.program_directory, 'Package_Type_Tar.txt' ).is_file():
+        #     self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
+        #     self.Package_Type = 'Tar'
 
         else:
             print( f"ERROR-DEV: 'Package_Type_*.txt' file not found at 'fb_config.py' in {self.program_directory}", file=sys.stderr )
