@@ -13,14 +13,14 @@ Junk/
 Hold/
 birdland_wrwetzel.egg-info/
 
-src/src
-
 pyproject.toml
 ReadMe-PyPi.md
 setup.cfg
 SpecFiles
 Start-From-Tar.sh
+MANIFEST.in
 
+src/src
 src/birdland_bootstrap.py
 src/birdland-full.spec
 src/birdland-partial.spec
@@ -34,3 +34,4 @@ src/ReadMe-PyInstaller.md
 
 src/birdland/Package_Type_Setuptools.txt
 src/birdland/ReadMe-Setuptools.md
+src/birdland/.rgignore
