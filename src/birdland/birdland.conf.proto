@@ -18,7 +18,7 @@
 #       which saves a sanitized version in birdland.conf.proto.
 
 #   This built from .birdland/birdland.conf
-#     on Wed, 25-May-2022, 13:04:47
+#     on Sun, 29-May-2022, 16:02:24
 
 # -------------------------------------------------------------------------------
 
@@ -90,6 +90,7 @@ theme = Dark
 #   to access.
 
 music_index_dir = Music-Index
+documentation_dir = Documentation
 youtube_index = YouTube-Index/Titles.json.gz
 canonicals = Canonical/CanonicalNames.txt
 audiofile_index = Audio-Index.json.gz
