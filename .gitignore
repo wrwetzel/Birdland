@@ -13,3 +13,24 @@ Junk/
 Hold/
 birdland_wrwetzel.egg-info/
 
+src/src
+
+pyproject.toml
+ReadMe-PyPi.md
+setup.cfg
+SpecFiles
+Start-From-Tar.sh
+
+src/birdland_bootstrap.py
+src/birdland-full.spec
+src/birdland-partial.spec
+src/Install-From-Nuitka.sh
+src/Install-From-PyInstaller.sh
+src/Package_Type_Nuitka.txt
+src/Package_Type_PyInstaller.txt
+src/pyproject.toml
+src/ReadMe-Nuitka.md
+src/ReadMe-PyInstaller.md
+
+src/birdland/Package_Type_Setuptools.txt
+src/birdland/ReadMe-Setuptools.md

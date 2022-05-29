@@ -39,17 +39,17 @@ then
 fi
 
 cp -r src/*                                                     ~/.local/share/birdland
-ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/birdland
-ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/bl-build-tables
-ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/bl-diff-index
+# ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/birdland
+# ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/bl-build-tables
+# ln -sf ~/.local/share/birdland/birdland/Start-From-Tar.sh       ~/.local/bin/bl-diff-index
 
-# ln -sf ~/.local/share/birdland/birdland/build_tables.py       ~/.local/bin/bl-build-tables
-# ln -sf ~/.local/share/birdland/birdland/check_offsets.py      ~/.local/bin/bl-check-offsets
+ln -sf ~/.local/share/birdland/birdland/build_tables.py         ~/.local/bin/bl-build-tables
+ln -sf ~/.local/share/birdland/birdland/diff_index.py           ~/.local/bin/bl-diff-index
 # cp src/birdland/birdland-tar.desktop                          ~/.local/share/applications/birdland.desktop
 # sed "s,~,$HOME,g" src/birdland/birdland-tar.desktop >         ~/.local/share/applications/birdland.desktop
 
 cp Package_Type_Tar.txt                                          ~/.local/share/birdland/birdland
-cp Start-From-Tar.sh                                             ~/.local/share/birdland/birdland
+# cp Start-From-Tar.sh                                           ~/.local/share/birdland/birdland
 
 echo "Copied Birdland data folders to: '~/.local/share/birdland'"
 echo "Linked executables in '~/.local/share/birdland/birdland' to '~/.local/bin'"

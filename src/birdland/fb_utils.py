@@ -1424,12 +1424,19 @@ class FB():
         #   WRW 15 Mar 2022 - Add support for running command as included package.
         #       Can make Command_as_Module conditional on packaging type conf.Package_Type
         #       but I see no reason to do so.
+
+        #   WRW 28 May 2022 - With support for self-contained packages suspended/removed no longer
+        #       a need to run as module and a slight risk of doing so. Run as external command only.
+
+        #   WRW 29 May 2022 - After a lot of time invested in support for the self-contained packages I
+        #       decided not to use them for now and probably for ever. They are huge and no real benefit
+        #       other than simplicity. Back off from that now. Command_as_Module is now False.
     
-        Command_as_Module = False
         Command_as_Module = True
+        Command_as_Module = False
     
         #   Debugging = True - Sends output to stdout/stderr instead of to window.
-        #   Needed to see error messages when application crashes.
+        #       Needed to see error messages when application crashes.
     
         Debugging = True
         Debugging = False
