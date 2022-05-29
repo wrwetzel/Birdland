@@ -26,6 +26,7 @@ src/birdland-full.spec
 src/birdland-partial.spec
 src/Install-From-Nuitka.sh
 src/Install-From-PyInstaller.sh
+src/Makefile
 src/Package_Type_Nuitka.txt
 src/Package_Type_PyInstaller.txt
 src/pyproject.toml
