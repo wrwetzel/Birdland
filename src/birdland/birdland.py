@@ -1983,14 +1983,24 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 def main():
     do_main()
 
+#   WRW 30 May 2022 - must chdir() after changing startup sequence in some situations.
+
 if __name__ == '__main__':
+    here = Path( os.path.realpath( __file__ ) ).parent.resolve().as_posix()
+  # os.environ[ 'PYTHONPATH' ] = here
+    os.chdir( here )
+    do_main()
+
+# ---------------------------------------------------------------------------------------
+
+if False and __name__ == '__main__':
     t = Path( sys.argv[0] ).name           
 
-    if t == 'birdland-build-tables':
+    if t == 'bl-build-tables':
         import build_tables
         build_tables.main()
 
-    elif t == 'birdland-diff-index':
+    elif t == 'bl-diff-index':
         import diff_index
         diff_index.main()
 
