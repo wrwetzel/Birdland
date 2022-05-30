@@ -846,9 +846,13 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #       cwd is fine when main() called from PyInstaller-packaged location.
     #       Change it only if called unbundled.
     #   /// RESUME OK - Think about this some more. 
-    #   Perhaps set this up with script before calling birdland? OK as is.
+    #   Perhaps set this up with script before calling birdland? No, OK as is.
 
-    if conf.Package_Type == 'Development' or conf.Package_Type == 'Setuptools':
+    if conf.Package_Type == 'Development' or 
+       conf.Package_Type == 'GitHub' or
+       conf.Package_Type == 'Tar' or
+       conf.Package_Type == 'Setuptools':
+
         os.chdir( os.path.dirname(os.path.realpath(__file__)))
 
     # conf.set_install_cwd( os.getcwd() )
@@ -1983,12 +1987,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 def main():
     do_main()
 
-#   WRW 30 May 2022 - must chdir() after changing startup sequence in some situations.
-
 if __name__ == '__main__':
-    here = Path( os.path.realpath( __file__ ) ).parent.resolve().as_posix()
-  # os.environ[ 'PYTHONPATH' ] = here
-    os.chdir( here )
     do_main()
 
 # ---------------------------------------------------------------------------------------
