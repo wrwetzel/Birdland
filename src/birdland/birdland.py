@@ -848,10 +848,10 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #   /// RESUME OK - Think about this some more. 
     #   Perhaps set this up with script before calling birdland? No, OK as is.
 
-    if conf.Package_Type == 'Development' or 
+    if( conf.Package_Type == 'Development' or
        conf.Package_Type == 'GitHub' or
        conf.Package_Type == 'Tar' or
-       conf.Package_Type == 'Setuptools':
+       conf.Package_Type == 'Setuptools'):
 
         os.chdir( os.path.dirname(os.path.realpath(__file__)))
 
