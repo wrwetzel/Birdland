@@ -6,22 +6,22 @@ documentation as it contains much not covered here.
 
 ## System Requirements
 ```
-    python3
+python3
 
-    Python modules:
-        click
-        configobj
-        Levenshtein
-        mutagen
-        mysqlclient             (only if using MySql database)
-        pandas
-        pillow                  (only if using Create Index feature)
-        PyMuPDF
-        PySimpleGUI
-        pytesseract             (only if using Create Index feature)
-        tk                      (check, may already be installed with Python)
-        unidecode
-        youtubesearchpython     (only to run get-youtube-links.py)
+Python modules:
+    click
+    configobj
+    Levenshtein
+    mutagen
+    mysqlclient             (only if using MySql database)
+    pandas
+    pillow                  (only if using Create Index feature)
+    PyMuPDF
+    PySimpleGUI
+    pytesseract             (only if using Create Index feature)
+    tk                      (check, may already be installed with Python)
+    unidecode
+    youtubesearchpython     (only to run get-youtube-links.py)
 ```
 
 ## Install Required Modules
@@ -81,9 +81,36 @@ The name of the executable is *birdland*. Run it from the command line:
 ```
 birdland
 ```
+
+## Alternative to Installation
+Instead of installing in *~/.local* you may run birdland directly in the cloned or
+unzipped directory hierarchy using the data files also in the hierarchy. In this
+case it will be convenient to add the directory containing the executables to your
+PATH. 
+
+If cloned in ~/tmp:
+```
+PATH=~/tmp/Birdland/src/birdland:$PATH
+```
+
+If unzipped in ~/tmp:
+```
+PATH=~/tmp/Birdland-main/src/birdland:$PATH
+```
+
+The executables are:
+```
+birdland.pl
+build_tables.pl
+diff_index.pl
+```
+
+## Initial Run
+Birdland creates a file *birdland.desktop* in
+~/.local/share/applications to add itself to the system menu. 
+
 After you run it for the first time from the command line you can then run it
-from the system menu. (Birdland creates a file birdland.desktop in
-~/.local/share/applications to add itself to the system menu.)
+from the system menu. 
 
 The first time you run *Birdland* it
 creates a configuration directory, populates

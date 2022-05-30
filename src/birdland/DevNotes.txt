@@ -770,6 +770,10 @@ Birdland can be installed in several different ways and launched in different
     git commit -m "Add symlink for images in README.md"
     git push -u origin main
 
+    git tag 0.1.0-beta -m "Add version number tag"
+    git describe
+
+
     To get to images:
         https://raw.githubusercontent.com/wrwetzel/Birdland/main/src/Documentation/Images/small-full-window.png
 
@@ -785,7 +789,7 @@ Birdland can be installed in several different ways and launched in different
             <img src="/wrwetzel/Birdland/raw/main/src/Documentation/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
         </a>                                   
 
-
+        Abandoned in favor of Images folder at top containing just those needed for README.md
 
 # ------------------------------------------------------------------------------------------
 #   Random Hold

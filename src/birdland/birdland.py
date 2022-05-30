@@ -22,7 +22,7 @@ import json
 import time
 import copy
 import datetime
-import importlib.metadata        
+# import importlib.metadata
 from pathlib import Path
 from collections import defaultdict
 
@@ -40,6 +40,7 @@ import fb_make_desktop
 import fb_menu_stats
 import fb_search
 import fb_index_create
+import fb_version
 
 # =======================================================================================
 #   A few Constants
@@ -573,18 +574,21 @@ def select_pdf_tab():
 #   Want more than can do in simple popup.
 #   Show: Help->About Birdland
 #   WRw 21 Mar 2022 - Pulled out into separate function to use with verbose, too.
+#   WRW 30 May 2022 - Remove use of importlib. Only applicable when this installed by PyPi
 
 def get_about_data():
 
     uname = os.uname()
 
-    try:
-        version = importlib.metadata.version( 'birdland' )
-    except:
-        try:
-            version = importlib.metadata.version( 'birdland-wrwetzel' )
-        except:
-            version = 'not available'
+    # try:
+    #     version = importlib.metadata.version( 'birdland' )
+    # except:
+    #     try:
+    #         version = importlib.metadata.version( 'birdland-wrwetzel' )
+    #     except:
+    #         version = 'not available'
+
+    version = fb_version.Version
 
     # ----------------------------------
     if SQLITE:

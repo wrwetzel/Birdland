@@ -6,22 +6,22 @@ documentation as it contains much not covered here.
 
 ## System Requirements
 ```
-    python3
+python3
 
-    Python modules:
-        click
-        configobj
-        Levenshtein
-        mutagen
-        mysqlclient             (only if using MySql database)
-        pandas
-        pillow                  (only if using Create Index feature)
-        PyMuPDF
-        PySimpleGUI
-        pytesseract             (only if using Create Index feature)
-        tk                      (check, may already be installed with Python)
-        unidecode
-        youtubesearchpython     (only to run get-youtube-links.py)
+Python modules:
+    click
+    configobj
+    Levenshtein
+    mutagen
+    mysqlclient             (only if using MySql database)
+    pandas
+    pillow                  (only if using Create Index feature)
+    PyMuPDF
+    PySimpleGUI
+    pytesseract             (only if using Create Index feature)
+    tk                      (check, may already be installed with Python)
+    unidecode
+    youtubesearchpython     (only to run get-youtube-links.py)
 ```
 
 ## Install Required Modules
@@ -51,21 +51,21 @@ You may obtain Birdland from GitHub in two ways, by cloning the Birdland remote 
 a .zip file.
 
 ### Obtain from Clone
-Create or go to a directory where you will clone it.
+Go to a directory where you will clone it.
 ```
-    git clone https://github.com/wrwetzel/Birdland.git
+git clone https://github.com/wrwetzel/Birdland.git
 ```
 This places the birdland package in a directory named *Birdland*.
 
 ### Obtain ZIP File from GitHub
 Go to: 
 ```
-    https://github.com/wrwetzel/Birdland.git
+https://github.com/wrwetzel/Birdland.git
 ```
 Click on the green *Code* button and then *Download ZIP* to download *Birdland-main.zip*. For example,
 here we assume it is in the *Downloads* directory in your home directory.
 
-Create or go to a directory where you will unpack Birdland and unpack it. For example here we assume that is
+Go to a directory where you will unpack Birdland and unpack it. For example here we assume that is
 *tmp* in your home directory.
 ```
 cd ~/tmp
@@ -91,8 +91,8 @@ PATH=~/.local/bin:$PATH
 ### Install from Clone
 Go to the directory where you cloned Birdland:
 ```
-    cd Birdland
-    ./Install-From-GitHub.sh
+cd Birdland
+./Install-From-GitHub.sh
 ```
 Since you cloned it you may want to keep the cloned files to explore and modify.       
 If not, you may remove them:
@@ -135,16 +135,19 @@ If unzipped in ~/tmp:
 PATH=~/tmp/Birdland-main/src/birdland:$PATH
 ```
 
-In this case the executables are:
+The executables are:
 ```
 birdland.pl
 build_tables.pl
 diff_index.pl
 ```
 
+## Initial Run
+Birdland creates a file *birdland.desktop* in
+~/.local/share/applications to add itself to the system menu. 
+
 After you run it for the first time from the command line you can then run it
-from the system menu. (Birdland creates a file birdland.desktop in
-~/.local/share/applications to add itself to the system menu.)
+from the system menu. 
 
 The first time you run *Birdland* it
 creates a configuration directory, populates
