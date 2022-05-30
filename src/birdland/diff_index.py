@@ -420,8 +420,8 @@ def do_main( verbose, all, canon, list, database, confdir, summary, page_summary
 
     else:
         if False:       # Helpful to rebuild sheet_offset table while cleaning up the indexes
-            # subprocess.run( ['build_tables.py', '--offset' ],
-            subprocess.run( ['bl-build-tables', '--offset' ],
+            subprocess.run( ['build_tables.py', '--offset' ],
+          #   subprocess.run( ['bl-build-tables', '--offset' ],
                           stdout=subprocess.DEVNULL,
                           stderr=subprocess.STDOUT)
 

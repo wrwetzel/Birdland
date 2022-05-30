@@ -803,10 +803,10 @@ We acknowledge the indexing work done by creators of each of the raw indexes: Al
 ## Dedication
 
 When I, the author of Birdland, was a child my dad gave me a piano lesson every night from the time
-I was four until I was twelve, at which point he got fed up out of frustration with my attitude
+I was four until I was twelve, when he gave up out of frustration with my attitude
 towards lessons and practice.  I had a good ear but was not very good at sight-reading so I would
 often ask him ***Let's hear how it goes.*** Once I heard him play the lesson I had no trouble with it.
-Eventually, he got wise to my trick and forced me to sight read on my own.  While I may not have
-appreciate them at the time, in hindsight his piano lessons were his greatest gift to me.  I
+Eventually, he got wise to my ways and forced me to sight read on my own.  While I may not have
+appreciate them at the time, in hindsight, his piano lessons were his greatest gift to me.  I
 dedicate Birdland to the memory of my dad.  He would have loved to have a library of thousands of
 songs at his fingertips.

@@ -772,6 +772,7 @@ Birdland can be installed in several different ways and launched in different
 
     git tag 0.1.0-beta -m "Add version number tag"
     git describe
+    git clone https://github.com/wrwetzel/Birdland.git
 
 
     To get to images:

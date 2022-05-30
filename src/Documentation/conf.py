@@ -32,7 +32,15 @@ copyright = '2022'
 author = 'Bill Wetzel'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.1'
+#   Find a way to store this only once and update automatically
+
+# release = '0.1.0-beta'
+
+import sys
+sys.path.insert(0, os.path.abspath('../birdland'))
+import fb_version
+release = fb_version.Version
+
 
 
 # -- General configuration ---------------------------------------------------
