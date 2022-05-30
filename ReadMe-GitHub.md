@@ -135,11 +135,9 @@ If unzipped in ~/tmp:
 PATH=~/tmp/Birdland-main/src/birdland:$PATH
 ```
 
-The executables are:
+The executable is:
 ```
 birdland.pl
-build_tables.pl
-diff_index.pl
 ```
 
 ## Initial Run
@@ -153,6 +151,26 @@ The first time you run *Birdland* it
 creates a configuration directory, populates
 that with a prototype configuration file and several other files, and builds
 a database from included raw-index files.
+
+## Next Steps
+
+Go to *File->Settings* to configure the location of your music, audio, midi, ChordPro,
+and JJazzLab libraries as applicable and your preferred external viewers and players.
+
+Be sure to also configure the *Canonical->File map file(s)* and
+Editable *Canonical->File map file* settings.
+
+Birdland needs to know the mapping between canonical music file names and *your* music files.
+Use to tool in the *Edit Canonical->File* tab or
+edit Canonical2File.txt in your configuration directory possibly using Example-Canonical2File.txt
+as a starting point.
+
+With the settings configured process the raw indexes included with Birdland and build the database:
+```
+Index Management -> Process Raw Index Sources
+Database -> Scan Audio Library
+Database -> Rebuild All Tables
+```
 
 ## Upgrade Birdland
 Repeat the steps above in *Install Birdland*. On subsequent installations the configuration directory
