@@ -57,16 +57,9 @@ def make_desktop( package_type, verbose ):
     # -------------------------------------------------------
     #   Get values specific to package_type
 
-    if package_type == 'Development':
-        program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
-        program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
-        Exec = f"/bin/sh -c {program}"
-        Icon = f"{program_dir}/Icons/Bluebird-64.png"
-        PPath = program_dir
-
     #   Tar mimics Setuptools installation.
 
-    elif package_type == 'Tar' or package_type == 'Setuptools' or package_type == 'GitHub':
+    if package_type == 'Tar' or package_type == 'Setuptools' or package_type == 'GitHub':
         program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
         program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
         Exec = f"/bin/sh -c {program}"
@@ -86,6 +79,15 @@ def make_desktop( package_type, verbose ):
     #     Exec = f"/bin/sh -c {executable_parent}/birdland"
     #     Icon = f"{executable_parent}/Icons/Bluebird-64.png"
     #     PPath = executable_parent
+
+    #   This should be last as always present in install directory in addition to one of the above.
+
+    elif package_type == 'Development':
+        program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
+        program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
+        Exec = f"/bin/sh -c {program}"
+        Icon = f"{program_dir}/Icons/Bluebird-64.png"
+        PPath = program_dir
 
     # -------------------------------------------------------
     #   Do tilda expansion
