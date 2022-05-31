@@ -13,7 +13,9 @@ this working several months ago. Lots broken. Setuptools distribution suspended
 for the present.
 
 Reminder:
+    https://github.com/wrwetzel/Birdland
     git commit -a -m "<Reason>"
     git push -u origin main
-
+    git clone https://github.com/wrwetzel/Birdland.git
+    
 # ------------------------------------------------------------------

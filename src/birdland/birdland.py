@@ -618,9 +618,11 @@ def get_about_data():
         run_environment = f"Python process"
 
     try:
-        timestamp = datetime.datetime.fromtimestamp( Path(sys.executable).stat().st_mtime ).strftime( '%a, %d-%b-%Y, %H:%M:%S')
+        # timestamp = datetime.datetime.fromtimestamp( Path(sys.executable).stat().st_mtime ).strftime( '%a, %d-%b-%Y, %H:%M:%S')
+        timestamp = datetime.datetime.fromtimestamp( Path(os.path.realpath(__file__)).stat().st_mtime ).strftime( '%a, %d-%b-%Y, %H:%M:%S')
     except:
-        timestamp = f"not available for {sys.executable}"
+        # timestamp = f"not available for {sys.executable}"
+        timestamp = f"not available for {os.path.realpath(__file__)}"
 
     # ----------------------------------
     # Python Paths: {', '.join( [ x for x in sys.path ]) }
@@ -648,7 +650,7 @@ def get_about_data():
         Version: {version}
         Run Environment: {run_environment}
         Package Type: {conf.Package_Type}
-        Executable Timestamp: {timestamp}
+        birdland.py Timestamp: {timestamp}
         Database: {database}. {fullword_notes}
 
     Directories:
@@ -657,9 +659,10 @@ def get_about_data():
         Data Directory: {conf.data_directory}
 
     Executable Identity:
-        Executable: {sys.executable}
+        Python executable: {sys.executable}
         Argv[0]: {sys.argv[0]}
         __file__: {__file__}
+        Realpath( __file__ ): {os.path.realpath(__file__)}
     """
     return version, info_text
 
@@ -710,7 +713,7 @@ def do_about():
         ],
         [
             sg.Multiline( info_text,
-                    font=("Helvetica", 10 ),
+                    font=("Helvetica", 9 ),
                     pad=((20,20),(10,0)),
                     size = ( None, info_text.count( '\n' ) +1 ),
                     write_only = True,
