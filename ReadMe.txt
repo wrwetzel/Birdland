@@ -9,7 +9,11 @@ Also includes packaging information for packaging using:
     Tar (for tar install).
 
 WRW 25 May 2022 - Looks like some things changes with recent updates from when I got
-this working several months ago. Lots broken.
+this working several months ago. Lots broken. Setuptools distribution suspended
+for the present.
 
+Reminder:
+    git commit -a -m "<Reason>"
+    git push -u origin main
 
 # ------------------------------------------------------------------

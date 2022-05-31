@@ -1166,7 +1166,7 @@ class Config():
                             This will take several seconds to a minute or so.\n""" )
 
         text.append( f"""When Birdland launches go to File->Settings, configure the location of your music, audio, and midi files.
-                        Then select 'Tools->Scan Media Files' to add your files to the database.""" )
+                        Then select 'Database->Rebuild All Tables' to add your files to the database.""" )
 
         text.append( f"""\nClick OK to continue.\n""" )
 

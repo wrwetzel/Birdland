@@ -124,16 +124,21 @@ Be sure to also configure the *Canonical->File map file(s)* and
 Editable *Canonical->File map file* settings.
 
 Birdland needs to know the mapping between canonical music file names and *your* music files.
-Use to tool in the *Edit Canonical->File* tab or
+Use the tool in the *Edit Canonical->File* tab or
 edit Canonical2File.txt in your configuration directory possibly using Example-Canonical2File.txt
 as a starting point.
 
-With the settings configured process the raw indexes included with Birdland and build the database:
+With the settings configured optionally scan your audio library and then rebuild the database.
+Large audio libraries take a long time to scan so you may want to defer that if you are anxious
+to get started.
 ```
-Index Management -> Process Raw Index Sources
 Database -> Scan Audio Library
 Database -> Rebuild All Tables
 ```
+
+See the documentation for more configuration details.
+
+
 ## Upgrade Birdland
 Repeat the steps above in *Install Birdland*. On subsequent installations the configuration directory
 and contents are preserved.

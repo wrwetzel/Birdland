@@ -20,6 +20,8 @@ ToDo A Little Later:
     build_composite.py - Build composite index from highest priority of all index sources
         including usr and ext. One file per canonical; include page and sheet.
 
+    Process new Sher data extracted from web site.
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ToDo Later:
