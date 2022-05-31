@@ -49,7 +49,7 @@ tar-user:
 +       Birdland/Package_Type_Tar.txt \
 +       Birdland/ReadMe-Tar.md \
 +       Birdland/Install-From-Tar.sh \
-+       Birdland/Start-From-Tar.sh
++       Birdland/Install.sh
 
 # ------------------------------
 pypi:
