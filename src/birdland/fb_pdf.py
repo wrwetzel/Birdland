@@ -221,6 +221,14 @@ class PDF():
                 # ----------------------------------------
                 #   Create new doc from file
 
+                #   WRW 1 June 2022 - A little more checking to be safe.
+
+                path = Path( file )
+                if not path.is_file():
+                    t = f"ERROR: PDF file {path.as_posix()} not found at show_music_file_internal()"
+                    self.conf.do_popup( t )
+                    return      
+
                 self.doc = fitz.open( file )
                 self.page_count = self.doc.page_count
                 self.current_file = file

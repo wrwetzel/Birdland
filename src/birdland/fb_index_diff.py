@@ -66,6 +66,13 @@ class Diff():
     
         file = self.fb.get_file_from_canonical( canonical )
         path = Path( self.fb.Music_File_Root, file )
+
+        #   WRW 1 June 2022 - Only noticed this when testing on virgin virtual machine.
+        if not path.is_file():
+            t = f"ERROR: PDF file {path.as_posix()} not found at show_pdf_part1()"
+            self.conf.do_popup( t )
+            return False, False
+
         self.doc = fitz.open( path )
 
         fitz.TOOLS.mupdf_display_errors(False)  # Suppress error messages in books with alpha-numbered front matter.
@@ -95,11 +102,18 @@ class Diff():
     
     # -----------------------------------------------------------------------------------------------
     #   /// RESUME - Can optimize this to eliminate multiple calls for same page, prep and show.
+    #   WRW 1 June 2022 - Looks like not used.
 
     def get_pdf_dimensions( self, canonical, page ):
     
         file = self.fb.get_file_from_canonical( canonical )
         path = Path( self.fb.Music_File_Root, file )
+
+        if not path.is_file():
+            t = f"ERROR: PDF file {path.as_posix()} not found at get_pdf_dimensions()"
+            self.conf.do_popup( t )
+            return False
+
         doc = fitz.open( path )
 
         fitz.TOOLS.mupdf_display_errors(False)  # Suppress error messages in books with alpha-numbered front matter.
@@ -187,6 +201,9 @@ the next time the raw index is processed."""
             pad=((10,0),(10,10)), )
 
         page_width, page_height = self.show_pdf_part1( self.canonical, page )
+        if not page_width or not page_height:
+            return False
+
         graph_y_size = 600
         graph_x_size = int( graph_y_size * page_width/page_height )
         zoom = graph_x_size / page_width        # Fit width     Since now fitting to exact page fit width and height
