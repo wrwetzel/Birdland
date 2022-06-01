@@ -65,6 +65,13 @@ class Diff():
     def show_pdf_part1( self, canonical, page ):
     
         file = self.fb.get_file_from_canonical( canonical )
+        if not self.fb.Music_File_Root:
+        #   WRW 1 June 2022 - Only noticed this when testing on virgin virtual machine.
+            t = f"'Root of music file' not defined in settings"
+            self.conf.do_popup( t )
+            return False, False
+
+
         path = Path( self.fb.Music_File_Root, file )
 
         #   WRW 1 June 2022 - Only noticed this when testing on virgin virtual machine.
