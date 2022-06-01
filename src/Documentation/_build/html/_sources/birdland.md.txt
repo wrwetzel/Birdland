@@ -707,7 +707,7 @@ with all books indexed by the selected *Src*.
 * Add/verify canonical book name in *Canonicals/CanonicalNames.txt*
 * Add/verify the canonical to file mapping in *Hostname-Canonical2file.txt* in your Birdland config directory.
 * Verify that the canonical names in *Canonicals/CanonicalNames.txt* and *Hostname-Canonical2file.txt* match.
-* Rebuild the *canonical2file* table.
+* Rebuild the *canonical* and *canonical2file* table.
 
 ### Adding An Index Source
 * Create new folder in *Index-Sources*.
@@ -720,10 +720,9 @@ src = Usr
 folder = User
 command = do-user.py
 ```
-
 * Build and run the do_\<source name>.py script in the folder for your new source.
 
-### Source-Specific Processing
+### Raw-Index Source-Specific Processing
 
 For each source there is a python script, do-\<source name>.py, in a source-specific
 directory.  That script reads the raw data in a source-specific form and writes a

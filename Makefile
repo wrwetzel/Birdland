@@ -41,6 +41,7 @@ tar-user:
 +       Birdland/src/birdland/get-youtube-links.py \
 +       Birdland/src/birdland/ReadMe-Birdland.md \
 +       Birdland/src/birdland/Remove-Birdland.sh\
+        Birdland/src/birdland/Package_Type_Unpacked.txt \
 +       Birdland/src/Book-Lists \
 +       Birdland/src/Canonical \
 +       Birdland/src/Index-Sources \

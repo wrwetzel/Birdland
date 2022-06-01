@@ -1263,13 +1263,13 @@ class Config():
         #   commands included as modules. Ouch!
 
         if True:
-            command = [ 'build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
+            command = [ './build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
          #  command = [ 'bl-build-tables', '--all', '-c', self.confdir.as_posix(), '-d', database ]
 
             rcode = self.fb.run_external_command_quiet( command, build_window[ 'build-text' ], True )
 
         else:
-            command = [ 'build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
+            command = [ './build_tables.py', '--all', '-c', self.confdir.as_posix(), '-d', database ]
             # global extcmd_popen       # /// RESUME - something fishy here.
 
             # if extcmd_popen:

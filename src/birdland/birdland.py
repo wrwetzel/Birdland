@@ -1407,12 +1407,12 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 elif menu_event == 'menu-rebuild-all':
                     # fb.run_external_command( [ 'bl-build-tables', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'build_tables.py', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './build_tables.py', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-rebuild-source-priority':
                     # fb.run_external_command( [ 'bl-build-tables', '--src_priority', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'build_tables.py', '--src_priority', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './build_tables.py', '--src_priority', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-rebuild-audio':
@@ -1422,22 +1422,22 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     t = conf.do_popup_ok_cancel( txt )
                     if t == 'OK':
                         # fb.run_external_command( [ 'bl-build-tables', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                        fb.run_external_command( [ 'build_tables.py', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                        fb.run_external_command( [ './build_tables.py', '--scan_audio', '--audio_files', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-rebuild-page-offset':
                     # fb.run_external_command( [ 'bl-build-tables', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'build_tables.py', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './build_tables.py', '--offset', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-rebuild-canon2file':
                     # fb.run_external_command( [ 'bl-build-tables', '--canon2file', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'build_tables.py', '--canon2file', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './build_tables.py', '--canon2file', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-convert-raw-sources':
                     # fb.run_external_command( [ 'bl-build-tables', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'build_tables.py', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './build_tables.py', '--convert_raw', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 # elif menu_event == 'menu-test-db-times':
@@ -1448,17 +1448,17 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 elif menu_event == 'menu-summary':
                     # fb.run_external_command( [ 'bl-diff-index', '--summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'diff_index.py', '--summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './diff_index.py', '--summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-page-summary':
                     # fb.run_external_command( [ 'bl-diff-index', '--page_summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'diff_index.py', '--page_summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './diff_index.py', '--page_summary', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 elif menu_event == 'menu-verbose':
                     # fb.run_external_command( [ 'bl-diff-index', '--verbose', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
-                    fb.run_external_command( [ 'diff_index.py', '--verbose', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
+                    fb.run_external_command( [ './diff_index.py', '--verbose', '--all', '-c', conf.confdir.as_posix(), '-d', fb.get_driver() ] )
                     continue
 
                 # --------------------------------------------------

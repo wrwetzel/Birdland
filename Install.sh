@@ -46,7 +46,7 @@ ln -sf ~/.local/share/birdland/birdland/birdland.py             ~/.local/bin/bir
 ln -sf ~/.local/share/birdland/birdland/build_tables.py         ~/.local/bin/bl-build-tables
 ln -sf ~/.local/share/birdland/birdland/diff_index.py           ~/.local/bin/bl-diff-index
 
-cp $Package_Type                                                ~/.local/share/birdland/birdland
+touch ~/.local/share/birdland/birdland/$Package_Type                                                
 
 echo "Copied Birdland data folders to: '~/.local/share/birdland'"
 echo "Linked executables in '~/.local/share/birdland/birdland' to '~/.local/bin'"

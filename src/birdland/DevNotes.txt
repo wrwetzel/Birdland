@@ -6,13 +6,11 @@
 #   ToDo Lists
 # ---------------------------------------------------------------------------
 
-ToDo:
-    Review usage of chdir and PYTHONPATH.
-    diff_index.py - data retained from one call to next when running as module?
+ToDo - Soon:
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-ToDo A Little Later:
+ToDo - A Little Later:
     Add more table-specific builds to menu?
     Look at searching for composer and other secondary boxes?
     Include GuitarGuy .html chord files - parse composer/artist in build_table.py(),
@@ -20,11 +18,11 @@ ToDo A Little Later:
     build_composite.py - Build composite index from highest priority of all index sources
         including usr and ext. One file per canonical; include page and sheet.
 
-    Process new Sher data extracted from web site.
+    Process new Sher data extracted from web site table.
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-ToDo Later:
+ToDo - Later:
     Look at typesense: typesense.org
     Look at http://millionsongdataset.com/
     Think about removing dummy elements at top of tab, include 'use_default_focus=False' in main Window() def,
@@ -79,6 +77,9 @@ ToDo - Done:
     Maybe later move raw csv files one level below Index-Sources/Sher, etc..
     Select Viewer tab after click in TOC.
     Move from Package_Type_Tar.txt, Development and GitHub to Package_Type_Unpacked, Installed.
+    Review usage of chdir and PYTHONPATH. Looks fine.
+    diff_index.py - data retained from one call to next when running as module?
+        No longer running as module.
 
 # ---------------------------------------------------------------------------
 #   ToDo - Of no interest.
@@ -411,7 +412,7 @@ Mikel Nelson:
     Note: I found several more books in the csv that were not in this list from online.
     These appear to be from 'forScore'.
 
-    WRW 11 Apr 2022 - the LatinRealBkC.csv doesn't align with Sher Latin Real Book. Omit it.
+    WRW 11 Apr 2022 - the LatinRealBkC.csv doesn't align with Sher Latin Real Book. Excluded it.
 
     Map:
         557 Standards - 557Standards.csv
@@ -488,6 +489,14 @@ PSR Tutorial:
 # --------------------------------------------------------------------------
 #   Packaging
 # --------------------------------------------------------------------------
+
+    WRW 1 June 2022 - Tried several approaches, got most working but decided against
+        all the bundled packages because of size and against SetupTools because
+        it (and my file structure) changed since I had it working. Revisit that later.
+
+        For now install only via GetHub and a local Tar file.
+
+# --------------------------------------------------------------------------
 #   WRW 8 Mar 2022 - Getting started with flatpak as a packaging tool for Birdland
 # ------------------------------------------------------------------------------------------
 
@@ -519,8 +528,6 @@ Install:
 
 Run:
     flatpak run com.wrwetzel.Hello
-
-# ------------------------------------------------------------------------------------------
 
 Setup:
     Intall flatpak-pip-generator:
@@ -617,7 +624,7 @@ Documentation:
     View at PyPi:
         https://test.pypi.org/project/birdland-wrwetzel/1.0.0/
 
-# ------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------
 
     __main__.py - executed when the package itself is invoked directly
     from the command line using the -m flag.
@@ -667,7 +674,63 @@ Documentation:
 
 
 # ------------------------------------------------------------------------------------------
+#   WRW 24 Mar 2022 - Betinning git integration and installation from GitHub
+# ------------------------------------------------------------------------------------------
+
+    Setup ssh authentication at github using id_rsa.pub for Gershwin.
+        Goto my icon in top right -> 'Your profile' -> SSH and GPG keys.
+
+    Enable ssh authentication:
+        git remote set-url origin git@github.com:wrwetzel/Birdland.git
+
+    git init
+    git add README.md
+    git commit -m "Initial commit"
+    git branch -M main
+    git remote add origin https://github.com/wrwetzel/Birdland.git
+    git push -u origin main
+    ssh -T git@github.com
+    git push -u origin main
+    git remote set-url origin git@github.com:wrwetzel/Birdland.git
+    git push -u origin main
+
+    git commit -a -m "Add symlink for images in README.md"
+    git push -u origin main
+
+    git tag 0.1.0-beta -m "Add version number tag"
+    git describe
+    git clone https://github.com/wrwetzel/Birdland.git
+
+    git ls-files
+
+    # ---------------------------------------------------------------------------
+
+    To get to images in lower directory for README.md in top directory:
+        https://raw.githubusercontent.com/wrwetzel/Birdland/main/src/Documentation/Images/small-full-window.png
+
+        Fails on the front page. Looks like not following Images symlink: 'src/Documentation/Images'
+
+        <a href="/wrwetzel/Birdland/blob/main/Images/Saxophone_64.png">
+            <img src="/wrwetzel/Birdland/raw/main/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
+        </a>
+
+        Works on the Documentation page:
+
+        <a href="/wrwetzel/Birdland/blob/main/src/Documentation/Images/Saxophone_64.png">
+            <img src="/wrwetzel/Birdland/raw/main/src/Documentation/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
+        </a>                                   
+
+        Abandoned in favor of Images folder at top containing just those needed for README.md
+
+# ------------------------------------------------------------------------------------------
 #   WRW 16 Mar 2022 - Installation details by packaging type.
+# ------------------------------------------------------------------------------------------
+
+#   WRW 1 June 2022 - These notes my not be up to date or agree with reality.
+#       Presently cloning or unpacking in an arbitrary directory and installing in
+#       ~/.local/share/birdland and ~/.local/bin (Installed) or running from the
+#       directory where unpacked (Unpacked).
+
 # ------------------------------------------------------------------------------------------
 
 Birdland can be installed in several different ways and launched in different
@@ -683,9 +746,11 @@ Birdland can be installed in several different ways and launched in different
             diff_index.py,
 
         Or via an alias:
-            bb - Alias to birdland.py, possibly with configuration directory specified.
-                alias bb='~/Dropbox/Work/Birdland/src/birdland/birdland.py'
-                alias bb='~/Dropbox/Work/Birdland/src/birdland/birdland.py --confdir ~/Dropbox/Config/birdland'
+            bb - Alias to birdland.py,                                                 
+            bbc - Alias to birdland.py, with configuration directory specified.
+
+            alias bb='~/Dropbox/Work/Birdland/src/birdland/birdland.py'
+            alias bbc='~/Dropbox/Work/Birdland/src/birdland/birdland.py --confdir ~/Dropbox/Config/birdland'
 
         Also and a few other commands in same directory.
 
@@ -693,6 +758,8 @@ Birdland can be installed in several different ways and launched in different
             ~/Dropbox/Work/Birdland/src
 
     # -------------------------------------------------------------
+    #   1 June 2022 - Setuptools not presently used, revisit it when have time.
+
     Setuptools:
         ~/.local/bin/birdland
 
@@ -727,6 +794,9 @@ Birdland can be installed in several different ways and launched in different
             and are run from __init__.py.
 
     # -------------------------------------------------------------
+    #   1 June 2022 - This generated a huge self-contained file and is not
+    #       used and probably will never be.
+
     PyInstaller:
         Includes python and all required libraries.
         Process index sources (running Index-Sources/<source>/do_*.py) not supported.
@@ -747,53 +817,6 @@ Birdland can be installed in several different ways and launched in different
     Setuptools:
     PyInstaller:
         startup.py -> __init__.py -> __main__.py -> birdland.py
-
-# ------------------------------------------------------------------------------------------
-#   WRW 24 Mar 2022
-#   Beginning git integration
-# ------------------------------------------------------------------------------------------
-
-    Setup ssh authentication at github using id_rsa.pub for Gershwin.
-        Goto my icon in top right -> 'Your profile' -> SSH and GPG keys.
-
-    Enable ssh authentication:
-        git remote set-url origin git@github.com:wrwetzel/Birdland.git
-
-    git init
-    git add README.md
-    git commit -m "Initial commit"
-    git branch -M main
-    git remote add origin https://github.com/wrwetzel/Birdland.git
-    git push -u origin main
-    ssh -T git@github.com
-    git push -u origin main
-    git remote set-url origin git@github.com:wrwetzel/Birdland.git
-    git push -u origin main
-
-    git commit -a -m "Add symlink for images in README.md"
-    git push -u origin main
-
-    git tag 0.1.0-beta -m "Add version number tag"
-    git describe
-    git clone https://github.com/wrwetzel/Birdland.git
-
-
-    To get to images:
-        https://raw.githubusercontent.com/wrwetzel/Birdland/main/src/Documentation/Images/small-full-window.png
-
-        Fails on the front page. Looks like not following Images symlink: 'src/Documentation/Images'
-
-        <a href="/wrwetzel/Birdland/blob/main/Images/Saxophone_64.png">
-            <img src="/wrwetzel/Birdland/raw/main/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
-        </a>
-
-        Works on the Documentation page:
-
-        <a href="/wrwetzel/Birdland/blob/main/src/Documentation/Images/Saxophone_64.png">
-            <img src="/wrwetzel/Birdland/raw/main/src/Documentation/Images/Saxophone_64.png" alt="saxophone" style="max-width: 100%;">
-        </a>                                   
-
-        Abandoned in favor of Images folder at top containing just those needed for README.md
 
 # ------------------------------------------------------------------------------------------
 #   Random Hold

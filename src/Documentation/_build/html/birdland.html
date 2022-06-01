@@ -121,7 +121,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#edit-local-canonical">Edit Local-&gt;Canonical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#adding-a-new-music-book">Adding A New Music Book</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#adding-an-index-source">Adding An Index Source</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#source-specific-processing">Source-Specific Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-index-source-specific-processing">Raw-Index Source-Specific Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#future-work">Future Work</a></li>
@@ -825,7 +825,7 @@ the titles. That metric is shown next to the <em>Src/Local</em> names. Use this 
 <li><p>Add/verify canonical book name in <em>Canonicals/CanonicalNames.txt</em></p></li>
 <li><p>Add/verify the canonical to file mapping in <em>Hostname-Canonical2file.txt</em> in your Birdland config directory.</p></li>
 <li><p>Verify that the canonical names in <em>Canonicals/CanonicalNames.txt</em> and <em>Hostname-Canonical2file.txt</em> match.</p></li>
-<li><p>Rebuild the <em>canonical2file</em> table.</p></li>
+<li><p>Rebuild the <em>canonical</em> and <em>canonical2file</em> table.</p></li>
 </ul>
 </div>
 <div class="section" id="adding-an-index-source">
@@ -845,8 +845,8 @@ the titles. That metric is shown next to the <em>Src/Local</em> names. Use this 
 <li><p>Build and run the do_&lt;source name&gt;.py script in the folder for your new source.</p></li>
 </ul>
 </div>
-<div class="section" id="source-specific-processing">
-<h3>Source-Specific Processing<a class="headerlink" href="#source-specific-processing" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="raw-index-source-specific-processing">
+<h3>Raw-Index Source-Specific Processing<a class="headerlink" href="#raw-index-source-specific-processing" title="Permalink to this headline">¶</a></h3>
 <p>For each source there is a python script, do-&lt;source name&gt;.py, in a source-specific
 directory.  That script reads the raw data in a source-specific form and writes a
 <em>json</em> file in a common form in the data directory <em>Music-Index</em>. The
