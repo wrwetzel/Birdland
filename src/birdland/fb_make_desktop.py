@@ -59,12 +59,26 @@ def make_desktop( package_type, verbose ):
 
     #   Tar mimics Setuptools installation.
 
-    if package_type == 'Tar' or package_type == 'Setuptools' or package_type == 'GitHub':
+    if package_type == 'Installed':
         program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
         program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
         Exec = f"/bin/sh -c {program}"
         Icon = f"{program_dir}/Icons/Bluebird-64.png"
         PPath = program_dir
+
+    elif package_type == 'Unpacked':
+        program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
+        program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
+        Exec = f"/bin/sh -c {program}"
+        Icon = f"{program_dir}/Icons/Bluebird-64.png"
+        PPath = program_dir
+
+    # if package_type == 'Tar' or package_type == 'Setuptools' or package_type == 'GitHub':
+    #     program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
+    #     program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
+    #     Exec = f"/bin/sh -c {program}"
+    #     Icon = f"{program_dir}/Icons/Bluebird-64.png"
+    #     PPath = program_dir
 
     # elif package_type  ==  'PyInstaller':
     #     executable = Path( sys.executable ).resolve().as_posix()
@@ -83,12 +97,12 @@ def make_desktop( package_type, verbose ):
     #   This should be last as always present in install directory in addition to one of the above.
     #   Same as Tar, etc., above.
 
-    elif package_type == 'Development':
-        program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
-        program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
-        Exec = f"/bin/sh -c {program}"
-        Icon = f"{program_dir}/Icons/Bluebird-64.png"
-        PPath = program_dir
+    # elif package_type == 'Development':
+    #     program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
+    #     program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
+    #     Exec = f"/bin/sh -c {program}"
+    #     Icon = f"{program_dir}/Icons/Bluebird-64.png"
+    #     PPath = program_dir
 
     # -------------------------------------------------------
     #   Do tilda expansion
