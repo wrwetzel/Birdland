@@ -75,11 +75,11 @@ This creates a new directory, *Birdland-main*, containing the package files.
 
 ## Installation
 
-The included installation script *Install-From-GitHub.sh* installs
+The included installation script *Install.sh* installs
 Birdland under *~/.local*, that is, under *.local* in your home directory.  This
 creates a directory, *~/.local/birdland*, containing the Birdland executables, raw indexes, canonical
 names, and many other directories and files.  It also creates links in *~/.local/bin* to the
-executables.
+executables in *~/.local/birdland*.
 
 Be sure that ~/.local/bin is in your PATH environment variable. If your shell is bash then
 check your ~./bashrc file:
@@ -92,7 +92,7 @@ PATH=~/.local/bin:$PATH
 Go to the directory where you cloned Birdland:
 ```
 cd Birdland
-./Install-From-GitHub.sh
+./Install.sh
 ```
 Since you cloned it you may want to keep the cloned files to explore and modify.       
 If not, you may remove them:
@@ -105,7 +105,7 @@ rm -rf ~/tmp/Birdland-main
 Go to the directory where you unpacked Birdland and run the installation script:
 ```
 cd Birdland-main
-./Install-From-GitHub.sh
+./Install.sh
 ```
 You may now remove the package folder in the temporary directory.
 ```
@@ -125,12 +125,12 @@ unzipped directory hierarchy using the data files also in the hierarchy. In this
 case it will be convenient to add the directory containing the executables to your
 PATH. 
 
-If cloned in ~/tmp:
+For example, if cloned in ~/tmp:
 ```
 PATH=~/tmp/Birdland/src/birdland:$PATH
 ```
 
-If unzipped in ~/tmp:
+Or, if unzipped in ~/tmp:
 ```
 PATH=~/tmp/Birdland-main/src/birdland:$PATH
 ```
@@ -147,10 +147,9 @@ Birdland creates a file *birdland.desktop* in
 After you run it for the first time from the command line you can then run it
 from the system menu. 
 
-The first time you run *Birdland* it
-creates a configuration directory, populates
-that with a prototype configuration file and several other files, and builds
-a database from included raw-index files.
+The first time you run *Birdland* it creates a configuration directory, populates that with a
+prototype configuration file and several other files, and builds a database from included raw-index
+files.
 
 ## Next Steps
 
@@ -165,16 +164,14 @@ Use the tool in the *Edit Canonical->File* tab or
 edit Canonical2File.txt in your configuration directory possibly using Example-Canonical2File.txt
 as a starting point.
 
-With the settings configured optionally scan your audio library and then rebuild the database.
+With the settings configured scan your audio library and then rebuild the database.
 Large audio libraries take a long time to scan so you may want to defer that if you are anxious
 to get started.
 ```
 Database -> Scan Audio Library
 Database -> Rebuild All Tables
 ```
-
 See the documentation for more configuration details.
-
 
 ## Upgrade Birdland
 Repeat the steps above in *Install Birdland*. On subsequent installations the configuration directory

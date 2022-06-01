@@ -78,6 +78,7 @@ ToDo - Done:
     Cache issue in Fullword_Match. No hurry, just for optimization and don't see any latencies now.
     Maybe later move raw csv files one level below Index-Sources/Sher, etc..
     Select Viewer tab after click in TOC.
+    Move from Package_Type_Tar.txt, Development and GitHub to Package_Type_Unpacked, Installed.
 
 # ---------------------------------------------------------------------------
 #   ToDo - Of no interest.

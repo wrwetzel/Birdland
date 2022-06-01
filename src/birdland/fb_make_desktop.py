@@ -81,6 +81,7 @@ def make_desktop( package_type, verbose ):
     #     PPath = executable_parent
 
     #   This should be last as always present in install directory in addition to one of the above.
+    #   Same as Tar, etc., above.
 
     elif package_type == 'Development':
         program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed

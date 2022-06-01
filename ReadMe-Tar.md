@@ -59,7 +59,7 @@ run the installation script:
 
 ```
 cd Birdland
-Install-From-Tar.sh
+./Install.sh
 ```
 This copies data folders to ~/.local/share/birdland and links executables to ~/.local/bin.
 

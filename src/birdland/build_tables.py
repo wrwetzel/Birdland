@@ -1689,11 +1689,11 @@ def build_jjazz_files( c, conn ):
 
 def convert_raw_source():
 
-    if conf.Package_Type == 'PyInstaller' or conf.Package_Type == 'Nuitka':
-        print( "WARNING: 'Process Index Sources' is not supported from a bundled installation.", file=sys.stderr() )
-        print( "    Please reinstall with pip from a Setuptools distribution or with tar from a Tar distribution. ", file=sys.stderr() )
-        return 1
-        # sys.exit(1)
+    # if conf.Package_Type == 'PyInstaller' or conf.Package_Type == 'Nuitka':
+    #     print( "WARNING: 'Process Index Sources' is not supported from a bundled installation.", file=sys.stderr() )
+    #     print( "    Please reinstall with pip from a Setuptools distribution or with tar from a Tar distribution. ", file=sys.stderr() )
+    #     return 1
+    #     # sys.exit(1)
 
     os.environ[ 'PYTHONPATH' ] = Path( __file__ ).parent.resolve().as_posix()
 

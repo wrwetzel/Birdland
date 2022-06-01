@@ -46,9 +46,7 @@ tar-user:
 +       Birdland/src/Index-Sources \
 +       Birdland/src/Music-Index \
 +       Birdland/src/YouTube-Index \
-+       Birdland/Package_Type_Tar.txt \
 +       Birdland/ReadMe-Tar.md \
-+       Birdland/Install-From-Tar.sh \
 +       Birdland/Install.sh
 
 # ------------------------------

@@ -36,6 +36,7 @@ src/ReadMe-PyInstaller.md
 src/birdland/Package_Type_Setuptools.txt
 src/birdland/ReadMe-Setuptools.md
 src/birdland/.rgignore
+src/birdland/__init__.py
 
 src/Documentation/Test-Tutorial.pdf
 src/Documentation/conf.py.orig

@@ -146,24 +146,45 @@ class Config():
         self.program_directory = Path( __file__ ).parent.resolve()
 
         # ------------------------------------------------------------
+        #   WRW 1 June 2022 - Switch to just two Package_Type.*.txt values:
+        #       'Installed' - run from ~/.local/bin with data in ~/.local/share/birdland
+        #       'Unpacked' - run from the location where unpacked with data there, too.
+
+        #   Note that cannot have one file with package type as contents because want
+        #       to override 'Unpacked' with 'Installed' when installed. 'Unpacked' same as
+        #       earlier 'Development'.
+
+        if Path( self.program_directory, 'Package_Type_Installed.txt' ).is_file():
+            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
+            self.Package_Type = 'Installed'
+
+        elif Path( self.program_directory, 'Package_Type_Unpacked.txt' ).is_file():
+            self.data_directory = self.program_directory.parent.as_posix()
+            self.Package_Type = 'Unpacked'
+
+        else:
+            print( f"ERROR-DEV: 'Package_Type_*.txt' file not found at 'fb_config.py' in {self.program_directory}", file=sys.stderr )
+            sys.exit(1)
+
+        # ------------------------------------------------------------
         #   WRW 16 Mar 2022 - Another approach. No guessing. Packaging places
         #       a file, 'Package_Type_*.txt', identifying the packaging type.
 
-        #   WRW 27 May 2022 - Backing off from all but GitHub. Each has own problems, not worth
+        #   WRW 27 May 2022 - Backing off from all but GitHub and Tar. Each has own problems, not worth
         #       the effort to manage multiple package type. GitHub is just about the same as tar
         #       but in a .zip file or as cloned.
 
-        if Path( self.program_directory, 'Package_Type_GitHub.txt' ).is_file():
-            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()                                                            
-            self.Package_Type = 'GitHub'
+        # if Path( self.program_directory, 'Package_Type_GitHub.txt' ).is_file():
+        #     self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
+        #     self.Package_Type = 'GitHub'
         
-        elif Path( self.program_directory, 'Package_Type_Tar.txt' ).is_file():
-            self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
-            self.Package_Type = 'Tar'
+        # elif Path( self.program_directory, 'Package_Type_Tar.txt' ).is_file():
+        #     self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
+        #     self.Package_Type = 'Tar'
 
-        elif Path( self.program_directory, 'Package_Type_Development.txt' ).is_file():
-            self.data_directory = self.program_directory.parent.as_posix()
-            self.Package_Type = 'Development'
+        # elif Path( self.program_directory, 'Package_Type_Development.txt' ).is_file():
+        #     self.data_directory = self.program_directory.parent.as_posix()
+        #     self.Package_Type = 'Development'
 
         # elif Path( self.program_directory, 'Package_Type_Setuptools.txt' ).is_file():
         #     self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
@@ -181,9 +202,9 @@ class Config():
         #     self.data_directory = Path( '~/.local/share/birdland/' ).expanduser().as_posix()
         #     self.Package_Type = 'Tar'
 
-        else:
-            print( f"ERROR-DEV: 'Package_Type_*.txt' file not found at 'fb_config.py' in {self.program_directory}", file=sys.stderr )
-            sys.exit(1)
+        # else:
+        #     print( f"ERROR-DEV: 'Package_Type_*.txt' file not found at 'fb_config.py' in {self.program_directory}", file=sys.stderr )
+        #     sys.exit(1)
 
         # print( f"/// fb_config.py: Package_Type: {self.Package_Type}" )
 

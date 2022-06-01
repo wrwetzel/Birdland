@@ -1203,7 +1203,7 @@ class FB():
             os.remove( tfile )
 
         else:
-            t = f"ChordPro command'{chordpro}' not found."
+            t = f"ChordPro command '{chordpro}' not found."
             self.conf.do_popup( t )
             return
 

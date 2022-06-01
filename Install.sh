@@ -1,25 +1,14 @@
 #!/bin/bash
 # --------------------------------------------------------------------------------------
-#   Install.sh - Install Birdland with Package_Type given on command line.
-#   Called from Install-From-Tar.sh or Install-From-GitHub.sh.
 #   WRW 30 May 2022
+#       Install.sh - Install Birdland with Package_Type given on command line.
+#       Called from Install-From-Tar.sh or Install-From-GitHub.sh.
+#   WRW 1 June 2022
+#       No, now just install with Package_Type_Installed.txt
+
 # --------------------------------------------------------------------------------------
 
-command="$1"
-case "$command" in
-    "Tar")
-        Package_Type=Package_Type_Tar.txt
-    ;;
-
-    "GitHub")
-        Package_Type=Package_Type_GitHub.txt
-    ;;
-
-    *)
-        echo "Usage: $0 [Tar|GitHub]"
-        exit 1
-
-esac
+Package_Type=Package_Type_Installed.txt
 
 if [[ ! -d ~/.local ]]
 then
@@ -63,6 +52,7 @@ echo "Copied Birdland data folders to: '~/.local/share/birdland'"
 echo "Linked executables in '~/.local/share/birdland/birdland' to '~/.local/bin'"
 echo "Be sure '~/.local/bin' is in your PATH"
 echo "Birdland executable is: 'birdland'"
-echo "For more information see: './ReadMe-Tar.md'"
+echo "For more information see: 'ReadMe-GitHub.md' or './ReadMe-Tar.md'"
 echo "Remove Birdland with: '~/.local/share/birdland/birdland/Remove-Birdland.sh'"
+echo ""
 echo "Installation complete. '../Birdland' or '../Birdland-main' are not needed for running Birdland and may be removed."
