@@ -78,6 +78,42 @@ database_tables = [                                     # for show stats.
            JOIN audio_files USING( title );
         """
     ],
+
+    [ "Rows in canonical2file table", None,
+        """SELECT COUNT(*) cnt
+           FROM canonical2file;
+        """
+    ],
+
+    [ "Rows in canonicals table", None,
+        """SELECT COUNT(*) cnt
+           FROM canonicals;
+        """
+    ],
+
+    [ "Rows in local2canonical table", None,
+        """SELECT COUNT(*) cnt
+           FROM local2canonical;
+        """
+    ],
+
+    [ "Rows in raw_index table", None,
+        """SELECT COUNT(*) cnt
+           FROM raw_index;
+        """
+    ],
+
+    [ "Rows in sheet_offsets table", None,
+        """SELECT COUNT(*) cnt
+           FROM sheet_offsets;
+        """
+    ],
+
+    [ "Rows in src_priority table", None,
+        """SELECT COUNT(*) cnt
+           FROM src_priority;
+        """
+    ],
 ]
 
 # --------------------------------------------------------------------------
