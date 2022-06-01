@@ -303,6 +303,8 @@ the next time the raw index is processed."""
     def do_pdf_popup( self, canonical, page, sheet=None ):
 
         page_width, page_height = self.show_pdf_part1( canonical, page )
+        if not page_width or not page_height:
+            return      
 
         graph_y_size = 600
         graph_x_size = int( graph_y_size * page_width/page_height )
