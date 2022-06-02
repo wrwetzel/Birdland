@@ -336,6 +336,9 @@ class Setlist():
         # ----------------------------------------------------------------
         elif event == 'setlist-move-up':
             items = self.setlist_get_current()
+            if not items:
+                return True
+
             if 'setlist-table' in values and len( values[ "setlist-table" ]):
                 index = values[ "setlist-table" ][0]
 
@@ -355,6 +358,9 @@ class Setlist():
         # ----------------------------------------------------------------
         elif event == 'setlist-move-down':
             items = self.setlist_get_current()
+            if not items:
+                return True
+
             if 'setlist-table' in values and len( values[ "setlist-table" ]):
                 index = values[ "setlist-table" ][0]
             else:
@@ -372,6 +378,8 @@ class Setlist():
         # ----------------------------------------------------------------
         elif event == 'setlist-delete':
             items = self.setlist_get_current()
+            if not items:
+                return True
 
             if 'setlist-table' in values and len( values[ "setlist-table" ]):
                 index = values[ "setlist-table" ][0]

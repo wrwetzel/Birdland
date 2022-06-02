@@ -7,6 +7,8 @@
 # ---------------------------------------------------------------------------
 
 ToDo - Soon:
+    Possibly include a minimal sample media library.
+    Index search on website.
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -127,16 +129,22 @@ ToDo - Done:
 #   Reminder Notes
 # ---------------------------------------------------------------------------------------
 
-    Update distributions after changes:
+    # - - - - - - - - - - - - - - - - - - - - - - - -
 
-        Birdland/src/Documentation:
-            make local remote
-            make site
+    Update distributions after changes:
 
         Birdland:
             make tar-user
             git commit -a -m "<reason>"
             git push -u origin main
+
+        Birdland/src/Documentation:
+            make local remote
+            make site
+
+    # - - - - - - - - - - - - - - - - - - - - - - - -
+    Add to sitemap:
+        curl 'https://www.google.com/ping?sitemap=https://birdland.wrwetzel.com/sitemap.txt'
 
     Run build-tables.py again after download YouTube links.
         First time to get titles_distinct used to drive getting YouTube links.
