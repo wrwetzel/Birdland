@@ -103,9 +103,18 @@ class PageList():
 
                 # -----------------------------------------------
                 #   Get a little more data to display and use for showing PDF file now that local is selected
+                #   WRW 1 June 2022 - On virgin machine without canonical2file we should still populate the table
+                #       as it looks like the music file is not even used here any more. No, need it to get
+                #       page count at least.
 
                 self.index_mgmt_info_src.update( value = self.src )
                 self.index_mgmt_info_local.update( value = self.local )
+
+                if not self.fb.Music_File_Root:
+                #   WRW 1 June 2022 - Only noticed this when testing on virgin virtual machine.
+                    t = f"'Root of music file' not defined in settings. Required to show page list."
+                    self.conf.do_popup( t )
+                    return True
 
                 self.canonical = self.fb.get_canonical_from_src_local( self.src, self.local )
                 if self.canonical:
@@ -122,7 +131,7 @@ class PageList():
 
                             if not fullpath.is_file():
                                 self.conf.do_nastygram( 'music_file_root', fullpath )
-                                return
+                                return True
 
                             self.page_count = self.pdf.get_page_count( fullpath )
 
