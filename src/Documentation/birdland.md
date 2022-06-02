@@ -223,7 +223,7 @@ sections for settings likely to vary by host.
 
 ### Download
 
-> For early releases Birdland is only package as a tar file or for access from GitHub.  Disregard
+> For early releases Birdland is only package for access from GitHub or as a tar file.  Disregard
 all else below.  The *PyPi*, *PyInstaller*, and *Nuitka* packages were built successfully earlier in
 the development cycle.  The software used to build *PyPi* package and the Birdland folder structure
 both changed incompatibly since then.  In the interest of a timely release *PyPi* installation is not presently
@@ -257,13 +257,21 @@ installation.
 
 Birdland is presently supported on Linux.
 
-Birdland requires the Python 3 interpreter. This is likely installed on most modern Linux
-distributions, is included in the self-contained packages, but will have to be installed
-for the Tar and PyPi installation if not already present.
+#### Application Packages
+The package name and process for installing these is specific to Linux distributions (Ubuntu, Mint, Arch, etc.) and
+not/barely documented here.
+
+* Birdland requires the Python 3 interpreter. This is likely installed on most modern Linux
+distributions. It will have to be installed for clone/download from GitHub, Tar distribution, or PyPi.
+It is included in the self-contained packages.
+
+* Tesseract - if using the Create Index feature. On Ubuntu this is in the *tesseract-ocr* package. On arch it is in *tesseract*.
+
+#### Python Modules
 
 Birdland requires the following Python modules. These are installed automatically if installing
 Birdland from PyPi, are included in the self-contained package, but have to be installed manually
-when installing Birdland from the tarball.
+when installing Birdland from GitHub or the Tar file.
 
 ```   
 click
@@ -281,11 +289,14 @@ unidecode
 youtube-search-python (only to run get-youtube-links.py)
 ```
 
+#### Fullword
 Birdland includes the source and binary for one module, *fullword* (a misnomer of fulltext), written
 in C but falls back to an alternate match strategy if that is not available.  There are presently no
 build instructions in the installation process to recompile that if the existing binary is
 incompatible with your system.  Execute *run.sh* in the *Fullword-Match* directory under the
 birdland source directory if you have a C-development environment on your system.
+
+#### Media Viewers/Players
 
 Birdland optionally need one or more of the following if you want to view or hear the
 related files from your libraries.
@@ -320,10 +331,11 @@ The Birdland application has been reasonably well tested during development but 
 yet been exposed to many users.  Corner cases or un-anticipated inputs and sequence of
 inputs will inevitably emerge.
 
-Development and testing was done on an up-to-date Arch Linux system with the Plasma (KDE) desktop environment. 
-Incompatibilities with
-other Linux distributions or older versions of Python and Python modules, and other system software are
-possible. Conflicts with the glibc library are specifically a concern with the self-contained packages.
+Development and testing was done on an up-to-date Arch Linux system with
+the Plasma (KDE) desktop environment.  Incompatibilities with other Linux
+distributions or older versions of Python and Python modules, and other
+system software are possible.  Conflicts with the glibc library are
+specifically a concern with the self-contained packages.
 
 The consolidation of the multiple index sources is not complete. The correct page is found for most titles
 in popular fakebooks but some page errors and alternate spellings of titles remain.
@@ -344,6 +356,35 @@ routine for *full-text* matching.  Because of the uncertainties of access to tha
 some environments Birdland will fall back to an alternate implementation using SQL
 *LIKE* matching if the C implementation cannot be loaded.  There will be small variation
 in search results between the two implementations and *LIKE* is a bit slower.
+
+### Troubleshooting
+
+#### Fitz Module Conflict
+Birdland imports the *fitz* module, which is installed via the *PyMuPDF* pacakge. Another *fitz* module exists,
+which is installed with the *fitz* package. These cannot coexist on the same system without conflict. To run
+Birdland you will have to remove the *fitz* package. See:
+```
+https://github.com/pymupdf/PyMuPDF/issues/523
+```
+
+#### PySimpleGUI
+The PySimpleGUI Python module requires both tk and tkinter.  On some Linux
+distributions tk and tkinter are installed automatically when you install
+PySimpleGUI.  If that is not the case for the distribution you are using
+then you will have to install in manually.  For example, on Ubuntu and
+Ubuntu-like systems:
+
+```
+sudo apt-get install python3-tk
+```
+
+#### Kate Editor
+If you have specified the *kate* editor for the *Text Editor for Raw Index* (our preference for this) then
+a recent update to *kate* broke the line-number option. It works fine if you also specify the column number.
+Thus the value for the *Editor line number option* for *kate* is:
+```
+-l ? -c 1
+```
 
 ## Getting Started
 

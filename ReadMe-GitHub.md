@@ -38,13 +38,8 @@ pip install click configobj Levenshtein mutagen mysqlclient pandas pillow
 pip install PyMuPDF PySimpleGUI pytesseract tk unidecode youtubesearchpython
 ```
 
-The PySimpleGUI Python module requires both tk and tkinter.
-On some Linux distributions tk and tkinter are installed automatically when you install PySimpleGUI. If that is not
-the case for the distribution you are using then you will have to install in manually. For example, on Ubuntu
-and Ubuntu-like systems:
-```
-sudo apt-get install python3-tk
-```
+You may encounter some Linux-distribution-specific rough edges in setting up Birdland and its requirements.
+Be sure to see the *Troubleshooting* section in the documentation.
 
 ## Obtain Birdland
 You may obtain Birdland from GitHub in two ways, by cloning the Birdland remote repository or by downloading

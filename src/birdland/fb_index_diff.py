@@ -667,6 +667,7 @@ the next time the raw index is processed."""
 
                     ln_option_full = ln_option.replace( '?', line_number ).split()
                     command = [ editor, *ln_option_full, epath ]
+
                     po = subprocess.Popen( command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL )
                     po.wait()
 

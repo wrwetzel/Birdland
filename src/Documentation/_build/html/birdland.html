@@ -63,10 +63,24 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#download">Download</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-requirements">System Requirements</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#application-packages">Application Packages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-modules">Python Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fullword">Fullword</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#media-viewers-players">Media Viewers/Players</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#status">Status</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#status">Status</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fitz-module-conflict">Fitz Module Conflict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pysimplegui">PySimpleGUI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kate-editor">Kate Editor</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#settings">Settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#operation">Operation</a></li>
@@ -376,7 +390,7 @@ sections for settings likely to vary by host.</p></li>
 <div class="section" id="download">
 <h3>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><p>For early releases Birdland is only package as a tar file or for access from GitHub.  Disregard
+<div><p>For early releases Birdland is only package for access from GitHub or as a tar file.  Disregard
 all else below.  The <em>PyPi</em>, <em>PyInstaller</em>, and <em>Nuitka</em> packages were built successfully earlier in
 the development cycle.  The software used to build <em>PyPi</em> package and the Birdland folder structure
 both changed incompatibly since then.  In the interest of a timely release <em>PyPi</em> installation is not presently
@@ -408,12 +422,22 @@ installation.</p>
 <div class="section" id="system-requirements">
 <h3>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h3>
 <p>Birdland is presently supported on Linux.</p>
-<p>Birdland requires the Python 3 interpreter. This is likely installed on most modern Linux
-distributions, is included in the self-contained packages, but will have to be installed
-for the Tar and PyPi installation if not already present.</p>
+<div class="section" id="application-packages">
+<h4>Application Packages<a class="headerlink" href="#application-packages" title="Permalink to this headline">¶</a></h4>
+<p>The package name and process for installing these is specific to Linux distributions (Ubuntu, Mint, Arch, etc.) and
+not/barely documented here.</p>
+<ul class="simple">
+<li><p>Birdland requires the Python 3 interpreter. This is likely installed on most modern Linux
+distributions. It will have to be installed for clone/download from GitHub, Tar distribution, or PyPi.
+It is included in the self-contained packages.</p></li>
+<li><p>Tesseract - if using the Create Index feature. On Ubuntu this is in the <em>tesseract-ocr</em> package. On arch it is in <em>tesseract</em>.</p></li>
+</ul>
+</div>
+<div class="section" id="python-modules">
+<h4>Python Modules<a class="headerlink" href="#python-modules" title="Permalink to this headline">¶</a></h4>
 <p>Birdland requires the following Python modules. These are installed automatically if installing
 Birdland from PyPi, are included in the self-contained package, but have to be installed manually
-when installing Birdland from the tarball.</p>
+when installing Birdland from GitHub or the Tar file.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">click</span>
 <span class="n">configobj</span>
 <span class="n">Levenshtein</span>
@@ -429,11 +453,17 @@ when installing Birdland from the tarball.</p>
 <span class="n">youtube</span><span class="o">-</span><span class="n">search</span><span class="o">-</span><span class="n">python</span> <span class="p">(</span><span class="n">only</span> <span class="n">to</span> <span class="n">run</span> <span class="n">get</span><span class="o">-</span><span class="n">youtube</span><span class="o">-</span><span class="n">links</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="fullword">
+<h4>Fullword<a class="headerlink" href="#fullword" title="Permalink to this headline">¶</a></h4>
 <p>Birdland includes the source and binary for one module, <em>fullword</em> (a misnomer of fulltext), written
 in C but falls back to an alternate match strategy if that is not available.  There are presently no
 build instructions in the installation process to recompile that if the existing binary is
 incompatible with your system.  Execute <em>run.sh</em> in the <em>Fullword-Match</em> directory under the
 birdland source directory if you have a C-development environment on your system.</p>
+</div>
+<div class="section" id="media-viewers-players">
+<h4>Media Viewers/Players<a class="headerlink" href="#media-viewers-players" title="Permalink to this headline">¶</a></h4>
 <p>Birdland optionally need one or more of the following if you want to view or hear the
 related files from your libraries.</p>
 <ul class="simple">
@@ -453,6 +483,7 @@ No choice here but JJazzLab.</p></li>
 </ul>
 </div>
 </div>
+</div>
 <div class="section" id="status">
 <h2>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h2>
 <p>A wise sage posited that <em>Perfect is the Enemy of Good</em>. With that in mind we decided to release
@@ -461,10 +492,11 @@ Birdland with a few known issues to expose it to a wider user base.</p>
 <p>The Birdland application has been reasonably well tested during development but has not
 yet been exposed to many users.  Corner cases or un-anticipated inputs and sequence of
 inputs will inevitably emerge.</p>
-<p>Development and testing was done on an up-to-date Arch Linux system with the Plasma (KDE) desktop environment.
-Incompatibilities with
-other Linux distributions or older versions of Python and Python modules, and other system software are
-possible. Conflicts with the glibc library are specifically a concern with the self-contained packages.</p>
+<p>Development and testing was done on an up-to-date Arch Linux system with
+the Plasma (KDE) desktop environment.  Incompatibilities with other Linux
+distributions or older versions of Python and Python modules, and other
+system software are possible.  Conflicts with the glibc library are
+specifically a concern with the self-contained packages.</p>
 <p>The consolidation of the multiple index sources is not complete. The correct page is found for most titles
 in popular fakebooks but some page errors and alternate spellings of titles remain.</p>
 <p>Birdland has a <em>theme</em> option but light themes are discouraged.  Most of the testing was
@@ -482,6 +514,38 @@ routine for <em>full-text</em> matching.  Because of the uncertainties of access
 some environments Birdland will fall back to an alternate implementation using SQL
 <em>LIKE</em> matching if the C implementation cannot be loaded.  There will be small variation
 in search results between the two implementations and <em>LIKE</em> is a bit slower.</p>
+<div class="section" id="troubleshooting">
+<h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fitz-module-conflict">
+<h4>Fitz Module Conflict<a class="headerlink" href="#fitz-module-conflict" title="Permalink to this headline">¶</a></h4>
+<p>Birdland imports the <em>fitz</em> module, which is installed via the <em>PyMuPDF</em> pacakge. Another <em>fitz</em> module exists,
+which is installed with the <em>fitz</em> package. These cannot coexist on the same system without conflict. To run
+Birdland you will have to remove the <em>fitz</em> package. See:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">pymupdf</span><span class="o">/</span><span class="n">PyMuPDF</span><span class="o">/</span><span class="n">issues</span><span class="o">/</span><span class="mi">523</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pysimplegui">
+<h4>PySimpleGUI<a class="headerlink" href="#pysimplegui" title="Permalink to this headline">¶</a></h4>
+<p>The PySimpleGUI Python module requires both tk and tkinter.  On some Linux
+distributions tk and tkinter are installed automatically when you install
+PySimpleGUI.  If that is not the case for the distribution you are using
+then you will have to install in manually.  For example, on Ubuntu and
+Ubuntu-like systems:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">tk</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="kate-editor">
+<h4>Kate Editor<a class="headerlink" href="#kate-editor" title="Permalink to this headline">¶</a></h4>
+<p>If you have specified the <em>kate</em> editor for the <em>Text Editor for Raw Index</em> (our preference for this) then
+a recent update to <em>kate</em> broke the line-number option. It works fine if you also specify the column number.
+Thus the value for the <em>Editor line number option</em> for <em>kate</em> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>-l ? -c 1
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 <div class="section" id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>

@@ -6,7 +6,7 @@
 #   Need to think about inheritance instead of passing pdf, fb, etc. into here
 
 #   Save but not useful so far:
-#       print( "/// qsize after update", self.window.thread_queue.qsize() )           
+#       print( "/// qsize after update", self.window.thread_queue.qsize() )
 
 # ---------------------------------------------------------------------------
 
@@ -324,7 +324,7 @@ class Setlist():
                 self.ele_setlist_delete.update( disabled = False )
 
                 if not 'setlist-table' in values or len( values[ 'setlist-table'] ) == 0:
-                    self.fb.safe_update( self.ele_setlist_table, None, [0] )
+                    self.fb.safe_update( self.ele_setlist_table, None, [] )     # Changed [0] to []. My thanks to Volker.
 
             else:
                 self.ele_setlist_move_up.update( disabled = True)
