@@ -63,14 +63,14 @@ def make_desktop( package_type, verbose ):
         program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
         program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
         Exec = f"/bin/sh -c {program}"
-        Icon = f"{program_dir}/Icons/Bluebird-64.png"
+        Icon = f"{program_dir}/Icons/Saxophone_64.png"
         PPath = program_dir
 
     elif package_type == 'Unpacked':
         program = Path( sys.argv[0] ).resolve().as_posix()          # Where birdland executed
         program_dir = Path( __file__ ).parent.resolve().as_posix()  # Where modules live
         Exec = f"/bin/sh -c {program}"
-        Icon = f"{program_dir}/Icons/Bluebird-64.png"
+        Icon = f"{program_dir}/Icons/Saxophone_64.png"
         PPath = program_dir
 
     # if package_type == 'Tar' or package_type == 'Setuptools' or package_type == 'GitHub':
