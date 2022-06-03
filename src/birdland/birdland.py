@@ -605,6 +605,8 @@ def get_about_data():
     if MYSQL:
         database = f"MySql, Database: '{conf.mysql_database}'"
         fullword_notes = ''
+
+        import MySQLdb              # WRW 3 June 2022 - Imported in do_main() but not in namespace here.
         mysqldb_module_version = '.'.join([str(x) for x in MySQLdb.version_info ])
 
     # ----------------------------------
@@ -712,10 +714,14 @@ def do_about():
             sg.Text( f"This software and index data is released under the terms of the MIT License.", pad=((20,20),(2,0)), font=("Helvetica", 10, ), text_color='#e0e0ff' ),
         ],
         [
+            #   WRW 3 June 2022 - Volker got warning about 'None' not allowed in argument to size. Changed
+            #       to fixed value of 80.
+
             sg.Multiline( info_text,
                     font=("Helvetica", 9 ),
                     pad=((20,20),(10,0)),
-                    size = ( None, info_text.count( '\n' ) +1 ),
+                  # size = ( None, info_text.count( '\n' ) +1 ),
+                    size = ( 80, info_text.count( '\n' ) +1 ),                                               
                     write_only = True,
                     # auto_refresh = True,
                     no_scrollbar = True,

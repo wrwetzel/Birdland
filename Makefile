@@ -36,6 +36,7 @@ tar-user:
 +       Birdland/src/birdland/Icons \
 +       Birdland/src/birdland/birdland.conf.proto \
 +       Birdland/src/Documentation/birdland.pdf \
++       Birdland/src/Documentation/birdland-create.pdf \
 +       Birdland/src/Documentation/birdland.md \
 +       Birdland/src/birdland/build-pdf-from-image.py \
 +       Birdland/src/birdland/get-youtube-links.py \

@@ -129,6 +129,12 @@ ToDo - Done:
 #   Reminder Notes
 # ---------------------------------------------------------------------------------------
 
+    Generate requirements.txt for project
+        pip install pipreqs --user
+        pipreqs
+
+        pip install -r requirements.txt
+
     # - - - - - - - - - - - - - - - - - - - - - - - -
 
     Update distributions after changes:
