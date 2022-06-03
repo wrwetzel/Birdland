@@ -132,10 +132,15 @@ ToDo - Done:
     # - - - - - - - - - - - - - - - - - - - - - - - -
 
     Virtual Env:
-        pip install virtualenv
-        python -m venv testenv
-        source testevn/bin/activate
-        deactivate
+        Install:
+            pip install virtualenv
+
+        Use:
+            python -m venv testenv
+            source testevn/bin/activate
+            deactivate
+
+            python birdland.py          # Otherwise will get python in /usr/bin and all modules.
     
         in virtual env
             pip install packages
@@ -159,8 +164,6 @@ ToDo - Done:
         Install from requirements.txt:
             pip install -r requirements.txt
 
-        Run in Virtual Env:                 Otherwise will get python in /usr/bin
-            python birdland.py
 
     # - - - - - - - - - - - - - - - - - - - - - - - -
 

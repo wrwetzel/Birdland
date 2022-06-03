@@ -18,7 +18,7 @@
 #       which saves a sanitized version in birdland.conf.proto.
 
 #   This built from .birdland/birdland.conf
-#     on Sun, 29-May-2022, 16:02:24
+#     on Fri, 03-Jun-2022, 12:11:36
 
 # -------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ select_limit = 100
 #   The name of the setlist file. Located in the configuration directory.
 setlistfile = setlist.json
 
-include_titles_missing_file = True
+include_titles_missing_file = False
 show_index_mgmt_tabs = True
 show_canon2file_tab = True
 
@@ -60,7 +60,7 @@ external_youtube_viewer = qutebrowser --override-restore
 # raw_index_editor_line_num = +?
 
 raw_index_editor = kate
-raw_index_editor_line_num = -c 1 -l ?
+raw_index_editor_line_num = -l ?
 
 # ---------------------------------------------------------
 #   Music is selected in source_priority order when multiple index sources 
