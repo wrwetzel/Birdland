@@ -129,11 +129,33 @@ ToDo - Done:
 #   Reminder Notes
 # ---------------------------------------------------------------------------------------
 
-    Generate requirements.txt for project
-        pip install pipreqs --user
-        pipreqs
+    # - - - - - - - - - - - - - - - - - - - - - - - -
 
-        pip install -r requirements.txt
+    Virtual Env:
+        pip install virtualenv
+        python -m venv testenv
+        source testevn/bin/activate
+        deactivate
+    
+        in virtual env
+            pip install packages
+                pandas
+                PySimpleGUI
+                mysqlclient     MySQLdb     *** Problem here with flatpak, return to it
+                PyMuPDF         fitz        *** Problem here with flatpak, return to it
+                tk              tkinter
+                mutagen
+                click
+                configobj
+                unidecode
+    
+    
+    
+        Generate requirements.txt for project
+            pip install pipreqs --user
+            pipreqs
+    
+            pip install -r requirements.txt
 
     # - - - - - - - - - - - - - - - - - - - - - - - -
 

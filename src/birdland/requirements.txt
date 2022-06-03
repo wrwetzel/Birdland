@@ -1,0 +1,23 @@
+# --------------------------------------------------------------------
+#   requirements.txt for Birdland
+
+#   pip install -r requirements.txt
+
+#   Uncomment mysqlclient to use MySql database, i.e. 'birdland -d mysql'
+# --------------------------------------------------------------------
+
+click
+configobj
+Levenshtein
+mutagen
+# mysqlclient             # only if using MySql database
+pandas
+pillow                    # only if using Index Management -> Create Index feature
+PyMuPDF
+PySimpleGUI
+pytesseract               # only if using Index Management -> Create Index feature
+# tk                      # will be installed with Python on some linux distributions.
+unidecode
+youtubesearchpython       # only to run get-youtube-links.py
+
+# --------------------------------------------------------------------
