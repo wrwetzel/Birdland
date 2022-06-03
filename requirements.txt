@@ -18,6 +18,6 @@ PySimpleGUI
 pytesseract               # only if using Index Management -> Create Index feature
 # tk                      # will be installed with Python on some linux distributions.
 unidecode
-youtubesearchpython       # only to run get-youtube-links.py
+youtube-search-python     # only to run get-youtube-links.py
 
 # --------------------------------------------------------------------

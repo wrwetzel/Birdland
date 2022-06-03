@@ -437,7 +437,8 @@ It is included in the self-contained packages.</p></li>
 <h4>Python Modules<a class="headerlink" href="#python-modules" title="Permalink to this headline">¶</a></h4>
 <p>Birdland requires the following Python modules. These are installed automatically if installing
 Birdland from PyPi, are included in the self-contained package, but have to be installed manually
-when installing Birdland from GitHub or the Tar file.</p>
+when installing Birdland from GitHub or the Tar file. A <em>requirements.txt</em> file is included to simplify this.
+See <em>ReadMe-GitHub.md</em> or <em>ReadMe-Tar.md</em> for details.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">click</span>
 <span class="n">configobj</span>
 <span class="n">Levenshtein</span>
@@ -490,8 +491,8 @@ No choice here but JJazzLab.</p></li>
 Birdland with a few known issues to expose it to a wider user base.</p>
 <p>At this stage in development and packaging, especially packaging, Birdland will be more attractive to techy users.</p>
 <p>The Birdland application has been reasonably well tested during development but has not
-yet been exposed to many users.  Corner cases or un-anticipated inputs and sequence of
-inputs will inevitably emerge.</p>
+yet been exposed to many users.  Corner cases, un-anticipated inputs and sequence of
+inputs, differences in execution environments, and differences between Linux distributions will inevitably emerge.</p>
 <p>Development and testing was done on an up-to-date Arch Linux system with
 the Plasma (KDE) desktop environment.  Incompatibilities with other Linux
 distributions or older versions of Python and Python modules, and other
@@ -624,6 +625,9 @@ the title of an audio file matches the title shown in the music viewer.  Click o
 Title</em> tab in the left sidebar and then a line in the <em>Title/Artist</em> table to play the audio.</p></li>
 <li><p>If a music notes icon appears in the <em>Status Bar</em> then the above applies but for midi files</p></li>
 <li><p>Add a title to a set list by clicking the <em>Add</em> button in the <em>Add Title to Setlist</em> panel. Create a new set list by typing the new name in the drop-down menu in lieu of selecting an existing one.</p></li>
+<li><p>By default the <em>Include titles missing in music files</em> settings option is selected so that you may explore the music index
+before you have added any music files and built the Canon2File.txt file. You may later deselect it to avoid littering
+search results with music books not in your library.</p></li>
 </ul>
 <p><img alt="setlist" src="_images/setlist.png" /></p>
 </div>
@@ -686,7 +690,10 @@ regenerated and you may not want it in cloud storage because of its size.</p>
 </div>
 <div class="section" id="include-titles-missing-in-music-files">
 <h5>Include titles missing in music files<a class="headerlink" href="#include-titles-missing-in-music-files" title="Permalink to this headline">¶</a></h5>
-<p>When searching the music index titles without a corresponding music present are ordinarily excluded from the results shown in the <em>Music Index</em>. Check this option to include those files. You may want to do this to explore the music index before you have set up the canonical to file map for your music library.</p>
+<p>When searching the music index titles without a corresponding music present are ordinarily excluded
+from the results shown in the <em>Music Index</em>.  Check this option to include those files.  You may
+want to do this to explore the music index before you have set up the canonical to file map for your
+music library.</p>
 </div>
 </div>
 <div class="section" id="database">

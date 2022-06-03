@@ -24,24 +24,7 @@ Python modules:
     youtubesearchpython     (only to run get-youtube-links.py)
 ```
 
-## Install Required Modules
-
-Install them under your home directory. Does not require root access.
-```
-pip install click configobj Levenshtein mutagen mysqlclient pandas pillow --user
-pip install PyMuPDF PySimpleGUI pytesseract tk unidecode youtubesearchpython --user
-```
-
-Or install them system wide. Requires root access.
-```
-pip install click configobj Levenshtein mutagen mysqlclient pandas pillow 
-pip install PyMuPDF PySimpleGUI pytesseract tk unidecode youtubesearchpython
-```
-
-You may encounter some Linux-distribution-specific rough edges in setting up Birdland and its requirements.
-Be sure to see the *Troubleshooting* section in the documentation.
-
-## Install Birdland
+## Unpack Birdland
 
 Unpack the birdland tar file *birdland-user.tar.gz* in a temporary directory. For example, if you
 have *tmp* in you home directory and have downloaded the tar file into *~/Downloads*:
@@ -49,11 +32,34 @@ have *tmp* in you home directory and have downloaded the tar file into *~/Downlo
 cd ~/tmp
 tar -xzvf ~/Downloads/birdland-user.tar.gz
 ```
-This creates a new directory, *Birdland*, containing the package files. Go to that directory and
-run the installation script:
+This creates a new directory, *Birdland*, containing the package files. 
+
+## Install Required Modules
+
+Go to the directory created when you unpacked the tar file:
+```
+cd ~/tmp/Birdland
+```
+Birdland includes a *requirements.txt* file that is suitable for most users.
+Uncomment the *mysqlclient* line if you want to use MySql instead of Sqlite3.
+
+Install Python modules under your home directory. Does not require root access.
+```
+pip install -r requirements.txt --user
+```
+Or install them system wide. Requires root access.
+```
+pip install -r requirements.txt
+```
+You may encounter some Linux-distribution-specific rough edges in setting up Birdland and its requirements.
+Be sure to see the *Troubleshooting* section in the documentation.
+
+## Install Birdland
+
+Go to the directory created when you unpacked the tar file and run the installation script:
 
 ```
-cd Birdland
+cd ~/tmp/Birdland
 ./Install.sh
 ```
 This copies data folders to ~/.local/share/birdland and links executables to ~/.local/bin.

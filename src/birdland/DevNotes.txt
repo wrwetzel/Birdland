@@ -148,14 +148,19 @@ ToDo - Done:
                 click
                 configobj
                 unidecode
-    
-    
+
+            Or:
+                pip install -r requirements.txt
     
         Generate requirements.txt for project
             pip install pipreqs --user
-            pipreqs
+            pipreqs                             *** Didn't work well, proposed packages not used.
     
+        Install from requirements.txt:
             pip install -r requirements.txt
+
+        Run in Virtual Env:                 Otherwise will get python in /usr/bin
+            python birdland.py
 
     # - - - - - - - - - - - - - - - - - - - - - - - -
 

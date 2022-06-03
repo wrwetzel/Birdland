@@ -1134,6 +1134,7 @@ class Create():
         elif event == 'create-index-show-map':
 
             if not self.index or self.index and not self.index.has_data():      # Nothing to draw
+                self.conf.do_popup( "No index data created for selected book." )
                 return True
 
             boxes_h = 50

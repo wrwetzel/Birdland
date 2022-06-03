@@ -271,7 +271,8 @@ It is included in the self-contained packages.
 
 Birdland requires the following Python modules. These are installed automatically if installing
 Birdland from PyPi, are included in the self-contained package, but have to be installed manually
-when installing Birdland from GitHub or the Tar file.
+when installing Birdland from GitHub or the Tar file. A *requirements.txt* file is included to simplify this.
+See *ReadMe-GitHub.md* or *ReadMe-Tar.md* for details.
 
 ```   
 click
@@ -328,8 +329,8 @@ Birdland with a few known issues to expose it to a wider user base.
 At this stage in development and packaging, especially packaging, Birdland will be more attractive to techy users.
 
 The Birdland application has been reasonably well tested during development but has not
-yet been exposed to many users.  Corner cases or un-anticipated inputs and sequence of
-inputs will inevitably emerge.
+yet been exposed to many users.  Corner cases, un-anticipated inputs and sequence of
+inputs, differences in execution environments, and differences between Linux distributions will inevitably emerge.
 
 Development and testing was done on an up-to-date Arch Linux system with
 the Plasma (KDE) desktop environment.  Incompatibilities with other Linux
@@ -469,6 +470,10 @@ Title* tab in the left sidebar and then a line in the *Title/Artist* table to pl
   
 * Add a title to a set list by clicking the *Add* button in the *Add Title to Setlist* panel. Create a new set list by typing the new name in the drop-down menu in lieu of selecting an existing one.
 
+* By default the *Include titles missing in music files* settings option is selected so that you may explore the music index
+before you have added any music files and built the Canon2File.txt file. You may later deselect it to avoid littering
+search results with music books not in your library.
+
 ![setlist](Images/setlist.png)
 
 ## Abbreviated Reference Manual
@@ -529,7 +534,10 @@ Only the canonical to file map in this option is shown in the *Edit Canonical->F
 
 ##### Include titles missing in music files
 
-When searching the music index titles without a corresponding music present are ordinarily excluded from the results shown in the *Music Index*. Check this option to include those files. You may want to do this to explore the music index before you have set up the canonical to file map for your music library.
+When searching the music index titles without a corresponding music present are ordinarily excluded
+from the results shown in the *Music Index*.  Check this option to include those files.  You may
+want to do this to explore the music index before you have set up the canonical to file map for your
+music library.
 
 #### Database
 
