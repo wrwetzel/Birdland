@@ -33,7 +33,7 @@ select_limit = 100
 #   The name of the setlist file. Located in the configuration directory.
 setlistfile = setlist.json
 
-include_titles_missing_file = False
+include_titles_missing_file = True
 show_index_mgmt_tabs = True
 show_canon2file_tab = True
 
