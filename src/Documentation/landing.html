@@ -7,7 +7,7 @@
     Landing page for Birdland website.
     WRW 11 May 2022
 
-    A very simple web page for just links to the documentation and downloads
+    A very page for links to the documentation and downloads
 
 -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -34,86 +34,18 @@ JJazzLab, audio player" >
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
         crossorigin="anonymous"></script>
 
-
 <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon">
 <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-<style>
-
-body {
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
-    font-size: 11pt;
-    letter-spacing: -0.01em;
-    line-height: 150%;
-    background-color: #f0f0ff;
-    color: #000000;
-    padding: 0;
-    min-width: 640px;
-    margin: 0px 30px 30px 30px;
-}
-
-.row {
-    display: flex;
-}
-
-.left-column {
-    flex: 100px;
-    padding: 0 10px 0 0;
-    font-size: 10pt;
-    border-right: 1px solid #808080;
-}
-
-.right-column {
-    padding: 0 0 0 10px;
-    flex: 90%;
-}
-
-#md-display {
-    font-size: 10pt;
-    background-color: #f0f0ff;
-    padding: 10px;
-    margin: 10px 10px 0px 0px;
-    display: none;
-/*
-    border-radius: 8px;
-    border: 2px solid #0000ff;
-*/
-}
-
-table, th, td {
-    font-size: 10pt;
-    border: 1px solid;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 4px 8px;
-}
-
-pre {
-    font-size: 9pt;
-    background-color: #e0e0ff;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #000080;
-}
-
-p#copyright {
-    font-size: 9pt;
-    color: #404040;
-}
-
-</style>
+<link rel="stylesheet" href="birdland.css">
 
 </head>
 
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
 <script>
-$(document).ready(function() {
 
-});     // END of: $(document).ready(function() {
+// $(document).ready(function() {
+// });     // END of: $(document).ready(function() {
 
 function show_md( url ) {
     $.ajax({
@@ -135,18 +67,20 @@ function show_md( url ) {
 
 <body>
 
-<h1> <img src=/Images/Saxophone_64.png width=32/> Birdland Musician's Assistant</h1>
+<h1> <img src=/Images/Saxophone_64.png width=32 style="display:inline;margin: 0;"/> Birdland Musician's Assistant</h1>
 
 <div class=row>
-<div class=left-column>
+<div class=index-column>
+    <a href=/landing.html>Home</a> <br>
     <a href=/_build/html/birdland.html>Documentation</a> <br>
     <a href=/screenshots.html>Screenshots</a> <br>
     <a href=/contact.html>Contact</a> <br>
-    <a href=#download>Download</a> <br>
+    <a href=landing.html#download>Download</a> <br>
+    <a href=/search.html>Index Search</a><br>
 </div>
 
 
-<div class=right-column>
+<div class=main-column>
     Birdland is a Linux-based multimedia music viewer and library manager for
     music books in PDF form including fakebooks.  It displays a page of music
     or a ChordPro song by searching a database of titles and other metadata.
@@ -163,7 +97,6 @@ function show_md( url ) {
     
     <img src = /Images/small-full-window.png width=50% />
 
-
     <a id="download">
     <h2>Download</h2>
 
@@ -172,42 +105,41 @@ function show_md( url ) {
     </p>
     
     <!--
-    <ul>
+        <ul>
 
-    <li>As a tar file.
-      This is likely to be familiar to techy users but does nothing automatically. You will
-      have to be sure all required Python modules are installed.
-    </li>
-    <li>
-    For access via GitHub. Similar to above.
-    </li>
+            <li>As a tar file.
+              This is likely to be familiar to techy users but does nothing automatically. You will
+              have to be sure all required Python modules are installed.
+            </li>
+            <li>
+            For access via GitHub. Similar to above.
+            </li>
 
-    <li>
-    For installation from <i>PyPi</i> via <i>pip</i>.
-      This is also likely to be familiar to techy users and automatically installs all require
-      Python modules.
-    </li>
-    <li>
-    As as self-contained file build by <i>PyInstaller</i>.
-    </li>
-    <li>
-    As as self-contained file build by <i>Nuitka</i>.
-    </li>
+            <li>
+            For installation from <i>PyPi</i> via <i>pip</i>.
+              This is also likely to be familiar to techy users and automatically installs all require
+              Python modules.
+            </li>
+            <li>
+            As as self-contained file build by <i>PyInstaller</i>.
+            </li>
+            <li>
+            As as self-contained file build by <i>Nuitka</i>.
+            </li>
+
+        </ul>
+
+        <p>
+        The last two are likely to be the easiest to install as they include the Python
+        interpreter and all required modules but they still require a recent glibc and the
+        download files are quite large.
+        </p>
     -->
-    </ul>
 
-    <!--
-    <p>
-    The last two are likely to be the easiest to install as they include the Python
-    interpreter and all required modules but they still require a recent glibc and the
-    download files are quite large.
-    </p>
-    -->
-
-    <table>
+    <table class=downloads>
     <thead>
     <tr>
-    <th>Package Type</th> <th>Link</th> <th>Installation Notes </th>
+        <th>Package Type</th> <th>Link</th> <th>Installation Notes </th>
     </tr>
     </thead>
     <tbody>
@@ -249,10 +181,10 @@ function show_md( url ) {
     
     <hr>
 
-    <div id = md-display>
+    <div id="md-display">
     </div>
 
-    <p id=copyright>
+    <p id="copyright">
     &copy; Bill Wetzel 2022
     </p>
 

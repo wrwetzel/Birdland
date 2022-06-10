@@ -844,9 +844,19 @@ textual work with *Indices* being used in mathematics.
 
 ## Credits
 
-First an foremost we are indebted to the developers of *PySimpleGUI*. That library, more than any other, enabled the development of Birdland. Earlier work based on the *Qt* library moved at a much, much slower pace.
+First an foremost we are indebted to the developers of *PySimpleGUI*.  That library, more than any
+other, enabled the development of Birdland.  Jason and Mike answered many questions and quickly resolved 
+issues in *PySimpleGUI*.
+Earlier work based on the *Qt* library moved at a much,
+much slower pace.
 
-We acknowledge the indexing work done by creators of each of the raw indexes: Alan Spiers, Jason A. Donenfeld, Mike Nelson, Stomp Box, Skrivarna Software, the Library at the University of Buffalo, and Sher Music. It was specifically the indexes Alan Spiers published on *GitHub* that rekindled our interest to resume the work on Birdland that we started many years ago.
+We acknowledge the indexing work done by creators of each of the raw indexes:  Alan Spiers, Jason A.
+Donenfeld, Mike Nelson, Stomp Box, Skrivarna Software, the Library at the University of Buffalo, and
+Sher Music.  It was specifically the indexes Alan Spiers published on *GitHub* that rekindled our
+interest to resume the work on Birdland that we started many years ago.
+
+In early testing Volker Heggemann identified several rough edges in the installation process and
+his review of the code found several problems in edge cases.
 
 ## Dedication
 

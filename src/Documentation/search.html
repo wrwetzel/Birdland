@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- 
+    Search form for Birdland website.
+    WRW 2 June 2022
+
+-->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<title>Birdland Musician's Assistant</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<meta name="author" content="birdland.wrwetel.com">
+<meta name="theme-color" content="#f8f8ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="[Birdland Musician's Assistant]">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Fakebook viewer, fakebook index, music viewer, music manager, fakebook, ChordPro,
+JJazzLab, audio player" >
+
+<!--
+<link rel="canonical" href="[canonical]" id=canonical-link />
+<link rel="manifest" href="[manifest]" id=manifest-link />
+-->
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js'></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+<link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="birdland.css">
+
+</head>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<script>
+
+let limit = 100;            // Max number of rows returned for any table.
+
+// ---------------------------------------------------------------
+
+function do_ajax( call_params, success ) {
+    var prom = $.ajax( call_params );
+
+    $.when( prom ).done( function( data ) {
+        if( data.error ) {
+            $("#error").html( "<span style='color: #c00;'>" + data.error + "</span><br>" + data.query + "<br>" + data.binding + "<br>" );
+        } else {
+            success( data );
+        }
+
+    }).fail( function( jqXHR, textStatus, errorThrown ) {
+        var msg = "";
+        msg += "Response Text: " + jqXHR.responseText + "<br>";
+        msg += "Ready State: " + jqXHR.readyState + "<br>";
+        msg += "Status Code: " + jqXHR.status + "<br>";
+        msg += "Status Text: " + textStatus + "<br>";
+        msg += "Error: " + errorThrown + "<br>";
+
+        $( "#error").html( "<span style='color: #c00;'>" + msg + "</span>" );
+    });
+}
+
+// ---------------------------------------------------------------
+
+function build_results( results, aa_flag ) {
+    let text = [];
+    text.push( "<table class=results>" );
+    text.push( "<tr><th>Title</th><th>Composer</th><th>Lyricist</th>" );
+
+    if( aa_flag ) {
+        text.push( "<th>Artist/Album</th>" );
+    }
+
+    text.push( "<th>Book</th><th>Sheet</th><th>Src</th></tr>" );
+
+    for( let row of results ) {
+        text.push( "<tr >" );
+
+        text.push( "<td>" );
+        text.push( row[0] );
+        text.push( "</td>" );
+
+        text.push( "<td>" );
+        text.push( row[1] );
+        text.push( "</td>" );
+
+        text.push( "<td>" );
+        text.push( row[2] );
+        text.push( "</td>" );
+
+        if( aa_flag ) {
+            text.push( "<td class=aa-data>" );
+            text.push( row[6] + "<br>" + row[7] )
+
+            text.push( "</td>" );
+        }
+
+        text.push( "<td>" );
+        text.push( row[3] );
+        text.push( "</td>" );
+
+        text.push( "<td>" );
+        text.push( row[4] );
+        text.push( "</td>" );
+
+        text.push( "<td>" );
+        text.push( row[5] );
+        text.push( "</td>" );
+
+        text.push( "</tr>" );
+    }
+
+    text.push( "</table>" );
+    return text.join( '\n' );
+}
+
+// ---------------------------------------------------------------
+
+function build_audio_results( results ) {
+    let text = [];
+    text.push( "<table class=results>" );
+    text.push( "<tr>" )
+    text.push( "<th>Title</th>" );
+    text.push( "<th>Artist</th>" );
+    text.push( "<th>Album</th>" );
+    text.push( "</tr>" )
+
+    for( let row of results ) {
+        text.push( "<tr >" );
+
+        text.push( "<td>" );
+        text.push( row[0] );
+        text.push( "</td>" );
+
+        text.push( "<td>" );
+        text.push( row[1] );
+        text.push( "</td>" );
+
+        text.push( "<td>" );
+        text.push( row[2] );
+        text.push( "</td>" );
+
+        text.push( "</tr>" );
+    }
+
+    text.push( "</table>" );
+    return text.join( '\n' );
+}
+
+// ---------------------------------------------------------------
+
+function show_indexed_books() {
+    do_ajax( {
+            type: "POST",
+            url: "/search.php",
+            dataType: "json",
+            data: {
+                type:   "indexed-books",
+            },
+        },
+        function ( data ) {
+            $( "#search-results" ).html( data.results );
+        }
+    );
+}
+
+// ---------------------------------------------------------------
+
+function do_music_search() {
+    do_ajax( {
+            type: "POST",
+            url: "/search.php",
+            dataType: "json",
+            data: {
+                type:           "music-search",
+                title:          $("#title").val(),
+                composer:       $("#composer").val(),
+                lyricist:       $("#lyricist").val(),
+                artist:         $("#artist").val(),
+                album:          $("#album").val(),
+                limit:          limit,
+            },
+        },
+        function( data) {
+            $( "#search-results" ).html( build_results( data.results, data.aa_flag ) );
+
+            $( "#count" ).html( data.count );
+            $( "#limit" ).html( Math.min( limit, data.count ) );
+            $( "#res-count" ).show();
+        }
+    );
+}
+
+// ---------------------------------------------------------------
+
+function do_audio_search() {
+    do_ajax( {
+            type: "POST",
+            url: "/search.php",
+            dataType: "json",
+            data: {
+                type:       "audio-search",
+                title:      $("#audio-title").val(),
+                artist:     $("#audio-artist").val(),
+                album:      $("#audio-album").val(),
+                limit:      limit,
+            }
+        },
+        function( data ) {
+            $( "#search-results" ).html( build_audio_results( data.results ) );
+
+            $( "#count" ).html( data.count );
+            $( "#limit" ).html( Math.min( limit, data.count ) );
+            $( "#res-count" ).show();
+        }
+    );
+}
+
+// ---------------------------------------------------------------
+
+$(document).ready(function() {
+
+    $('.music-search').keyup(function(event) {
+        if (event.keyCode == 13) {
+            do_music_search();
+            return false;
+        }
+    });
+
+    $('.audio-search').keyup(function(event) {
+        if (event.keyCode == 13) {
+            do_audio_search();
+            return false;
+        }
+    });
+
+    $('#submit-music-search').click( function() {
+        do_music_search();
+    });
+
+    $('#submit-audio-search').click( function() {
+        do_audio_search();
+    });
+
+    // ---------------------------------------------------------------
+
+    // $( function() {
+    //     // $( ".widget input[type=submit], .widget a, .widget button" ).button();
+    //     $( "#submit-search, .widget .widget a, .widget button" ).button();
+    // });
+
+    // ---------------------------------------------------------------
+    //  Tab activation
+
+    $( "#tabs" ).tabs({
+        heightStyle: "content",
+        active: "#tabs-music-search",
+        activate: function( event, ui ) {
+            $( "#res-count" ).hide();
+            $( "#error" ).html( '' );
+            $( "#search-results" ).html( '' );
+
+            if( ui.newPanel.attr('id') == "tabs-indexed-books" ) {
+                show_indexed_books();
+            }
+
+            else if( ui.newPanel.attr('id') == "tabs-music-search" ) {
+            }
+
+            else if( ui.newPanel.attr('id') == "tabs-audio-search" ) {
+            }
+        }
+    });
+
+}); // END of: $(document).ready(function() {
+
+</script>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<body>
+<h1> <img src=/Images/Saxophone_64.png width=32 style="display:inline;margin: 0;"/> Birdland Musician's Assistant</h1>
+
+<!-- ----------------------------------------------------------------- -->
+
+<div class=row>
+
+    <div class=index-column>
+        <a href=/landing.html>Home</a> <br>
+        <a href=/_build/html/birdland.html>Documentation</a> <br>
+        <a href=/screenshots.html>Screenshots</a> <br>
+        <a href=/contact.html>Contact</a> <br>
+        <a href=/landing.html#download>Download</a> <br>
+        <a href=/search.html>Index Search</a><br>
+    </div>
+
+    <div class=main-column>
+
+        <h2>Fakebook Index Search</h2>
+
+        <div id="tabs">
+            <ul>    
+                <li><a href="#tabs-music-search">Music Index</a></li>
+                <li><a href="#tabs-audio-search">Audio Index</a></li>
+                <li><a href="#tabs-indexed-books">Indexed Books</a></li>
+            </ul>
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+            <div id="tabs-music-search" >
+                Search the Birdland Musician's Assistant database to obtain the canonical book name and sheet number
+                from the given search parameters.
+
+                <p>
+                The database contains (as of 6 June 2022) 82272 total titles, 25810 distinct titles, in 135 indexed music books, including fakebooks.
+                </p>
+
+                <p>
+                <b>This is only an index. There are no music books (.pdf) nor links to music books here</b>. Indexes are lists of facts and not subject to copyright.
+                Many music books are protected by copyright.
+                </p>
+
+                <p>
+                The terms <b>Sheet</b> and <b>Src</b> in the table below have a formal meaning, which is described in the Birdland documentation. See the link
+                in the left sidebar.
+                </p>
+
+                <p>
+                Search results are limited (presently 100) to manage the server load. Refine your search with more terms to reduce results below the maximum.
+                </p>
+
+                <p class=attention>
+                The <i>sheet</i> numbers shown in search results are from raw indexes.  Some are correct; some
+                are PDF file page numbers, which generally do not match the sheet number.
+                Future work will harmonize all raw indexed into one consolidated sheet-based index with
+                an accompanying sheet-offset file to map sheet numbers to page numbers. When that is complete
+                the raw indexes from multiple sources will no longer be included and the search results here should
+                be correct;
+                </p>
+
+                <p>
+                You can refine the search of the <i>title</i>, <i>artist</i>, and <i>album</i>
+                fields by with following syntax in your search terms:
+
+                <table class=fullword>
+                <tr><th>Syntax</th><th>Results</th></tr>
+
+                <tr>
+                <td>word1 word2</td><td>Match any of word1 word2</td>
+                </tr>
+                <tr>
+                <td>"word1 word2"</td><td>Match exactly word1 word2</td>
+                </tr>
+                <tr>
+                <td>+word1 +word2</td><td>Must include word1 and word2</td>
+                </tr>
+                <tr>
+                <td>+word1 -word2</td><td>Must include word1, must not include word2</td>
+                </tr>
+
+                </table>
+                </p>
+
+                <p>
+                <i>Composer</i> and <i>Lyricist</i> are searched for the terms anywhere in the fields.
+                </p>
+
+                <hr style="height:4px;border-width:0;color:black;background-color:black;">
+                <div class=row>
+
+                    <div class = left-column >
+                        Obtain the cannonical book name and sheet from
+                        the <i>Music Files Index</i> for title, composer, or lyricist matching
+                        the parameters given below.
+                        <p></p>
+
+                        <table class=search>
+                            <tr>
+                             <td valign="top" style="text-align:right;">
+                              <label for="title"> Title</label>
+                             </td>
+                             <td valign="top">
+                              <input class='music-search' id='title'  type="text" name="name" maxlength="50" size="40">
+                             </td>
+                            </tr>
+
+                            <tr>
+                             <td valign="top" style="text-align:right;">
+                              <label for="composer"> Composer</label>
+                             </td>
+                             <td valign="top">
+                              <input class='music-search' id='composer'  type="text" name="name" maxlength="50" size="40">
+                             </td>
+                            </tr>
+
+                            <tr>
+                             <td valign="top" style="text-align:right;">
+                              <label for="lyricist"> Lyricist</label>
+                             </td>
+                             <td valign="top">
+                              <input class='music-search' id='lyricist'  type="text" name="name" maxlength="50" size="40">
+                             </td>
+                            </tr>
+
+                        </table>
+                    </div> <!-- end left-column-->
+
+                    <div class=right-column>
+                        Obtain song titles from the <i>Audio Files Index</i> for artist or album matching the parameters given below
+                        and then the cannonical book name and sheet from the <i>Music Files Index</i> matching those titles.
+                        <p></p>
+
+                        <table class=search>
+                            <tr>
+                             <td valign="top" style="text-align:right;">
+                              <label for="artist"> Artist</label>
+                             </td>
+                             <td valign="top">
+                              <input class='music-search' id='artist'  type="text" name="name" maxlength="50" size="40">
+                             </td>
+                            </tr>
+
+                            <tr>
+                             <td valign="top" style="text-align:right;">
+                              <label for="album"> Album</label>
+                             </td>
+                             <td valign="top">
+                              <input class='music-search' id='album'  type="text" name="name" maxlength="50" size="40">
+                             </td>
+                            </tr>
+                        </table>
+                    </div>  <!-- end right-column -->
+                </div>  <!-- end row -->
+                <p></p>
+                <button id="submit-music-search" type="button" name="search-button" style="color: white; background: green; margin-bottom: 10px;">Search</button>
+
+            </div> <!-- end tabs-music-search-->
+
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+            <div id="tabs-audio-search" >
+
+                Search the Birdland <i>Audio Files Index</i> for title, artist or album matching the parameters given below.
+
+                <p>
+                The Birdland <i>Audio Files Index</i> is a collection of audio metadata - title, artist, album.
+                The collection has a strong focus on jazz espeically piano, sax, and female singers, but also include folk,
+                classic rock, broadway, and some classical. There is little to no contemporary popular music.
+                This is only an example index. Your <i>Audio Files Index</i> in Birdland will be different and
+                based on your own audio library.
+                </p>
+
+                <p>
+                The purpose of this <i>Audio Index</i> is to aid in understanding the relationship between
+                the <i>Audio Files Index</i> and the <i>Music Files Index</i> in the search on the <i>Music Index</i>
+                tab as the search there sometimes yields unexpected results.
+                </p>
+
+                <p><b>This is only an index. There are no audio files (.mp3, .flac, .wav, etc.) 
+                nor links to audio files here.</b> Indexes are lists of facts and not subject to copyright.
+                Audio files are protected by copyright.
+                </p>
+
+                <p>
+                Search results are limited (100 presently but may change) to manage the server load. Refine your search with more terms to reduce results below the maximum.
+                </p>
+
+                <hr style="height:4px;border-width:0;color:black;background-color:black;">
+
+                <table class=search>
+                    <tr>
+                     <td valign="top" style="text-align:right;">
+                      <label for="audio-title"> Title</label>
+                     </td>
+                     <td valign="top">
+                      <input class='audio-search' id='audio-title'  type="text" name="name" maxlength="50" size="40">
+                     </td>
+                    </tr>
+
+                    <tr>
+                     <td valign="top" style="text-align:right;">
+                      <label for="audio-artist"> Artist</label>
+                     </td>
+                     <td valign="top">
+                      <input class='audio-search' id='audio-artist'  type="text" name="name" maxlength="50" size="40">
+                     </td>
+                    </tr>
+
+                    <tr>
+                     <td valign="top" style="text-align:right;">
+                      <label for="audio-album"> Album</label>
+                     </td>
+                     <td valign="top">
+                      <input class='audio-search' id='audio-album'  type="text" name="name" maxlength="50" size="40">
+                     </td>
+                    </tr>
+                </table>
+
+                <p></p>
+                <button id="submit-audio-search" type="button" name="search-button" style="color: white; background: green; margin-bottom: 10px;">Search</button>
+
+            </div> <!-- end tabs-audio-search -->
+
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+            <div id=tabs-indexed-books >    
+
+                The table below shows the canonical name of all music books included in the Birdland database
+                along with the index <i>Src</i>(s) covering each book.
+
+                <div id="indexed-books"> </div>
+            </div> <!-- end indexed-books -->
+
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        </div> <!-- end tabs -->
+        <div id="error" style="font-size: 10pt; font-weight: bold"></div>
+    
+        <div id=res-count>
+            <p>
+            First <span id=limit></span> results out of <span id=count></span> matching search.
+            </p>
+        </div>
+
+        <div id=search-results></div>
+
+        <p id=copyright>
+        &copy; Bill Wetzel 2022
+        </p>
+
+    </div> <!-- end main-column -->
+  
+</div> <!-- end class=row -->
+
+</body>

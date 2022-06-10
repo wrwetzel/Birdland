@@ -253,7 +253,7 @@ class FB():
         column = set( re.split( '\s|\.|/|,', column.lower() ))      # Split column on space . / , chars.
         value = value.lower().split()
         for val in column:
-            if val in ignore_value:     # Ignore extensions on file names.
+            if val in ignore_words:     # Ignore extensions on file names.
                 return False
         for word in value:
             if word not in column:
@@ -594,6 +594,9 @@ class FB():
                      WHERE local2canonical.canonical IS NOT NULL
                      ORDER BY canonicals.canonical
                  """
+        else:
+            txt = ''    # To suppress warning Volker saw.
+
         try:
             dc.execute( txt )
 

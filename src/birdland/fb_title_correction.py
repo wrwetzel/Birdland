@@ -402,7 +402,7 @@ def do_main( ):
     if From_DB:
         import MySQLdb
         conn = MySQLdb.connect( "localhost", conf.val( 'database_user' ), conf.val( 'database_password' ), conf.mysql_database )
-        c = conn.cursor()
+      # c = conn.cursor()     # WRW 5 June 2022 - not used.
         dc = conn.cursor(MySQLdb.cursors.DictCursor)
     
         with open( "Title-corrections-from-titles_distinct.txt", "w" ) as log:
@@ -413,8 +413,8 @@ def do_main( ):
             for fix in sorted( Fixes, key = lambda x: Fixes[x] ):
                 print( f"{fix:>30}: {Fixes[fix]}" )
     
-        conn.commit()
-        conn.close
+      # conn.commit()       # Read-only here, no need for commit().
+        conn.close()        # WRW 5 June 2022 - typo, added parens.
 
     # ----------------------------------------------------------------
 

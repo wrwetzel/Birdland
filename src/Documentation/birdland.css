@@ -1,0 +1,210 @@
+/* ---------------------------------------------------------------------------------------- */
+/*
+    WRW ~10 June 2022 - Move content of <style> from .html files into this .css file and
+    harmonize content. Remove default <table> style. All tables now have class specified.
+
+    Remember:
+        table.class {}    - applies class table element
+        .class td {}      - applies class to td, a descendent of element of class, which could be table.
+
+    Alternatively:
+        Put table in div and apply class as:
+            .class table {}   - applies class to table
+            .class td {}      - applies class to td
+*/
+/* ---------------------------------------------------------------------------------------- */
+
+body {
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+    font-size: 11pt;
+    letter-spacing: -0.01em;
+    line-height: 150%;
+    background-color: #f0f0ff;
+    color: #000000;
+    padding: 0;
+    min-width: 640px;
+    margin: 0px 30px 30px 30px;
+}
+
+/* -------------------------------------------- */
+
+.row {
+    display: flex;
+}
+
+.index-column {
+    flex: 100px;
+    font-size: 10pt;
+    padding: 0 10px 0 0;
+    border-right: 1px solid #808080;
+}
+
+.main-column {
+    flex: 90%;
+    padding: 0 0 0 10px;
+}
+
+.left-column {
+    flex: 30%;   
+    padding: 0 10px 0 0;
+    border-right: 1px solid #808080;
+}
+
+.right-column {
+    flex: 30%;   
+    margin-left: 30px;
+}
+
+/* -------------------------------------------- */
+
+.aa-data {
+    font-size: 8pt;
+}
+
+#md-display {
+    font-size: 10pt;
+    background-color: #f0f0ff;
+    padding: 10px;
+    margin: 10px 10px 0px 0px;
+    display: none;
+/*
+    border-radius: 8px;
+    border: 2px solid #0000ff;
+*/
+}
+
+/* -------------------------------------------- */
+
+table.results {   
+    border: 1px solid black;
+    border-collapse: collapse;
+    font-size: 9pt;
+    width: 100%;
+    line-height: 110%;
+    letter-spacing: normal;
+}
+
+.results th {
+    border-bottom: 1px solid black;
+}
+
+.results th,
+.results td {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    padding: 4px 4px;
+}
+
+.results tr:nth-child(odd) {
+    background-color: #e8e8ff;
+}
+
+.results tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - -  */
+
+table.contact {
+    border: none;
+}
+
+.contact td {
+    padding: 4px 0px;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - -  */
+
+table.search{
+    border: none;
+}
+
+.search th,
+.search td {
+    border: none;
+    padding: 4px 0px;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - -  */
+
+table.downloads {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.downloads th,
+.downloads td {
+    padding: 4px 8px;
+    border: 1px solid black;
+}
+
+/* -------------------------------------------- */
+
+table.fullword {
+    font-size: 10pt;
+    border: 1px solid black;
+    border-collapse: collapse;
+    line-height: 110%;
+}
+
+.fullword th,
+.fullword td {
+    border: 1px solid black;
+    padding: 4px 8px;
+}
+
+/* -------------------------------------------- */
+
+#res-count {
+    display: none;
+}
+
+.attention {
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: #ffe0e0;
+    padding: 8px;
+    margin: 8px 0px;
+}
+
+p#copyright {
+    font-size: 9pt;
+    color: #404040;
+}
+
+pre {
+    font-size: 9pt;
+    background-color: #e0e0ff;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #000080;
+}
+
+img { 
+    display: block;
+    margin: 0px 10px 0px 30px;
+    max-width: 90%;
+    height: auto;
+}
+
+figure {
+    margin: 0px;
+    padding: 0px;
+}
+
+figcaption {
+    font-size: 11pt;
+    margin: 8px 10px 30px 10px;
+}
+
+label {
+    font-weight: bold;
+    padding-right: 8px;
+}
+
+input {
+    border: 1px solid #808080;
+    padding: 4px 8px;
+}
+
+/* -------------------------------------------- */

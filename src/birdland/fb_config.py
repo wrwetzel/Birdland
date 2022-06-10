@@ -37,7 +37,7 @@ import re
 #           's' - Relative to Index_Sources dir under data directory, filename is in data dict, not config file
 #           'f' - Relative to Index_Sources dir under data directory.
 
-#       type:
+##       type:
 #           'V' - value, textbox
 #           'B' - binary, checkbox
 #           'C' - multi-value, combobox

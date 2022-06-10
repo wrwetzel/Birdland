@@ -3,21 +3,14 @@
 #   birdland.py
 # ---------------------------------------------------------------------------------------
 
-import PySimpleGUI as sg
-# import tkinter as tk
-# import tk
-
 import os
 import sys
 import platform
-import signal
-import subprocess
-import socket
-import click
-import fitz
+# import signal
+# import subprocess
+# import socket
 import sqlite3
-import re
-import configobj                 
+# import re
 import json
 import time
 import copy
@@ -25,6 +18,13 @@ import datetime
 # import importlib.metadata
 from pathlib import Path
 from collections import defaultdict
+import configobj                 
+import fitz
+import click
+
+import PySimpleGUI as sg
+# import tkinter as tk
+# import tk
 
 import fb_utils
 import fb_pdf
@@ -59,13 +59,21 @@ music_tree_aux = {}     # Metadata for music_tree
 audio_tree = None
 audio_tree_aux = {}     # Metadata for audio_tree
 
+Select_Limit = None     # for pylint
+MYSQL = SQLITE = FULLTEXT = None                
+window = None
+music_tree = None
+music_tree_aux = None
+audio_tree = None
+audio_tree_aux = None
+
 # ----------------------------------------
 #   WRW 5 Mar 2022 - I want to localize status info in a class and add
 #       a couple of indicators of audio and midi of title available.
 
 class Status():
-    def __init__( self, bar ):
-        self.bar = bar
+    def __init__( self, bar_element ):
+        self.bar_element = bar_element
         self.pdf_count = 0
         self.pdf_len = 0
         self.audio_count = 0
@@ -85,33 +93,33 @@ class Status():
         self.current_jjazz = False
         self.current_chordpro = False
 
-    def set_music_index( self, count, len ):
+    def set_music_index( self, count, lenth ):
         self.pdf_count = count
-        self.pdf_len = len
+        self.pdf_len = lenth
 
-    def set_audio_index( self, count, len ):
+    def set_audio_index( self, count, lenth ):
         self.audio_count = count
-        self.audio_len = len
+        self.audio_len = lenth
 
-    def set_music_files( self, count, len ):
+    def set_music_files( self, count, lenth ):
         self.music_count = count
-        self.music_len = len
+        self.music_len = lenth
 
-    def set_midi_files( self, count, len ):
+    def set_midi_files( self, count, lenth ):
         self.midi_count = count
-        self.midi_len = len
+        self.midi_len = lenth
 
-    def set_chordpro_files( self, count, len ):
+    def set_chordpro_files( self, count, lenth ):
         self.chordpro_count = count
-        self.chordpro_len = len
+        self.chordpro_len = lenth
 
-    def set_jjazz_files( self, count, len ):
+    def set_jjazz_files( self, count, lenth ):
         self.jjazz_count = count
-        self.jjazz_len = len
+        self.jjazz_len = lenth
 
-    def set_youtube_index( self, count, len ):
+    def set_youtube_index( self, count, lenth ):
         self.youtube_count = count
-        self.youtube_len = len
+        self.youtube_len = lenth
 
     def set_current_audio( self, val ):
         self.current_audio = val
@@ -133,7 +141,7 @@ class Status():
         chordpro_avail =  'Cp '  if self.current_chordpro else  ''
         jjazz_avail =  'Jj '  if self.current_jjazz else  ''
 
-        results =  f"Search Results:   "
+        results =  "Search Results:   "
         results += f"Music Index: {self.pdf_len:>4} of {self.pdf_count:>4}      "
         results += f"Audio Index: {self.audio_len:>4} of {self.audio_count:>4}      "
         results += f"Music Files: {self.music_len:>4} of {self.music_count:>4}      "
@@ -143,7 +151,7 @@ class Status():
         results += f"YouTube Index: {self.youtube_len:>4} of {self.youtube_count:>4}      "
         results += f"{audio_avail:>10}    {midi_avail:>10}   {chordpro_avail:>10}   {jjazz_avail:>10}"
     
-        self.bar.update( results )
+        self.bar_element.update( results )
 
 # ----------------------------------------
 #   WRW 7 Mar 2022 - Add a record/playback facility for testing
@@ -183,7 +191,6 @@ class Tabs_Control():
     def __init__( self ):                                                                                 
         self.idx_tabs = False
         self.c2f_tab = True
-        pass
 
     def initialize( self ):
         self.idx_tabs = conf.val( 'show_index_mgmt_tabs' )
@@ -217,10 +224,12 @@ class Tabs_Control():
 
     def toggle( self, tab ):
         if tab == 'idx':
-            self.idx_tabs = False if self.idx_tabs else True
+            self.idx_tabs = not self.ids_tabs
+          # self.idx_tabs = False if self.idx_tabs else True
             self.update( 'idx' )
         elif tab == 'c2f':
-            self.c2f_tab = False if self.c2f_tab else True
+            self.c2f_tab = not self.c2f_tab 
+          # self.c2f_tab = False if self.c2f_tab else True
             self.update( 'c2f' )
 
     def update( self, tab ):
@@ -330,16 +339,14 @@ def do_configure_save_update():
 def new_key( aux ):
     if aux.keys():
         return max( aux.keys() ) + 1
-    else:
-        return 1
+    return 1
 
 # ------------------------------------------------
 
-def nested_dict(n, type):
+def nested_dict(n, dtype):
     if n == 1:
-        return defaultdict(type)
-    else:
-        return defaultdict(lambda: nested_dict(n-1, type))
+        return defaultdict(dtype)
+    return defaultdict(lambda: nested_dict(n-1, dtype))
 
 # ------------------------------------------------
 #        tree.insert(parent,
@@ -480,7 +487,9 @@ def do_show_recent_event_histo():
 #   window.Element( 'tab-display-pdf' ).set_focus()
 #   window.Element( 'display-graph-pdf' ).draw_line( (0,0), (100,100)  )
 
-def initialize_gui( dc, window ):
+#   WRW 5 June 2022 - changed window to lwindow for pylint
+
+def initialize_gui( lwindow ):
     global music_tree, audio_tree
     global music_tree_aux, audio_tree_aux
 
@@ -498,7 +507,7 @@ def initialize_gui( dc, window ):
                page_count = 1,
                title='Bluebird Music Manager', )
 
-    # size = window.Element( 'display-graph-pdf' ).get_size()
+    # size = lwindow.Element( 'display-graph-pdf' ).get_size()
 
     # -------------------------------------------------------
     #   Load initial data into music and audio browse trees (in left sidebar).
@@ -514,16 +523,16 @@ def initialize_gui( dc, window ):
     # -------------------------------------------------------
     #   Set focus to title search box and select pdf display, which now contains help file.
 
-    window.Element( 'song-title' ).set_focus()
-    window.Element( 'tab-display-pdf' ).select()
+    lwindow.Element( 'song-title' ).set_focus()
+    lwindow.Element( 'tab-display-pdf' ).select()
     
     # -------------------------------------------------------
     #   Set saved values for setlist in both setlist Combo elements.
     
     current_name = sl.setlist_load()
     sl_names = sl.setlist_get_names()
-    window.Element(  'setlist-save-menu' ).update( values = sl_names, value=current_name )
-    window.Element(  'setlist-controls-menu' ).update( values = sl_names, value=current_name )
+    lwindow.Element(  'setlist-save-menu' ).update( values = sl_names, value=current_name )
+    lwindow.Element(  'setlist-controls-menu' ).update( values = sl_names, value=current_name )
     
     # --------------------------------------------
     #   Load current setlist in setlist tab.
@@ -543,7 +552,7 @@ def initialize_gui( dc, window ):
 
     #   Note: Config-Event processed in fb_pdf.py, not here. Appears as 'display-graph-pdf-Config-Event'
     
-    # window.bind( '<Configure>', 'Config-Event' )    # size of widget changed
+    # lwindow.bind( '<Configure>', 'Config-Event' )    # size of widget changed
 
     # --------------------------------------------
     #   Set the visibility of some tabs based on config options.
@@ -557,11 +566,11 @@ def initialize_gui( dc, window ):
     #   The expand arg here overrides PySimpleGui expand_x and expand_y.
     #   See dummy exploration program "Play/expand-problem.py" for more details.
     
-#/// RESUME   window.Element( 'sidebar-tabgroup' ).Widget.pack( side = tk.LEFT, expand=False, fill=tk.Y )
-#/// RESUME   window.Element( 'main-tabgroup' ).Widget.pack( side = tk.LEFT, expand=True, fill=tk.BOTH )
-    window.Element( 'sidebar-tabgroup' ).Widget.pack( side = 'left', expand=False, fill='y' )
-    window.Element( 'main-tabgroup' ).Widget.pack( side = 'left', expand=True, fill='both')
-    window.set_alpha(1)     # Show window. It had been initialized with alpha of 0.
+#/// RESUME   lwindow.Element( 'sidebar-tabgroup' ).Widget.pack( side = tk.LEFT, expand=False, fill=tk.Y )
+#/// RESUME   lwindow.Element( 'main-tabgroup' ).Widget.pack( side = tk.LEFT, expand=True, fill=tk.BOTH )
+    lwindow.Element( 'sidebar-tabgroup' ).Widget.pack( side = 'left', expand=False, fill='y' )
+    lwindow.Element( 'main-tabgroup' ).Widget.pack( side = 'left', expand=True, fill='both')
+    lwindow.set_alpha(1)     # Show window. It had been initialized with alpha of 0.
     
 # --------------------------------------------------------------------------
 
@@ -611,18 +620,18 @@ def get_about_data():
 
     # ----------------------------------
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        run_environment = f"PyInstaller bundle"
+        run_environment = "PyInstaller bundle"
 
     elif "__compiled__" in globals():
-        run_environment = f"Nuitka bundle"
+        run_environment = "Nuitka bundle"
 
     else:
-        run_environment = f"Python process"
+        run_environment = "Python process"
 
     try:
         # timestamp = datetime.datetime.fromtimestamp( Path(sys.executable).stat().st_mtime ).strftime( '%a, %d-%b-%Y, %H:%M:%S')
         timestamp = datetime.datetime.fromtimestamp( Path(os.path.realpath(__file__)).stat().st_mtime ).strftime( '%a, %d-%b-%Y, %H:%M:%S')
-    except:
+    except Exception as e:
         # timestamp = f"not available for {sys.executable}"
         timestamp = f"not available for {os.path.realpath(__file__)}"
 
@@ -708,10 +717,10 @@ def do_about():
             sg.Text( f"Version: {version}", pad=((20,20),(10,0)), font=("Helvetica", 16, ), text_color='#e0e0ff' ),
         ],
         [
-            sg.Text( f"Copyright \xa9 2022 Bill Wetzel", pad=((20,20),(8,0)), font=("Helvetica", 10, ), text_color='#e0e0ff' ),
+            sg.Text( "Copyright \xa9 2022 Bill Wetzel", pad=((20,20),(8,0)), font=("Helvetica", 10, ), text_color='#e0e0ff' ),
         ],
         [
-            sg.Text( f"This software and index data is released under the terms of the MIT License.", pad=((20,20),(2,0)), font=("Helvetica", 10, ), text_color='#e0e0ff' ),
+            sg.Text( "This software and index data is released under the terms of the MIT License.", pad=((20,20),(2,0)), font=("Helvetica", 10, ), text_color='#e0e0ff' ),
         ],
         [
             #   WRW 3 June 2022 - Volker got warning about 'None' not allowed in argument to size. Changed
@@ -732,7 +741,7 @@ def do_about():
         [
             sg.Button('Close', key='config-button-cancel', font=("Helvetica", 9), pad=((5,0),(10,10)), )
         ]
-    ],
+    ]
 
     # -------------------------------------------------------------
 
@@ -756,7 +765,7 @@ def do_about():
         if event == sg.WINDOW_CLOSED:
             return False
 
-        elif event == 'config-button-cancel':
+        if event == 'config-button-cancel':     # WRW 5 June 2022 - elif -> if for pylint
             about_window.close()
             return False
 
@@ -774,7 +783,8 @@ def do_about():
 
 def do_main( verbose, very_verbose, confdir, database, progress, log, record, playback ):
 
-    logging = True if log else False
+  # logging = True if log else False
+    logging = bool( log )
 
     # -----------------------------------------------------------------------
     #   A few exit and error functions defined inside main() for namespace reasons.
@@ -857,9 +867,8 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #   /// RESUME OK - Think about this some more. 
     #   Perhaps set this up with script before calling birdland? No, OK as is.
 
-    if( conf.Package_Type == 'Installed' or
-        conf.Package_Type == 'Unpacked' ):
-       os.chdir( os.path.dirname(os.path.realpath(__file__)))
+    if conf.Package_Type in ('Installed', 'Unpacked'):          # WRW 5 June 2022 - changed from multiple ifs for pylint
+        os.chdir( os.path.dirname(os.path.realpath(__file__)))
 
     #   if( conf.Package_Type == 'Development' or
     #      conf.Package_Type == 'GitHub' or
@@ -878,7 +887,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     results, success = conf.check_home_config( confdir )
     if not success:
         if progress:
-            print( f"ERROR: Error in home configuration:", file=sys.stderr )
+            print( "ERROR: Error in home configuration:", file=sys.stderr )
             print( '\n'.join( results ))
         conf.initialize_home_config( confdir )      # Need confdir to test if should have .birdland in home dir.
         announce += 1
@@ -886,7 +895,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     results, success = conf.check_specified_config( confdir )
     if not success:
         if progress:
-            print( f"ERROR: Error in specified configuration:", file=sys.stderr )
+            print( "ERROR: Error in specified configuration:", file=sys.stderr )
             print( '\n'.join( results ))
         conf.initialize_specified_config( confdir )
         announce += 1
@@ -903,7 +912,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     results, success = conf.check_hostname_config()
     if not success:
         if progress:
-            print( f"ERROR: Error in host-specific configuration:", file=sys.stderr )
+            print( "ERROR: Error in host-specific configuration:", file=sys.stderr )
             print( '\n'.join( results ))
         conf.initialize_hostname_config()
         announce += 1
@@ -954,7 +963,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     if not success:
         res = True
         if progress:
-            print( f"ERROR: Error in database configuration (birdland.py):", file=sys.stderr )
+            print( "ERROR: Error in database configuration (birdland.py):", file=sys.stderr )
             print( '\n'.join( results ))
 
         if MYSQL:       # If check_database() failed for mysql it is likely because of user credentials.
@@ -965,7 +974,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
             else:
                 print( "ERROR: Can't continue without user credentials for MySql database", file=sys.stderr )
-                exit(1)
+                sys.exit(1)
 
         if SQLITE:
             conf.initialize_database( database )
@@ -973,10 +982,10 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     # -----------------------------------------------------------------------
 
     global window
-    global music_tree
-    global music_tree_aux
-    global audio_tree
-    global audio_tree_aux
+    # global music_tree
+    # global music_tree_aux
+    # global audio_tree
+    # global audio_tree_aux
 
     # -----------------------------------------------------------------------
     #   Initialize these early in case joker clicks on blank line in table coming from initial values of "".
@@ -996,7 +1005,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         try:
             import MySQLdb
             conn = MySQLdb.connect( "localhost", conf.val( 'database_user' ), conf.val( 'database_password' ), conf.mysql_database )
-            c = conn.cursor()
+          # c = conn.cursor()
             dc = conn.cursor(MySQLdb.cursors.DictCursor)
             have_db = True
 
@@ -1275,7 +1284,8 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         # ----------------------------------------------------
         #   Likely not needed but include be safe. In case user closes window during timeout loop.
 
-        elif event == sg.WINDOW_CLOSED or event == 'Exit':
+        # elif event == sg.WINDOW_CLOSED or event == 'Exit':
+        elif event in (sg.WINDOW_CLOSED, 'Exit'):               # WRW 5 June 2022 - changed from if/or to in
             do_short_exit(0)
 
     if counter == limit:
@@ -1289,7 +1299,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
     #   in that to scale initial pdf to fit size of graph.
     #   Postpone announcement of no database credentials till here, after window up.
 
-    initialize_gui( dc, window )
+    initialize_gui( window )
 
     if record:
         recorder = Record( record )
@@ -1327,7 +1337,8 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
         #       NG when below "if '::' in event:". Must be above logging and verbose
         #       since event is None.
 
-        if event == sg.WINDOW_CLOSED or event == 'Exit':
+        # if event == sg.WINDOW_CLOSED or event == 'Exit':
+        if event in (sg.WINDOW_CLOSED, 'Exit'):      # WRW 5 June 2022 - changed from if/or to in
             do_full_exit(0)
 
         # ------------------------------------------------------------------
@@ -1517,7 +1528,9 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
         # ----------------------
 
-        elif( main_tab == 'tab-setlist-table' or 'display-button-add-to-setlist' ) and sl.process_events( event, values ):
+        #   WRW 5 June 2022 - add 'event ==' before 'display-button-add-to-setlist' 
+
+        elif( main_tab == 'tab-setlist-table' or event == 'display-button-add-to-setlist' ) and sl.process_events( event, values ):
             continue
 
         # Note processing events for pdf and meta for tab-display-pdf
@@ -1680,7 +1693,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                             select_pdf_tab()
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'indexed-music-file-table' event", values[ event ] )
+                    do_error_announce( "ERROR: Unexpected values content for 'indexed-music-file-table' event", values[ event ] )
             continue
 
         # ----------------------------------------------------------------
@@ -1712,7 +1725,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     select_pdf_tab()
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'music-filename-table' event", values[event] )
+                    do_error_announce( "ERROR: Unexpected values content for 'music-filename-table' event", values[event] )
             continue
 
         # ------------------------------------------------------------
@@ -1734,7 +1747,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     fb.play_audio_file( path )
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'audio-file-table' event", values[event] )
+                    do_error_announce( "ERROR: Unexpected values content for 'audio-file-table' event", values[event] )
             continue
 
         # ----------------------------------------------------------------
@@ -1754,7 +1767,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     fb.play_midi_file( fullpath )
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'audio-file-table' event", values[event] )
+                    do_error_announce( "ERROR: Unexpected values content for 'audio-file-table' event", values[event] )
             continue
 
         # ----------------------------------------------------------------
@@ -1767,7 +1780,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                     index = values[ "current-chordpro-table" ][0]
                     title = chordpro_file_table_data[ index ][0]
-                    artist = chordpro_file_table_data[ index ][1]
+                 #  artist = chordpro_file_table_data[ index ][1]
                     file = chordpro_file_table_data[ index ][2]
                     fullpath = Path( conf.val( 'chordpro_file_root' ), file )
 
@@ -1791,7 +1804,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     fb.show_chordpro_file( fullpath, show_chordpro_file_callback )
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'current-chordpro-table' event", values[event] )
+                    do_error_announce( "ERROR: Unexpected values content for 'current-chordpro-table' event", values[event] )
             continue
 
         # ----------------------------------------------------------------
@@ -1813,7 +1826,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                     fb.show_jjazz_file( fullpath )
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'current-jjazz-table' event", values[event] )
+                    do_error_announce( "ERROR: Unexpected values content for 'current-jjazz-table' event", values[event] )
             continue
 
         # ----------------------------------------------------------------
@@ -1829,7 +1842,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                 fb.play_audio_file( path )
 
             else:
-                do_error_announce( f"ERROR: Unexpected values content for 'current-audio-table' event", values[event] )
+                do_error_announce( "ERROR: Unexpected values content for 'current-audio-table' event", values[event] )
 
             continue
 
@@ -1849,7 +1862,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 fb.play_midi_file( fullpath )
             else:
-                do_error_announce( f"ERROR: Unexpected values content for 'current-midi-table' event", values[event] )
+                do_error_announce( "ERROR: Unexpected values content for 'current-midi-table' event", values[event] )
 
             continue
 
@@ -1862,14 +1875,14 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                 if "youtube-file-table" in values and len( values[ "youtube-file-table" ] ):
                     index = values[ "youtube-file-table" ][0]
 
-                    ytitle = youtube_file_table_data[ index ][1]
+                  # ytitle = youtube_file_table_data[ index ][1]
                     yt_id = youtube_file_table_data[ index ][3]
 
                     # fb.open_youtube_file( ytitle )
                     fb.open_youtube_file_alt( yt_id )
 
                 else:
-                    do_error_announce( f"ERROR: Unexpected values content for 'youtube-file-table' event", values[event] )
+                    do_error_announce( "ERROR: Unexpected values content for 'youtube-file-table' event", values[event] )
             continue
 
         # ----------------------------------------------------------------
@@ -1895,7 +1908,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 pdf_extensions = [ '.pdf' ]         
 
-                if node['kind'] == 'dir' and node['children'] == None:
+                if node['kind'] == 'dir' and node['children'] is None:
                     add_to_browse_tree( 'browse-music-files', music_tree, music_tree_aux, parent_key, node,
                                         fb.Music_File_Root, music_file_icon, pdf_extensions )
 
@@ -1927,7 +1940,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
                             src_info = f"File indexed by: {', '.join( srcs )}"
                         else:
                             window[ 'browse-src-combo' ].update( values = [] )
-                            src_info = f"File not indexed"
+                            src_info = "File not indexed"
 
                     else:
                         canon_info = "File not mapped to canonical"
@@ -1962,7 +1975,7 @@ def do_main( verbose, very_verbose, confdir, database, progress, log, record, pl
 
                 audio_extensions = conf.val('audio_file_extensions')
 
-                if node['kind'] == 'dir' and node['children'] == None:
+                if node['kind'] == 'dir' and node['children'] is None:
                     add_to_browse_tree( 'browse-audio-files', audio_tree, audio_tree_aux, parent_key, node,
                                         fb.Audio_File_Root, audio_file_icon, audio_extensions )
 

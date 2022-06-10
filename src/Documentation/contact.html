@@ -33,28 +33,7 @@ JJazzLab, audio player" >
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
         crossorigin="anonymous"></script>
 
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-<style>
-
-body {
-
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
-    font-size: 10pt;
-    letter-spacing: -0.01em;
-    line-height: 150%;
-    background-color: #f0f0ff;
-    color: #000000;
-    padding: 0;
-    min-width: 640px;
-    margin: 0px 30px 0px 30px;
-}
-
-td {
-    padding: 0px 0px 5px 2px;
-}
-
-</style>
+<link rel="stylesheet" href="birdland.css">
 
 </head>
 
@@ -77,9 +56,6 @@ $(document).ready(function() {
         return re.test( email );
     }
 
-    //  Do form validation here before sending to host.
-    //  WRW 13 July 2017 - add pams_pin and street if available
-
     $('#contact-submit').click( function() {
         var err_count = 0;
 
@@ -92,7 +68,7 @@ $(document).ready(function() {
             return;
         }
         else {
-            $("#contact-results").html( "" );
+            $("#contact-results").html( "Sending message, just a moment." );
         }
 
         if( ! check_email( $("#contact-email").val() ) ) {
@@ -138,91 +114,104 @@ $(document).ready(function() {
 }); // END of: $(document).ready(function() {
 
 </script>
+<body>
 
 <h1> <img src=/Images/Saxophone_64.png width=32 style="display:inline;margin: 0;"/> Birdland Musician's Assistant</h1>
 
-<h2>Contact</h2>
-
-<p>
-Please use the form to contact us. We will not share your email address with anyone.
-</p>
-
-<!-- <form> -->
-<table width="100%" style="float:left">
-
-<!-- ----------------------------------------------------------------- -->
-
-<tr>
- <td valign="top" style="text-align:right;">
-  <label for="first_name"> Name</label>
- </td>
- <td valign="top">
-  <input id='contact-name'  type="text" name="name" maxlength="50" size="40">
- </td>
-</tr>
-
-<tr>
- <td style="text-align:right;" valign="top">
-  <label for="email"> Email</label>
- </td>
- <td valign="top">
-  <input  id='contact-email' type="text" name="email" maxlength="80" size="40">
- </td>
-
-</tr>
-
-<tr>
- <td style="text-align:right;" valign="top">
-  <label for="comments"> Message</label>
- </td>
- <td valign="top">
-  <textarea  id='contact-comments' name="comments" maxlength="5000" cols="50" rows="10"></textarea>
- </td>
-</tr>
-
-<!-- ----------------------------------------------------------------- -->
-
-<tr>
- <td>
- </td>
- <td>
-    <span id=contact-results style="font-size: 11pt; font-weight: bold"></span>
-</td>
-</tr>
-
-<tr>
- <td style="text-align:right;">
-    <button id="contact-submit" type="button" name="contact-form-button" style="color: white; background: green;">Send</button>
- </td>
- <td>
-</td>
-</tr>
-
-</table>
-
-<!--
-
-<tr>
- <td style="text-align:right;">
-    &nbsp;
- </td>
- <td>
-    &nbsp;
-</td>
-</tr>
-
-<tr>
- <td style="text-align:right;">
-    &nbsp;
- </td>
- <td>
-    &nbsp;
-</td>
-</tr>
-
-
-<p>
-    <div id=contact-results style="height: 3em; margin-left: .7em; padding-bottom: 3em; font-size: 11pt; font-weight: bold"></div>
-</p>
--->
+<div class=row>
+<div class=index-column>
+    <a href=/landing.html>Home</a> <br>
+    <a href=/_build/html/birdland.html>Documentation</a> <br>
+    <a href=/screenshots.html>Screenshots</a> <br>
+    <a href=/contact.html>Contact</a> <br>
+    <a href=/landing.html#download>Download</a> <br>
+    <a href=/search.html>Index Search</a><br>
 </div>
+
+<div class=main-column>
+    <h2>Contact</h2>
+    
+    <p>
+    Please use the form to contact us. We will not share your email address with anyone.
+    </p>
+    
+    <table class=contact width="100%" style="float:left">
+    
+    <!-- ----------------------------------------------------------------- -->
+    
+    <tr>
+     <td valign="top" style="text-align:right;">
+      <label for="first_name"> Name</label>
+     </td>
+     <td valign="top">
+      <input id='contact-name'  type="text" name="name" maxlength="50" size="40">
+     </td>
+    </tr>
+    
+    <tr>
+     <td style="text-align:right;" valign="top">
+      <label for="email"> Email</label>
+     </td>
+     <td valign="top">
+      <input  id='contact-email' type="text" name="email" maxlength="80" size="40">
+     </td>
+    
+    </tr>
+    
+    <tr>
+     <td style="text-align:right;" valign="top">
+      <label for="comments"> Message</label>
+     </td>
+     <td valign="top">
+      <textarea  id='contact-comments' name="comments" maxlength="5000" cols="50" rows="10"></textarea>
+     </td>
+    </tr>
+    
+    <!-- ----------------------------------------------------------------- -->
+    
+    <tr>
+     <td>
+     </td>
+     <td>
+        <span id=contact-results style="font-size: 11pt; font-weight: bold"></span>
+    </td>
+    </tr>
+    
+    <tr>
+     <td style="text-align:right;">
+        <button id="contact-submit" type="button" name="contact-form-button" style="color: white; background: green;">Send</button>
+     </td>
+     <td>
+    </td>
+    </tr>
+    
+    </table>
+    
+    <!--
+    
+    <tr>
+     <td style="text-align:right;">
+        &nbsp;
+     </td>
+     <td>
+        &nbsp;
+    </td>
+    </tr>
+    
+    <tr>
+     <td style="text-align:right;">
+        &nbsp;
+     </td>
+     <td>
+        &nbsp;
+    </td>
+    </tr>
+    
+    
+    <p>
+        <div id=contact-results style="height: 3em; margin-left: .7em; padding-bottom: 3em; font-size: 11pt; font-weight: bold"></div>
+    </p>
+    -->
+    </div>
+</div>
+</body>

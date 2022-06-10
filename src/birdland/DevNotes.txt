@@ -10,6 +10,11 @@ ToDo - Soon:
     Possibly include a minimal sample media library.
     Index search on website.
 
+    Copy database to server failed. OK after removed UNIQUE constraing in building the titles table.
+        Why was this not reported while building.
+
+    Check for mysql fulltext index on title in titles_distinct.
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ToDo - A Little Later:
@@ -247,6 +252,11 @@ ToDo - Done:
         .explain on|off default on
         .headers on|off
         .stats on|off
+
+    MySql database:
+        create database Birdland;
+        create user 'birdland'@'localhost' identified by '******';
+        grant select on Birdland.* to 'birdland'@'localhost' with grant option;
 
     Python path[]
         As initialized upon program startup, the first item of this list, path[0],

@@ -227,8 +227,8 @@ class Setlist():
                             self.ele_tab_display_pdf.set_focus()
 
                     else:
-                        # self.sg.popup( f"\nNo music file for:\n\n   '{title}'\n\n    From: {canonical}\n",
-                        self.sg.popup( f"\nMusic file '{file}'\n\n   not found in music library.\n",
+                     #  self.sg.popup( f"\nMusic file '{file}'\n\n   not found in music library.\n",
+                        self.sg.popup( f"\nNo music file for:\n\n   '{title}'\n\n    From: {canonical}\n",
                             title='Warning',
                             icon='BL_Icon',
                             keep_on_top = True,

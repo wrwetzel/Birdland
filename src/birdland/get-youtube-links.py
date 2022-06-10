@@ -172,10 +172,11 @@ def do_query( confdir, database ):
     with gzip.open( ofile, 'wt' ) as ofd:
         ofd.write( json_text )
 
+    conn.close()    # WRW 5 June 2022 - Oops, typo, added parens and moved into do_query()
+
 # ----------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     do_query()
-    conn.close
 
 # ----------------------------------------------------------------------------------

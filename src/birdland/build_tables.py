@@ -46,7 +46,7 @@ Old_Dc = None
 
 # --------------------------------------------------------------------------
 
-audio_file_extensions = [ ".mp3", ".fla", ".flac", ".FLAC", ".Mp3", ".MP3", ".mpc", ".ape", ".ogg", ".FLAC", ".wav", ".aif" ]
+audio_file_extensions = [ ".mp3", ".fla", ".flac", ".FLAC", ".Mp3", ".MP3", ".mpc", ".ape", ".ogg", ".wav", ".aif" ]
 
 # ==========================================================================
 
@@ -468,6 +468,9 @@ def build_audio_files( c ):
         txt = 'ALTER TABLE audio_files ADD FULLTEXT( title ), ADD FULLTEXT( artist ), ADD FULLTEXT( album );'
         execute( c, txt )
 
+        txt = 'ALTER TABLE audio_files ADD INDEX( title )'  # WRW 4 June 2022 - Need this for fakebook search site, just mysql.
+        execute( c, txt )
+
     if SQLITE:
         txt = "CREATE INDEX audio_files_index ON audio_files( title, artist, album )"
         execute( c, txt )
@@ -769,6 +772,9 @@ def build_titles( dc, c, conn ):
         execute( c, txt )
 
     if MYSQL:
+        #   WRW 4 June 2022 - Changed from MYISAM to INNODB to fix problem sending table to server
+        #       that was related to UNIQUE(). OK with no UNIQUE(). OK with INNODB.
+
         txt = """CREATE TABLE titles (
                 src VARCHAR(255),
                 local VARCHAR(255),
@@ -778,9 +784,9 @@ def build_titles( dc, c, conn ):
                 sheet VARCHAR(10),
                 id MEDIUMINT UNSIGNED AUTO_INCREMENT,
                 PRIMARY KEY(id),
-                UNIQUE( title_id, src, local )
+                UNIQUE( title_id, src, local )   
                 )
-                ENGINE = MYISAM
+                ENGINE = INNODB   
                 CHARACTER SET 'utf8mb4'
         """
         execute( c, txt )
@@ -1028,9 +1034,15 @@ def build_titles_distinct( c, conn ):
     #       build_titles() and build_title2youtube(). Cut run time in about half.
     #       add_indexes() adds FULLTEXT index.  Need ordinary index for get_title_id_from_title().
     #   PRIMARY KEY is automatically indexed, don't need to add another here.
+    #   WRW 4 June 2022 - Realized I have no FULLTEXT index on title in titles_distinct for MySql.
+    #       add_indexes() must have been vestigal. Probably pulled all from that and put inline.
+    #       Made a difference - eliminated noticeable latency.
 
     if MYSQL:
         txt = "ALTER TABLE titles_distinct ADD INDEX( title ), ADD INDEX( title_id )"
+        execute( c, txt )
+
+        txt = "ALTER TABLE titles_distinct ADD FULLTEXT( title )"   # WRW 4 June 2022
         execute( c, txt )
 
     if SQLITE:

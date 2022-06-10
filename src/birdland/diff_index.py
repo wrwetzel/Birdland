@@ -430,7 +430,7 @@ def do_main( verbose, all, canon, list, database, confdir, summary, page_summary
     # ---------------------------------------------------------------
     
     # conn.commit()
-    conn.close
+    conn.close()    # WRW 5 June 2022 - Oops, typo, added parens.
     return rcode
 
 # ---------------------------------------------------------------
